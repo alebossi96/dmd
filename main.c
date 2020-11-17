@@ -1,0 +1,28 @@
+#include"dmd.h"
+int main(){
+hid_device *handle = hid_open(0x0451, 0xc900, NULL);
+
+
+if (!handle) {
+	printf("unable to open device\n");
+	handle = NULL;
+	if(!DEBUG) return 1;
+	}
+changeMode(handle, '3');
+int exposure[1];
+exposure[0] = 1e5;
+int dark_time[1]={0};
+dark_time[0] = 0;
+int trigger_in[1];
+trigger_in[0] = 0;
+int trigger_out[1];
+trigger_out[0] = 1;
+int images[1][1080][1920]={0};
+		
+defSequenceTest(handle,images,exposure,trigger_in,dark_time,trigger_out, 60,1);
+        
+
+return 0;
+}
+
+
