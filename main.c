@@ -8,19 +8,27 @@ if (!handle) {
 	handle = NULL;
 	if(!DEBUG) return 1;
 	}
-changeMode(handle, '3');
+changeMode(handle, 3);
 int exposure[1];
-exposure[0] = 1e5;
+exposure[0] = 1000000;
 int dark_time[1]={0};
 dark_time[0] = 0;
 int trigger_in[1];
 trigger_in[0] = 0;
 int trigger_out[1];
 trigger_out[0] = 1;
-int images[1][1080][1920]={0};
-		
-defSequenceTest(handle,images,exposure,trigger_in,dark_time,trigger_out, 60,1);
-        
+int images[1][1080][1920];
+for(int i = 0; i<1080; i++){
+	
+	for(int j = 0; j<1920; j++){
+		if(j<1000) images[0][i][j]=255;
+		else images[0][i][j]=0;
+	}
+	
+}
+
+defSequence(handle,images,exposure,trigger_in,dark_time,trigger_out, 60,1);
+startSequence(handle);
 
 return 0;
 }
