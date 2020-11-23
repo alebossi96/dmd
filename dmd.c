@@ -14,7 +14,7 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 }
 
 int command(hid_device *handle, const char &mode, const char &sequencebyte, const char &com1, const char &com2, const char *data, const int &sizeData){
-	
+
 	unsigned char buffer[SIZE];
 	char flagstring[8];	
 	if(mode == 'r')
@@ -69,8 +69,10 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 		j = 58;
 		while(j<sizeData){
 			buffer[i] = data[j];
+			
+
 			j++;
-			i++;	
+			i++;
 			if(i%65==0){
 				printf("\n\n");
 				if(!DEBUG){
@@ -81,13 +83,16 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 					for(int k = 0; k<SIZE;k++) printf("%d, ", buffer[k]);
 					printf("\n\n");
 				}
+			
 				i =1;
 			}
 		}
-		if(j%64 !=0){
-			while(j%64!=0){
-				buffer[j%64+1] =0x00;
+		if(i%64 !=0){
+			while(i%64!=0){
+
+				buffer[i] =0x00;
 				j++;
+				i++;
 			}			
 		if(!DEBUG){
 			int res = hid_write(handle, buffer,SIZE);
@@ -292,7 +297,7 @@ void configureLut(hid_device *handle,int size, int rep){
 	free(tmp);
 }
 int pow_i(const int &b,const int &exp){
-	int res=0;
+	int res=1;
 	for(int i=0; i<exp; i++)
 		res*=b;
 	return res;
@@ -438,6 +443,7 @@ void defSequence(hid_device *handle,int matrixes[1][1080][1920],int *exposure,in
 			struct Node *bitString=NULL;
 			int bytecount=0;
 			newEncode(mergedImagesint, &bitString, bytecount);
+
 			//e qui dovrò creare un array da bitString
 			int *tmp;
 			tmp =(int*)malloc(bytecount*sizeof(int));
@@ -463,6 +469,10 @@ void defSequence(hid_device *handle,int matrixes[1][1080][1920],int *exposure,in
 				encoded[bytecount-j-1]=tmp[j];
 				
 			}
+			
+			printf("\n\n\n bytecount = %d \n\n\n", bytecount);
+			for(int i = 0; i < bytecount; i++) printf("%d, ", encoded[i]);
+			printf("\n\n\n");
 			free(tmp);
 			push(&encodedImagesList,encoded);
 			push(&sizes,bytecount);
@@ -477,7 +487,7 @@ void defSequence(hid_device *handle,int matrixes[1][1080][1920],int *exposure,in
 	}
 	while(encodedImagesList!=NULL){
 
-		//setBmp(handle, (i-1)/24,sizes->data);	
+		setBmp(handle, (i-1)/24,sizes->data);	
 		printf("\n\n");
 		bmpLoad(handle,encodedImagesList->data,sizes->data);
 		encodedImagesList = encodedImagesList->next;
@@ -696,6 +706,8 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 	push(bitString, 0x01);
 	for(int i = 0; i<21; i++) push(bitString, 0x00);
 	int n=0;
+	//fino a qui va bene
+	//da qui bho
 	for(int i = 0; i<1080; i++){
 		for(int j = 0; j<1920; j++){
 			if(i>0){
@@ -707,6 +719,7 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 					push(bitString, 0x01);				
 					byteCount+=2;
 					if(n>=128){
+
 						push(bitString, (n & 0x7f) | 0x80);
 						push(bitString, n>>7);
 						byteCount+=2;
@@ -724,6 +737,7 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 								j++;							
 							}
 							if(n>=128){
+
 								push(bitString, (n & 0x7f) | 0x80);
 								push(bitString, n>>7);
 								byteCount+=2;
@@ -759,6 +773,7 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 								j++;
 							}
 							if(n>=128){
+
 								push(bitString, (n & 0x7f) | 0x80);
 								push(bitString, n>>7);
 								byteCount+=2;
@@ -804,6 +819,7 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 							j++;							
 						}
 						if(n>=128){
+
 							push(bitString, (n & 0x7f) | 0x80);
 							push(bitString, n>>7);
 							byteCount+=2;
@@ -837,6 +853,7 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 							j++;
 						}
 						if(n>=128){
+
 							push(bitString, (n & 0x7f) | 0x80);
 							push(bitString, n>>7);
 							byteCount+=2;
