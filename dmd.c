@@ -13,6 +13,7 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 	return res;
 }
 
+
 int command(hid_device *handle, const char &mode, const char &sequencebyte, const char &com1, const char &com2, const char *data, const int &sizeData){
 
 	unsigned char buffer[SIZE];
@@ -60,7 +61,7 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 			printf("written bytes = %d \n", res);
 			checkForErrors(handle);
 		}else{
-			//for(int k = 0; k<SIZE;k++) printf("%d, ", buffer[k]);
+			for(int k = 0; k<SIZE;k++) printf("%d, ", buffer[k]);
 			printf("\n\n");
 		}
 		buffer[0] = 0x00;
@@ -74,6 +75,7 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 			j++;
 			i++;
 			if(i%65==0){
+				
 				printf("\n\n");
 				if(!DEBUG){
 				int res = hid_write(handle, buffer,SIZE);
@@ -85,31 +87,30 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 				}
 			
 				i =1;
+				
 			}
 		}
-		if(i%64 !=0){
-			while(i%64!=0){
-
+		if(i%65 !=0 && i != 1){
+			while(i%65!=0){
+				
 				buffer[i] =0x00;
 				j++;
 				i++;
-			}			
-		if(!DEBUG){
-			int res = hid_write(handle, buffer,SIZE);
-			printf("written bytes = %d \n", res);
-			checkForErrors(handle);
-		}else{
-			for(int k = 0; k<SIZE;k++) printf("%d, ", buffer[k]);
-			printf("\n\n");
-		}
-		
-
-	
+				}			
+			if(!DEBUG){
+				int res = hid_write(handle, buffer,SIZE);
+				printf("written bytes = %d \n", res);
+				checkForErrors(handle);
+			}else{
+				for(int k = 0; k<SIZE;k++) printf("%d, ", buffer[k]);
+				printf("\n\n");
+			}
 		}
 	}
 
 	return 0;	
 }
+
 /*
 int command(hid_device *handle, const char &mode, const char &sequencebyte, const char &com1, const char &com2, const char *data, const int &sizeData){
 		
@@ -373,17 +374,19 @@ void definePatterns(hid_device *handle, const int &index,const int &exposure,con
 
 	payload[10]= tmp[0];
 	payload[11]=tmp[1];
-
+	printf("\n\npayload definePatterns\n\n");
+	for(int i = 0; i<12; i++) printf("%d, ", payload[i]);
+	printf("\n\n\n");
 	command(handle, 'w',0x00,0x1a,0x34,payload,12);
 	checkForErrors(handle);
 }
 
-void defSequence(hid_device *handle,int matrixes[1][1080][1920],int *exposure,int *trigger_in, int *dark_time, int *trigger_out, int repetition, const int &size){
-	
+void defSequence(hid_device *handle,int ***matrixes,int *exposure,int *trigger_in, int *dark_time, int *trigger_out, int repetition, const int &size){
+
 	stopSequence(handle);
 	struct List * encodedImagesList =NULL;
 	struct Node * sizes=NULL;
-	configureLut(handle,size,repetition);//<<<<<<<<<<<<<<<<<<<<<<<
+	configureLut(handle,size,repetition);
 	int sizeList=0;
 	//devo passare 24 in 24 immagini a mergeImages
 	/*if(size%24==0)
@@ -442,8 +445,20 @@ void defSequence(hid_device *handle,int matrixes[1][1080][1920],int *exposure,in
 			mergeImages(imageData,mergedImagesint);//ci sono dei problemi
 			struct Node *bitString=NULL;
 			int bytecount=0;
-			newEncode(mergedImagesint, &bitString, bytecount);
+			/*
+				for(int j = 0; j<1080; j++){
+					for(int k = 0; k<1920; k++){
+						for(int i = 0; i<3; i++)
+						printf("%d - ", mergedImagesint[j][k][i]);
+						printf("\n");
+					
 
+				}
+
+
+			}*/
+			newEncode(mergedImagesint, &bitString, bytecount);
+			
 			//e qui dovrò creare un array da bitString
 			int *tmp;
 			tmp =(int*)malloc(bytecount*sizeof(int));
@@ -471,8 +486,10 @@ void defSequence(hid_device *handle,int matrixes[1][1080][1920],int *exposure,in
 			}
 			
 			printf("\n\n\n bytecount = %d \n\n\n", bytecount);
-			for(int i = 0; i < bytecount; i++) printf("%d, ", encoded[i]);
-			printf("\n\n\n");
+
+			for(int i = 0; i < bytecount; i++) printf("%d,\n ", encoded[i]);
+			printf("\n");
+
 			free(tmp);
 			push(&encodedImagesList,encoded);
 			push(&sizes,bytecount);
@@ -922,5 +939,62 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 
 }//function
 
-//linea 746 decommentare
+
+
+void hadamard(int **matrix, const int &nBasis){
+	int logN = log(nBasis)/log(2);
+
+	if( nBasis%pow_i(2,logN) != 0)
+		return;
+
+	matrix[0][0] = 1;
+	for(int i = 0; i< logN; i++){
+		int size = pow2_i(i);
+		for(int j =0; j<size; j++){
+			for(int k = 0; k<size; k++){
+				//matrix[j][j] = matrix[j][j]
+				matrix [j+size][k+size] = -matrix[j][k];
+				matrix [j][k+size] = matrix[j][k];
+				matrix [j+size][k] = matrix[j][k];
+			}
+		}
+	}
+
+
+
+}
+
+void getBasis(const int &nBasis, const int &nMeas, int ***basis){
+	int **H;
+
+	H =(int **)malloc(nBasis*sizeof(int*));
+	for(int i = 0; i<nBasis; i++)
+		H [i] = (int *)malloc(nBasis*sizeof(int));
+
+
+	hadamard(H, nBasis);
+
+
+	//come inserire? nel senso binning? padding?/ transformazione?
+
+	//int mult = 32/nBasis;//devo cercare la più vicina potenza del 2
+	
+	int logN = log(nBasis)/log(2);
+	int mult=WIDTH/pow2_i(logN);
+	int idxZeros = (WIDTH-mult*nBasis)/2;
+	for(int i = 0; i <nMeas; i++){
+		for(int j = 0; j<WIDTH;j++){
+			
+			if(j>(idxZeros-1) && j<(WIDTH-idxZeros)){
+				int el =(H[i][(j-idxZeros)/mult]+1)/2;
+				 for(int k = 0; k<HEIGHT; k++)
+					basis[i][k][j] = el;
+			}
+			else for(int k = 0; k<HEIGHT; k++) basis[i][k][j] = 0;	
+			
+		}
+		
+	}
+}
+
 
