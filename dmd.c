@@ -448,6 +448,7 @@ void defSequence(hid_device *handle,int ***matrixes,int *exposure,int *trigger_i
 			/*
 				for(int j = 0; j<1080; j++){
 					for(int k = 0; k<1920; k++){
+						printf("i = %d j = %d ", j,k);
 						for(int i = 0; i<3; i++)
 						printf("%d - ", mergedImagesint[j][k][i]);
 						printf("\n");
@@ -457,6 +458,7 @@ void defSequence(hid_device *handle,int ***matrixes,int *exposure,int *trigger_i
 
 
 			}*/
+			
 			newEncode(mergedImagesint, &bitString, bytecount);
 			
 			//e qui dovrò creare un array da bitString
@@ -487,9 +489,9 @@ void defSequence(hid_device *handle,int ***matrixes,int *exposure,int *trigger_i
 			
 			printf("\n\n\n bytecount = %d \n\n\n", bytecount);
 
-			for(int i = 0; i < bytecount; i++) printf("%d,\n ", encoded[i]);
+			for(int i = 0; i < bytecount; i++) printf("encoded[%d] = %d,\n ",i, encoded[i]);
 			printf("\n");
-
+			//getchar();
 			free(tmp);
 			push(&encodedImagesList,encoded);
 			push(&sizes,bytecount);
@@ -766,7 +768,7 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 							push(bitString, image[i][j][1]);
 							push(bitString, image[i][j][2]);
 							byteCount+=3;
-							j++;
+							//j++;<-----------------------
 							n=0;
 						}else if(j>1917 || isRowEqual(image[i][j+1],image[i][j+2]) || isRowEqual(image[i][j+1],image[i-1][j+1])){
 							push(bitString, 0x01);
@@ -775,7 +777,7 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 							push(bitString, image[i][j][1]);
 							push(bitString, image[i][j][2]);
 							byteCount+=3;
-							j++;
+							//j++;<----------------
 							n=0;					
 						}else{//se j<1919e le condizioni isRowEqual non si verificano
 							push(bitString, 0x00);
@@ -783,7 +785,7 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 							byteCount++;
 							struct Node *toAppend=NULL;
 							while(j<1919 && !isRowEqual(image[i][j],image[i][j+1])){
-								n++;
+								n++;//tutti quelli che sono diversi
 								push(&toAppend, image[i][j][0]);
 								push(&toAppend, image[i][j][1]);
 								push(&toAppend, image[i][j][2]);
@@ -827,16 +829,21 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 						n=0;
 					}
 				}//else di if(isRowEqual(image[i][j],image[i-1][j]))
-			}else{//if(i>0)
+			}else{//if(i>0) quindi i == 0
 				if(j<1919){
+					printf("\n initial  j= %d \n",j);
 					if(isRowEqual(image[i][j],image[i][j+1])){
+						
 						n++;
 						while(j<1919 && isRowEqual(image[i][j],image[i][j+1])){
+							//printf("\n j= %d  n = %d\n",j, n);
+							
 							n++;
 							j++;							
 						}
 						if(n>=128){
-
+							//printf("\n j= %d  n = %d\n",j, n);
+							//getchar();
 							push(bitString, (n & 0x7f) | 0x80);
 							push(bitString, n>>7);
 							byteCount+=2;
@@ -848,7 +855,7 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 						push(bitString, image[i][j][1]);
 						push(bitString, image[i][j][2]);
 						byteCount+=3;
-						j++;
+						//j++;<--------------------
 						n=0;
 					}else if(j>1917 || isRowEqual(image[i][j+1],image[i][j+2]) || isRowEqual(image[i][j+1],image[i-1][j+1])){						push(bitString, 0x01);
 						byteCount++;
@@ -856,14 +863,14 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 						push(bitString, image[i][j][1]);
 						push(bitString, image[i][j][2]);
 						byteCount+=3;
-						j++;
+						//j++;<------------------
 						n=0;					
 					}else{//se j<1919e le condizioni isRowEqual non si verificano
 						push(bitString, 0x00);
 						byteCount++;
 						struct Node *toAppend=NULL;
 						while(j<1919 && !isRowEqual(image[i][j],image[i][j+1])){
-							n++;
+							n++;//aggiungo tutti quelli diversi
 							push(&toAppend, image[i][j][0]);
 							push(&toAppend, image[i][j][1]);
 							push(&toAppend, image[i][j][2]);
@@ -903,7 +910,7 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 					push(bitString, image[i][j][1]);
 					push(bitString, image[i][j][2]);
 					byteCount+=3;
-					j++;
+					//j++;<---------------
 					n=0;
 				}
 

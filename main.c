@@ -9,7 +9,7 @@ if (!handle) {
 	if(!DEBUG) return 1;
 	}
 changeMode(handle, 3);
-int nMeas =4;
+int nMeas =1;
 int *exposure;
 int *dark_time;
 int *trigger_in;
@@ -25,23 +25,32 @@ for (int i = 0; i<nMeas; i++) dark_time[i]= 0;
 for (int i = 0; i<nMeas; i++) trigger_in[i] = 0;
 for (int i = 0; i<nMeas; i++) trigger_out[i] = 1;
 //int images[1][1080][1920];
-/*
-images = (int***)malloc(size *sizeof(int**));
-	for(int i = 0; i<size; i++){
+/*	
+images = (int***)malloc(nMeas *sizeof(int**));
+	for(int i = 0; i<nMeas; i++){
 		images[i] = (int**)malloc(1080*sizeof(int*));
 		for(int j = 0;j<1080; j++)
 			images[i][j]= (int*)malloc(1920*sizeof(int));
 	}
+for (int k = 0; k<nMeas; k++){
+	for(int i = 0; i<1080; i++){
+		for(int j = 0; j<1920; j++){
+			if(j<100*k ) images[k][i][j]=0;
+			else images[k][i][j]=1;
+		}	
+		
+	}
+}
 
 for(int i = 0; i<1080; i++){
 	for(int j = 0; j<1920; j++){
-		if(j<1000 && i <500) images[0][i][j]=0;
-		else images[0][i][j]=1;
+		if(j<1000 && i <500) images[1][i][j]=1;
+		else images[1][i][j]=0;
 	}	
 	
-}*/
+}
 
-	
+*/
 	int ***basis;
 	basis = (int***)malloc(nMeas*sizeof(int**));
 	for(int i = 0; i<nMeas; i++){
@@ -51,15 +60,29 @@ for(int i = 0; i<1080; i++){
 	}
 	getBasis(8,nMeas, basis);
 /*
+	for (int k = 0; k<nMeas; k++){
+		for(int i = 0; i<HEIGHT; i++){
+			for(int j = 0; j<WIDTH; j++){
+				//basis[k][i][j]=1;
+				
+				if(j<200*k ) basis[k][i][j]=0;
+				else basis[k][i][j]=1;
+				
+			}	
+			
+		}
+	}
+*/
 	for(int i = 0;i<nMeas; i++){
-		for(int j = 0; j<HEIGHT; j++){
-			for(int k = 0; k<WIDTH; k++){
+		for(int j = 0; j<HEIGHT; j+=200){
+			for(int k = 0; k<WIDTH; k+= 200){
 				printf("%d, ", basis[i][j][k]);
 			}
 			printf("\n");
 		}
 	}
-*/
+//getchar();
+
 printf("da qui inizia defSequence\n");
 defSequence(handle,basis,exposure,trigger_in,dark_time,trigger_out, 60,nMeas);
 startSequence(handle);
