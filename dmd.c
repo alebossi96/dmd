@@ -15,7 +15,7 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 
 
 int command(hid_device *handle, const char &mode, const char &sequencebyte, const char &com1, const char &com2, const char *data, const int &sizeData){
-
+	FILE * pFile = fopen("cCommand.txt", "a");
 	unsigned char buffer[SIZE];
 	char flagstring[8];	
 	if(mode == 'r')
@@ -47,9 +47,13 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 		if(!DEBUG){
 			int res = hid_write(handle, buffer,SIZE);
 			printf("written bytes = %d \n", res);
-			checkForErrors(handle);
+			
 		}else{
-			for(int k = 0; k<SIZE;k++) printf("%d, ", buffer[k]);
+			for(int k = 0; k<SIZE;k++){ 
+				printf("%d, ", buffer[k]);
+				fprintf(pFile, "%d\n", buffer[k]);
+			}
+			fprintf(pFile, "\n\n");
 			printf("\n\n");
 		}
 
@@ -59,9 +63,13 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 		if(!DEBUG){
 			int res = hid_write(handle, buffer,SIZE);
 			printf("written bytes = %d \n", res);
-			checkForErrors(handle);
+			
 		}else{
-			for(int k = 0; k<SIZE;k++) printf("%d, ", buffer[k]);
+			for(int k = 0; k<SIZE;k++){ 
+				printf("%d, ", buffer[k]);
+				fprintf(pFile, "%d\n", buffer[k]);
+			}
+			fprintf(pFile, "\n\n");
 			printf("\n\n");
 		}
 		buffer[0] = 0x00;
@@ -80,9 +88,13 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 				if(!DEBUG){
 				int res = hid_write(handle, buffer,SIZE);
 				printf("written bytes = %d \n", res);
-				checkForErrors(handle);
+				
 				}else{
-					for(int k = 0; k<SIZE;k++) printf("%d, ", buffer[k]);
+					for(int k = 0; k<SIZE;k++){ 
+						printf("%d, ", buffer[k]);
+						fprintf(pFile, "%d\n", buffer[k]);
+					}
+					fprintf(pFile, "\n\n");
 					printf("\n\n");
 				}
 			
@@ -100,14 +112,137 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 			if(!DEBUG){
 				int res = hid_write(handle, buffer,SIZE);
 				printf("written bytes = %d \n", res);
-				checkForErrors(handle);
+				
 			}else{
-				for(int k = 0; k<SIZE;k++) printf("%d, ", buffer[k]);
+				for(int k = 0; k<SIZE;k++){ 
+					printf("%d, ", buffer[k]);
+					fprintf(pFile, "%d\n", buffer[k]);
+				}
+				fprintf(pFile, "\n\n");
+				printf("\n\n");
+			}
+		}
+	}
+	/*if(!DEBUG)
+		checkForErrors(handle);*/
+	
+	fclose(pFile);
+	return 0;	
+}
+
+
+int command_(hid_device *handle, const char &mode, const char &sequencebyte, const char &com1, const char &com2, const char *data, const int &sizeData){
+	FILE * pFile = fopen("cCommand.txt", "a");
+	unsigned char buffer[SIZE];
+	char flagstring[8];	
+	if(mode == 'r')
+		flagstring[0]='1';
+	else
+		flagstring[0]='0';
+	flagstring[1]='1';
+	for(int i=2; i<8;i++)
+		flagstring[i] ='0';
+	buffer[0]=0x0;
+	int *tmp = bitsToBytes(flagstring,8);
+	buffer[1]=tmp[0];
+	free(tmp);
+	buffer[2]=sequencebyte;
+	char *tmpChar;
+	tmpChar = convlen(sizeData+2,16);
+	tmp =bitsToBytes(tmpChar,16);
+	buffer[3]=tmp[0];
+	buffer[4]=tmp[1];
+	free(tmp);
+	free(tmpChar);
+	buffer[5]= com2;
+	buffer[6]=com1;
+	long unsigned int tot = 7;
+	int j = 0;
+	if((tot+sizeData)<SIZE){
+		for(int i = 0;i<sizeData;i++ ) buffer[tot+i] =data[i];
+		for(int i = tot+sizeData; i<SIZE; i++) buffer[i] = 0x00;
+		if(!DEBUG){
+			int res = hid_read(handle, buffer,SIZE);
+			printf("read = %d \n", res);
+			
+		}else{
+			for(int k = 0; k<SIZE;k++){ 
+				printf("%d, ", buffer[k]);
+				fprintf(pFile, "%d\n", buffer[k]);
+			}
+			fprintf(pFile, "\n\n");
+			printf("\n\n");
+		}
+
+	}else{
+		for(int i = 0; i<SIZE-tot; i++) buffer[i+tot]= data[i];
+		
+		if(!DEBUG){
+			int res = hid_read(handle, buffer,SIZE);
+			printf("read = %d \n", res);
+			
+		}else{
+			for(int k = 0; k<SIZE;k++){ 
+				printf("%d, ", buffer[k]);
+				fprintf(pFile, "%d\n", buffer[k]);
+			}
+			fprintf(pFile, "\n\n");
+			printf("\n\n");
+		}
+		buffer[0] = 0x00;
+		for(int i = 0; i<SIZE; i++) buffer[i]= 0;
+		int i = 1;
+		j = 58;
+		while(j<sizeData){
+			buffer[i] = data[j];
+			
+
+			j++;
+			i++;
+			if(i%65==0){
+				
+				printf("\n\n");
+				if(!DEBUG){
+				int res = hid_read(handle, buffer,SIZE);
+				printf("read = %d \n", res);
+				
+				}else{
+					for(int k = 0; k<SIZE;k++){ 
+						printf("%d, ", buffer[k]);
+						fprintf(pFile, "%d\n", buffer[k]);
+					}
+					fprintf(pFile, "\n\n");
+					printf("\n\n");
+				}
+			
+				i =1;
+				
+			}
+		}
+		if(i%65 !=0 && i != 1){
+			while(i%65!=0){
+				
+				buffer[i] =0x00;
+				j++;
+				i++;
+				}			
+			if(!DEBUG){
+				int res = hid_read(handle, buffer,SIZE);
+				printf("read = %d \n", res);
+				
+			}else{
+				for(int k = 0; k<SIZE;k++){ 
+					printf("%d, ", buffer[k]);
+					fprintf(pFile, "%d\n", buffer[k]);
+				}
+				fprintf(pFile, "\n\n");
 				printf("\n\n");
 			}
 		}
 	}
 
+	
+	fclose(pFile);
 	return 0;	
 }
 
@@ -149,7 +284,7 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 			if(!DEBUG){
 				int res = hid_write(handle, buffer,SIZE);
 				printf("written bytes = %d \n", res);
-				checkForErrors(handle);
+				
 				}
 			buffer[0]=0x00;
 			i--;
@@ -165,7 +300,7 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 	if(!DEBUG){
 		int res = hid_write(handle, buffer,SIZE);
 		printf("written bytes = %d \n", res);
-		checkForErrors(handle);
+		
 		}
 
 		
@@ -188,6 +323,24 @@ void checkForErrors(hid_device *handle){
 	if( hid_error(handle)==NULL)
 		printf("errori");
 		//cosa intende per string nella documentazione
+	unsigned char message[1] = {1};
+	int res = hid_read(handle, message,1);
+	char * flag = convlen(res, 8);
+	for(int i = 0; i<8; i++)
+	printf("%c", flag[i]);
+	printf("\n");
+	//if(flag[2]== '1'){
+		//printf("errori");
+		char *a= NULL;
+		command_(handle, 'r',0x22,0x01,0x00, a, 0);
+		int error = hid_read(handle, message,1);
+		printf("error = %d \n", error);
+		command_(handle, 'r',0x22,0x01,0x01,a, 0);
+		message[0] = 128;
+		int response = hid_read(handle, message,1);
+		printf("response = %d \n", response);
+
+	//}
 
 }
 
@@ -268,12 +421,12 @@ int * bitsToBytes(const int *a,const int &size){
 void changeMode(hid_device *handle, int mode_){
 	char mode[1]={mode_};
 	command(handle, 'w', 0x00, 0x1a, 0x1b, mode,1);
-	checkForErrors(handle);
+	
 }
 void stopSequence(hid_device *handle){
 	char mode[1]={0};
 	command(handle, 'w', 0x00, 0x1a, 0x24, mode,1);
-	checkForErrors(handle);
+	
 }
 void configureLut(hid_device *handle,int size, int rep){
 	char *im =convlen(size,11); //ho size in bit lunghezza 11
@@ -294,7 +447,7 @@ void configureLut(hid_device *handle,int size, int rep){
 	int *tmp =  bitsToBytes(string,48);
 
 	command(handle, 'w',0x00,0x1a,0x31,tmp,6);
-	checkForErrors(handle);
+	
 	free(tmp);
 }
 int pow_i(const int &b,const int &exp){
@@ -378,7 +531,7 @@ void definePatterns(hid_device *handle, const int &index,const int &exposure,con
 	for(int i = 0; i<12; i++) printf("%d, ", payload[i]);
 	printf("\n\n\n");
 	command(handle, 'w',0x00,0x1a,0x34,payload,12);
-	checkForErrors(handle);
+	
 }
 
 void defSequence(hid_device *handle,int ***matrixes,int *exposure,int *trigger_in, int *dark_time, int *trigger_out, int repetition, const int &size){
@@ -442,23 +595,21 @@ void defSequence(hid_device *handle,int ***matrixes,int *exposure,int *trigger_i
 					mergedImagesint[i][j] = (int*)malloc(3* sizeof(int));
 				}
 			}
+
+			
 			mergeImages(imageData,mergedImagesint);//ci sono dei problemi
 			struct Node *bitString=NULL;
 			int bytecount=0;
-			/*
-				for(int j = 0; j<1080; j++){
-					for(int k = 0; k<1920; k++){
-						printf("i = %d j = %d ", j,k);
-						for(int i = 0; i<3; i++)
-						printf("%d - ", mergedImagesint[j][k][i]);
-						printf("\n");
-					
-
-				}
-
-
-			}*/
+			FILE * pFile = fopen("cMerged.txt", "a");
 			
+				for(int i = 0; i<1080; i++){
+					for(int j = 0; j<1920; j++){
+						for(int k = 0; k<3; k++)
+						fprintf(pFile, "%d\n", mergedImagesint[i][j][k]);
+						
+				}
+			}
+			fclose(pFile);
 			newEncode(mergedImagesint, &bitString, bytecount);
 			
 			//e qui dovrò creare un array da bitString
@@ -486,6 +637,15 @@ void defSequence(hid_device *handle,int ***matrixes,int *exposure,int *trigger_i
 				encoded[bytecount-j-1]=tmp[j];
 				
 			}
+			FILE * pFile2 = fopen("cNewEncode.txt", "a");
+			
+				for(int i = 0; i<bytecount; i++){
+					
+					fprintf(pFile2, "%d\n", encoded[i]);
+						
+				
+				}
+			fclose(pFile2);
 			
 			printf("\n\n\n bytecount = %d \n\n\n", bytecount);
 
@@ -507,8 +667,12 @@ void defSequence(hid_device *handle,int ***matrixes,int *exposure,int *trigger_i
 	while(encodedImagesList!=NULL){
 
 		setBmp(handle, (i-1)/24,sizes->data);	
+		if(!DEBUG)
+		checkForErrors(handle);		
 		printf("\n\n");
 		bmpLoad(handle,encodedImagesList->data,sizes->data);
+		if(!DEBUG)
+		checkForErrors(handle);	
 		encodedImagesList = encodedImagesList->next;
 		sizes = sizes->next;
 	}
@@ -618,7 +782,7 @@ void defSequence(hid_device *handle,int matrixes[1][1080][1920],int *exposure,in
 void startSequence(hid_device *handle){
 	char mode[1]={2};
 	command(handle,'w',0x00,0x1a,0x24,mode,1);
-        checkForErrors(handle);
+        
 }
 
 void push(struct Node **head, int data){
@@ -687,7 +851,7 @@ void bmpLoad(hid_device *handle, const int *image, const int &size){
 		for(int j = 0; j<bits; j++) payload[j+2] = image[504*i+j];
 	
 		command(handle, 'w',0x11,0x1a,0x2b, payload, bits+2);
-		checkForErrors(handle);
+		
 	}
 
 }

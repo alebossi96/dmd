@@ -9,7 +9,7 @@ if (!handle) {
 	if(!DEBUG) return 1;
 	}
 changeMode(handle, 3);
-int nMeas =1;
+int nMeas =9;
 int *exposure;
 int *dark_time;
 int *trigger_in;
@@ -58,21 +58,24 @@ for(int i = 0; i<1080; i++){
 		for(int j = 0;j<HEIGHT; j++)
 			basis[i][j]= (int*)malloc(WIDTH*sizeof(int));
 	}
-	getBasis(8,nMeas, basis);
-/*
+
+//	getBasis(8,nMeas, basis);
+
 	for (int k = 0; k<nMeas; k++){
 		for(int i = 0; i<HEIGHT; i++){
 			for(int j = 0; j<WIDTH; j++){
 				//basis[k][i][j]=1;
 				
-				if(j<200*k ) basis[k][i][j]=0;
+				if(j<100*k ) basis[k][i][j]=0;
 				else basis[k][i][j]=1;
 				
 			}	
 			
 		}
 	}
-*/
+
+
+/*
 	for(int i = 0;i<nMeas; i++){
 		for(int j = 0; j<HEIGHT; j+=200){
 			for(int k = 0; k<WIDTH; k+= 200){
@@ -81,12 +84,23 @@ for(int i = 0; i<1080; i++){
 			printf("\n");
 		}
 	}
+*/
 //getchar();
-
+			FILE * pFile = fopen("cImages.txt", "a");
+			
+				for(int i = 0; i<nMeas; i++){
+					for(int j = 0; j<1080; j++){
+						for(int k = 0; k<1920; k++)
+						fprintf(pFile, "%d\n", basis[i][j][k]);
+						
+				}
+			}
+			fclose(pFile);
 printf("da qui inizia defSequence\n");
 defSequence(handle,basis,exposure,trigger_in,dark_time,trigger_out, 60,nMeas);
 startSequence(handle);
-
+if(!DEBUG)
+		checkForErrors(handle);
 return 0;
 }
 
