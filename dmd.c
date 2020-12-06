@@ -15,6 +15,12 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 
 
 int command(hid_device *handle, const char &mode, const char &sequencebyte, const char &com1, const char &com2, const char *data, const int &sizeData){
+	FILE * pData = fopen("cData.txt", "a");	
+	for(int k = 0; k<sizeData;k++){ 
+		
+		fprintf(pData, "%d\n", data[k]);
+	}
+	fclose(pData);
 	FILE * pFile = fopen("cCommand.txt", "a");
 	unsigned char buffer[SIZE];
 	char flagstring[8];	
@@ -428,6 +434,14 @@ void stopSequence(hid_device *handle){
 	command(handle, 'w', 0x00, 0x1a, 0x24, mode,1);
 	
 }
+
+
+void reset(hid_device *handle){
+	char mode[1]={2};
+	command(handle, 'w', 0x00, 0x02, 0x00, mode,1);
+	
+}
+
 void configureLut(hid_device *handle,int size, int rep){
 	char *im =convlen(size,11); //ho size in bit lunghezza 11
 	char *r=convlen(rep,32);
@@ -530,6 +544,11 @@ void definePatterns(hid_device *handle, const int &index,const int &exposure,con
 	printf("\n\npayload definePatterns\n\n");
 	for(int i = 0; i<12; i++) printf("%d, ", payload[i]);
 	printf("\n\n\n");
+	FILE * pFile = fopen("cdefinePatterns.txt", "a");
+	for(int i = 0; i<12; i++)
+		fprintf(pFile, "%d\n", payload[i]);
+
+	fclose(pFile);
 	command(handle, 'w',0x00,0x1a,0x34,payload,12);
 	
 }
@@ -595,8 +614,18 @@ void defSequence(hid_device *handle,int ***matrixes,int *exposure,int *trigger_i
 					mergedImagesint[i][j] = (int*)malloc(3* sizeof(int));
 				}
 			}
-
+/*
+			FILE * pImgData = fopen("cMerged.txt", "a");
 			
+				for(int i = 0; i<24; i++){
+					for(int j = 0; j<1080; j++){
+						for(int k = 0; k<1920; k++)
+						fprintf(pImgData, "%d\n", imageData[i][j][k]);
+						
+				}
+			}
+			fclose(pImgData);
+*/
 			mergeImages(imageData,mergedImagesint);//ci sono dei problemi
 			struct Node *bitString=NULL;
 			int bytecount=0;
@@ -610,7 +639,7 @@ void defSequence(hid_device *handle,int ***matrixes,int *exposure,int *trigger_i
 				}
 			}
 			fclose(pFile);
-			newEncode(mergedImagesint, &bitString, bytecount);
+			newEncode2(mergedImagesint, &bitString, bytecount);
 			
 			//e qui dovrò creare un array da bitString
 			int *tmp;
@@ -658,25 +687,30 @@ void defSequence(hid_device *handle,int ***matrixes,int *exposure,int *trigger_i
 			sizeList++;
 			char c111[3]={'1','1','1'};
 
-			for(int j = (i/24-1)*24; j<(i+1) && j<size; j++)
+			for(int j = (i/24-1)*24; j<(i) && j<size; j++){
 				definePatterns(handle, j, exposure[j],1,c111,trigger_in[j],dark_time[j],trigger_out[j],(i-1)/24,j-(i/24-1)*24);	
+				printf("i= %d j = %d  (i-1)/24 =%d j-(i/24-1)*24 = %d",i,j,(i-1)/24,j-(i/24-1)*24);			
+				//getchar();
+			}
 			//NON SONO CERTO DEGLI ULTIMI DUE!
 			
 		}
 	}
+	int j = 0;
 	while(encodedImagesList!=NULL){
-
-		setBmp(handle, (i-1)/24,sizes->data);	
-		if(!DEBUG)
-		checkForErrors(handle);		
+		//il prosimo check devo farlo qui
+		setBmp(handle, (i-1)/24-j,sizes->data);	
+		//if(!DEBUG)
+		//checkForErrors(handle);		
 		printf("\n\n");
 		bmpLoad(handle,encodedImagesList->data,sizes->data);
-		if(!DEBUG)
-		checkForErrors(handle);	
+		//if(!DEBUG)
+		//checkForErrors(handle);	
 		encodedImagesList = encodedImagesList->next;
 		sizes = sizes->next;
+		j++;
 	}
-	
+	//disallocare sizes e encodedImagesList
 	
 
 }
@@ -808,6 +842,8 @@ void setBmp(hid_device *handle,const int  &index,const int &size){
 	int payload[6];
 	char index_[16];
 	char *tmp;
+	printf("index =%d \n",index);
+	//getchar();
 	tmp = convlen(index,5);
 	for(int i =0; i<11; i++) index_[i] = '0';
 	for(int i = 0; i<5; i++) index_[i+11] = tmp[i];
@@ -823,7 +859,11 @@ void setBmp(hid_device *handle,const int  &index,const int &size){
 	total = bitsToBytes(tmp,32);
 	free(tmp);
 	for(int i = 0; i<4; i++) payload[i+2]= total[i];
+	FILE * pFile = fopen("cSetBmp.txt", "a");
+	for(int i = 0; i<6; i++)
+		fprintf(pFile, "%d\n", payload[i]);
 
+	fclose(pFile);
 	command(handle, 'w',0x00,0x1a,0x2a,payload,6);
 }
 void bmpLoad(hid_device *handle, const int *image, const int &size){
@@ -849,12 +889,122 @@ void bmpLoad(hid_device *handle, const int *image, const int &size){
 		payload= (int*)malloc((bits+2)*sizeof(int));
 		for(int j = 0; j<2; j++) payload[j] = tmp[j];
 		for(int j = 0; j<bits; j++) payload[j+2] = image[504*i+j];
-	
+		FILE * pFile = fopen("cBmpLoad.txt", "a");
+		for(int i = 0; i< bits+2; i++)
+			fprintf(pFile, "%d\n", payload[i]);
+
+		fclose(pFile);
 		command(handle, 'w',0x11,0x1a,0x2b, payload, bits+2);
 		
 	}
 
 }
+
+void newEncode2(int ***image, struct Node **bitString, int &byteCount){
+	printf("image[0][0][0]=%d\n", image[0][0][0]);
+	byteCount=48;
+	push(bitString, 0x53);
+	push(bitString, 0x70);
+	push(bitString, 0x6c);
+	push(bitString, 0x64);
+	char*tmpChar;
+	tmpChar = convlen(1920,16);
+	int *res= bitsToBytes(tmpChar,16);
+	push(bitString, res[0]);//dovrebbero essere solo 2 byte
+	push(bitString, res[1]);
+	free(res);
+	free(tmpChar);
+	tmpChar=convlen(1080,16);
+	res= bitsToBytes(tmpChar,16);
+	free(tmpChar);
+	push(bitString, res[0]);//dovrebbero essere solo 2 byte
+	push(bitString, res[1]);
+	free(res);
+	//tmpChar = convlen(0,32);
+	//res=bitsToBytes(tmpChar,32);
+	//free(tmpChar);
+	
+	for(int i = 0; i<4; i++) push(bitString, 0x00);
+	struct Node *link = *bitString;
+	//free(res);
+	for(int i = 0; i<8; i++) push(bitString, 0xff);
+	for(int i = 0; i<5; i++) push(bitString, 0x00);
+	push(bitString, 0x02);
+	push(bitString, 0x01);
+	for(int i = 0; i<21; i++) push(bitString, 0x00);
+	int n=0;
+	//fino a qui va bene
+	//da qui bho
+	for(int i = 0; i<1080; i++){
+		for(int j = 0; j<1920; j++){
+			if(i != 0){if( isRowEqual(image[i][j],image[i-1][j])){
+				while(j<1920 &&isRowEqual(image[i][j],image[i-1][j])){
+					n++;
+					j++;}
+				push(bitString, 0x00);
+				push(bitString, 0x01);				
+				byteCount+=2;
+				if(n>=128){
+					push(bitString, (n & 0x7f) | 0x80);
+					push(bitString, n>>7);
+					byteCount+=2;
+				}else{
+					push(bitString, n);					
+					byteCount++;
+				}
+				n=0;
+				continue;
+			}}
+			if(j < 1919){if( isRowEqual(image[i][j],image[i][j+1])){
+				n++;
+			}}
+			else{
+				if(n>=128){
+					push(bitString, (n & 0x7f) | 0x80);
+					push(bitString, n>>7);
+					byteCount+=2;
+				}else{
+					push(bitString, n);					
+					byteCount++;
+				}//se quella dopo è diversa stampa
+				push(bitString, image[i][j][0]);
+				push(bitString, image[i][j][1]);
+				push(bitString, image[i][j][2]);
+				byteCount+=3;
+				n = 0;
+			}
+		}
+		push(bitString, 0x00);
+		push(bitString, 0x00);
+		byteCount+=2;
+	}
+	push(bitString, 0x00);
+	push(bitString, 0x01);
+	push(bitString, 0x00);
+	byteCount+=3;	
+	while(byteCount%4!=0){
+		
+		push(bitString, 0x00);
+		byteCount++;	
+	}
+	int size = byteCount;
+	int *total;
+	
+	tmpChar = convlen(size,32);
+	total = bitsToBytes(tmpChar,32);
+	
+	for(int q = 0; q<4; q++){//per riempiere i primi 4 
+		link->data=total[3-q];
+		link = link->next;
+	}
+	free(tmpChar);
+	free(total);
+
+}
+
+
+
+
 
 void newEncode(int ***image, struct Node **bitString, int &byteCount){
 	printf("image[0][0][0]=%d\n", image[0][0][0]);
@@ -1021,7 +1171,7 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 						byteCount+=3;
 						//j++;<--------------------
 						n=0;
-					}else if(j>1917 || isRowEqual(image[i][j+1],image[i][j+2]) || isRowEqual(image[i][j+1],image[i-1][j+1])){						push(bitString, 0x01);
+					}else if(j>1917 || isRowEqual(image[i][j+1],image[i][j+2]) /*|| isRowEqual(image[i][j+1],image[i-1][j+1])*/){						push(bitString, 0x01);
 						byteCount++;
 						push(bitString, image[i][j][0]);
 						push(bitString, image[i][j][1]);
@@ -1060,7 +1210,7 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 							free(toAppend);
 							toAppend = next;
 						}
-						for(int k =n; k>0; k++)
+						for(int k =n; k>0; k--)
 							push(bitString, tmp[k-1]);
 						byteCount+=n;
 						free(tmp);
