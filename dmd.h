@@ -1,5 +1,5 @@
 #ifndef DMD_H
-#define DEBUG false
+#define DEBUG true
 #define WIDTH 1920
 #define HEIGHT 1080
 #include<hidapi.h>
@@ -35,6 +35,7 @@ void push(struct Node **head, int data);
 void push(struct List **head, int* data);
 void newEncode(int ***image, struct Node **n, int &bytecount);
 void newEncode2(int ***image, struct Node **n, int &bytecount);
+void newEncodeSimpleRLE(int ***image, struct Node **n, int &bytecount);
 void definePatterns(hid_device *handle, const int &index,const int &exposure,const int &bitdepth, const char *color,const int &triggerIn,const int &darkTime,const int &triggerout,const int &patInd,const int &bitpos);
 void setBmp(hid_device *handle,const int  &index,const int &size);
 void bmpLoad(hid_device *handle, const int *image, const int &size);
