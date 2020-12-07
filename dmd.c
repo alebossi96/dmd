@@ -643,7 +643,7 @@ void defSequence(hid_device *handle,int ***matrixes,int *exposure,int *trigger_i
 				}
 			}
 			fclose(pFile);
-			newEncode2(mergedImagesint, &bitString, bytecount);
+			newEncodeSimpleRLE(mergedImagesint, &bitString, bytecount);
 			
 			//e qui dovrò creare un array da bitString
 			int *tmp;
@@ -911,13 +911,13 @@ void newEncodeSimpleRLE(int ***image, struct Node **bitString, int &byteCount){
 	push(bitString, 0x6c);
 	push(bitString, 0x64);
 	char*tmpChar;
-	tmpChar = convlen(1920,16);
+	tmpChar = convlen(1080,16);//inverto altezza con larghezza
 	int *res= bitsToBytes(tmpChar,16);
 	push(bitString, res[0]);//dovrebbero essere solo 2 byte
 	push(bitString, res[1]);
 	free(res);
 	free(tmpChar);
-	tmpChar=convlen(1080,16);
+	tmpChar=convlen(1920,16);
 	res= bitsToBytes(tmpChar,16);
 	free(tmpChar);
 	push(bitString, res[0]);//dovrebbero essere solo 2 byte
@@ -932,17 +932,41 @@ void newEncodeSimpleRLE(int ***image, struct Node **bitString, int &byteCount){
 	//free(res);
 	for(int i = 0; i<8; i++) push(bitString, 0xff);
 	for(int i = 0; i<5; i++) push(bitString, 0x00);
-	push(bitString, 0x02);
+	push(bitString, 0x01);//RLE compression
 	push(bitString, 0x01);
 	for(int i = 0; i<21; i++) push(bitString, 0x00);
 	int n=0;
-	int i = 0;
-	int j = 0;
-
-
-
-
+	for(int i = 0; i<1920; i++){
+		//sono tutte uguali le colonne!!CREDO
+		for(int j = 0; j<1080/255; j+=1){
+			if(j*255<1080) push(bitString, 255);
+			else push(bitString,1080-(j-1)*255);
+			push(bitString, image[0][i][0]);
+			push(bitString, image[0][i][1]);
+			push(bitString, image[0][i][2]);
+			byteCount+=4;
+		}
+		push(bitString, 0x00);
+		push(bitString, 0x00);
+		byteCount+=2;
+	}
+	push(bitString, 0x00);
+	push(bitString, 0x01);
+	byteCount+=2;
+	int size = byteCount;
+	int *total;
+	
+	tmpChar = convlen(size,32);
+	total = bitsToBytes(tmpChar,32);
+	
+	for(int q = 0; q<4; q++){//per riempiere i primi 4 
+		link->data=total[3-q];
+		link = link->next;
+	}
+	free(tmpChar);
+	free(total);
 }
+
 void newEncode2(int ***image, struct Node **bitString, int &byteCount){
 	printf("image[0][0][0]=%d\n", image[0][0][0]);
 	byteCount=48;
