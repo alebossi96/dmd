@@ -1,15 +1,19 @@
 #include"dmd.h"
 int main(){
 hid_device *handle = hid_open(0x0451, 0xc900, NULL);
-
+sleep(2);
+//printf("reset");
+//reset(handle);
 
 if (!handle) {
 	printf("unable to open device\n");
 	handle = NULL;
 	if(!DEBUG) return 1;
 	}
+stopSequence(handle);
 changeMode(handle, 3);
-int nMeas =9;
+int nMeas =5;
+int nBasis =128;
 int *exposure;
 int *dark_time;
 int *trigger_in;
@@ -59,23 +63,23 @@ for(int i = 0; i<1080; i++){
 			basis[i][j]= (int*)malloc(WIDTH*sizeof(int));
 	}
 
-//	getBasis(8,nMeas, basis);
-
+	getBasis(nBasis,nMeas, basis);
+/*
 	for (int k = 0; k<nMeas; k++){
 		for(int i = 0; i<HEIGHT; i++){
 			for(int j = 0; j<WIDTH; j++){
 				//basis[k][i][j]=1;
 				
-				if(j<100*k ) basis[k][i][j]=0;
-				else basis[k][i][j]=1;
+				if(abs(j -5*k)<100 ) basis[k][i][j]=1;
+				else basis[k][i][j]=0;
 				
 			}	
 			
 		}
 	}
 
+*/
 
-/*
 	for(int i = 0;i<nMeas; i++){
 		for(int j = 0; j<HEIGHT; j+=200){
 			for(int k = 0; k<WIDTH; k+= 200){
@@ -84,7 +88,7 @@ for(int i = 0; i<1080; i++){
 			printf("\n");
 		}
 	}
-*/
+
 //getchar();
 			FILE * pFile = fopen("cImages.txt", "a");
 			
@@ -96,11 +100,18 @@ for(int i = 0; i<1080; i++){
 				}
 			}
 			fclose(pFile);
+
+
+
 printf("da qui inizia defSequence\n");
+//60 è #ripetizioni! potrebbe essere x quello che si ferma
 defSequence(handle,basis,exposure,trigger_in,dark_time,trigger_out, 60,nMeas);
 startSequence(handle);
 if(!DEBUG)
 		checkForErrors(handle);
+
+
+//stopSequence(handle);
 return 0;
 }
 
