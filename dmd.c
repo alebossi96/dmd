@@ -34,19 +34,20 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 		flagstring[i] ='0';
 	//buffer[0]=0x0;
 	int *tmp = bitsToBytes(flagstring,8);
-	buffer[0]=tmp[0];
+	buffer[0]=0;
+	buffer[1]=tmp[0];
 	free(tmp);
-	buffer[1]=sequencebyte;
+	buffer[2]=sequencebyte;
 	char *tmpChar;
 	tmpChar = convlen(sizeData+2,16);
 	tmp =bitsToBytes(tmpChar,16);
-	buffer[2]=tmp[0];
-	buffer[3]=tmp[1];
+	buffer[3]=tmp[0];
+	buffer[4]=tmp[1];
 	free(tmp);
 	free(tmpChar);
-	buffer[4]= com2;
-	buffer[5]=com1;
-	long unsigned int tot = 6;
+	buffer[5]= com2;
+	buffer[6]=com1;
+	long unsigned int tot = 7;
 	int j = 0;
 	if((tot+sizeData)<65){
 		for(int i = 0;i<sizeData;i++ ) buffer[tot+i] =data[i];
@@ -84,7 +85,7 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 		//buffer[0] = 0x00;
 		//for(int i = 0; i<SIZE; i++) buffer[i]= 0;
 		int i = 0;
-		j = 58;
+		j = 57;
 		while(j<sizeData){
 			buffer[i] = data[j];
 			
@@ -681,6 +682,7 @@ void defSequence(hid_device *handle,int ***matrixes,int *exposure,int *trigger_i
 	}
 	configureLut(handle,size,repetition);
 	int j = 0;
+	sleep(1);
 	while(encodedImagesList!=NULL){
 		//il prosimo check devo farlo qui
 		setBmp(handle, (i-1)/24-j,sizes->data);	

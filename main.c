@@ -12,7 +12,7 @@ if (!handle) {
 	}
 stopSequence(handle);
 changeMode(handle, 3);
-int nMeas =5;
+int nMeas =65;
 int nBasis =128;
 int *exposure;
 int *dark_time;
