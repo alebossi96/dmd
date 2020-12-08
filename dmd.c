@@ -1,4 +1,4 @@
-#define SIZE 64
+#define SIZE 65
 
 #include"dmd.h"
 int command(hid_device *handle, const char &mode, const char &sequencebyte, const char &com1, const char &com2, const int *data, const int &sizeData){
@@ -12,6 +12,7 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 	free(tmp);
 	return res;
 }
+
 
 
 
@@ -32,9 +33,8 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 	flagstring[1]='1';
 	for(int i=2; i<8;i++)
 		flagstring[i] ='0';
-	//buffer[0]=0x0;
+	buffer[0]=0x0;
 	int *tmp = bitsToBytes(flagstring,8);
-	buffer[0]=0;
 	buffer[1]=tmp[0];
 	free(tmp);
 	buffer[2]=sequencebyte;
@@ -49,9 +49,9 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 	buffer[6]=com1;
 	long unsigned int tot = 7;
 	int j = 0;
-	if((tot+sizeData)<65){
+	if((tot+sizeData)<SIZE){
 		for(int i = 0;i<sizeData;i++ ) buffer[tot+i] =data[i];
-		for(int i = tot+sizeData; i<64; i++) buffer[i] = 0x00;
+		for(int i = tot+sizeData; i<SIZE; i++) buffer[i] = 0x00;
 		if(!DEBUG){
 			int res = hid_write(handle, buffer,SIZE);
 			printf("written bytes = %d \n", res);
@@ -67,7 +67,7 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 		}
 
 	}else{
-		for(int i = 0; i<64-tot; i++) buffer[i+tot]= data[i];
+		for(int i = 0; i<SIZE-tot; i++) buffer[i+tot]= data[i];
 		
 		if(!DEBUG){
 			int res = hid_write(handle, buffer,SIZE);
@@ -82,17 +82,17 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 			fprintf(pFile, "\n\n");
 			printf("\n\n");
 		}
-		//buffer[0] = 0x00;
-		//for(int i = 0; i<SIZE; i++) buffer[i]= 0;
-		int i = 0;
-		j = 57;
+		buffer[0] = 0x00;
+		for(int i = 0; i<SIZE; i++) buffer[i]= 0;
+		int i = 1;
+		j = 58;
 		while(j<sizeData){
 			buffer[i] = data[j];
 			
 
 			j++;
 			i++;
-			if(i%64==0){
+			if(i%65==0){
 				
 				printf("\n\n");
 				if(!DEBUG){
@@ -109,12 +109,12 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 					printf("\n\n");
 				}
 			
-				i =0;
+				i =1;
 				
 			}
 		}
-		if(i%64 !=0 && i != 1){
-			while(i%64!=0){
+		if(i%65 !=0 && i != 1){
+			while(i%65!=0){
 				
 				buffer[i] =0x00;
 				j++;
@@ -524,8 +524,10 @@ void definePatterns(hid_device *handle, const int &index,const int &exposure,con
 	tmp = bitsToBytes(convlen(darkTime,24),24);
 	for(int i = 0; i<3; i++) payload[6+i] = tmp[i];
 	free(tmp);
-	tmpChar = convlen(triggerOut,8);
-	
+	if(triggerOut==1)
+	tmpChar = convlen(0,8);
+	else
+	tmpChar = convlen(1,8);
 	tmp = bitsToBytes(tmpChar,8);
 	payload[9] = tmp[0];
 	free(tmp);

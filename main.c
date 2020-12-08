@@ -12,7 +12,7 @@ if (!handle) {
 	}
 stopSequence(handle);
 changeMode(handle, 3);
-int nMeas =65;
+int nMeas =400;
 int nBasis =128;
 int *exposure;
 int *dark_time;
@@ -24,7 +24,7 @@ exposure = (int *) malloc(nMeas * sizeof(int));
 dark_time = (int *) malloc(nMeas * sizeof(int));
 trigger_in = (int *) malloc(nMeas * sizeof(int));
 trigger_out = (int *) malloc(nMeas * sizeof(int));
-for (int i = 0; i<nMeas; i++) exposure[i] = 1000000;
+for (int i = 0; i<nMeas; i++) exposure[i] = 100000;
 for (int i = 0; i<nMeas; i++) dark_time[i]= 0;
 for (int i = 0; i<nMeas; i++) trigger_in[i] = 0;
 for (int i = 0; i<nMeas; i++) trigger_out[i] = 1;
@@ -63,8 +63,8 @@ for(int i = 0; i<1080; i++){
 			basis[i][j]= (int*)malloc(WIDTH*sizeof(int));
 	}
 
-	getBasis(nBasis,nMeas, basis);
-/*
+	//getBasis(nBasis,nMeas, basis);
+
 	for (int k = 0; k<nMeas; k++){
 		for(int i = 0; i<HEIGHT; i++){
 			for(int j = 0; j<WIDTH; j++){
@@ -78,7 +78,7 @@ for(int i = 0; i<1080; i++){
 		}
 	}
 
-*/
+
 
 	for(int i = 0;i<nMeas; i++){
 		for(int j = 0; j<HEIGHT; j+=200){
@@ -105,7 +105,8 @@ for(int i = 0; i<1080; i++){
 
 printf("da qui inizia defSequence\n");
 //60 è #ripetizioni! potrebbe essere x quello che si ferma
-defSequence(handle,basis,exposure,trigger_in,dark_time,trigger_out, 60,nMeas);
+defSequence(handle,basis,exposure,trigger_in,dark_time,trigger_out, nMeas,nMeas);
+getchar();
 startSequence(handle);
 if(!DEBUG)
 		checkForErrors(handle);
