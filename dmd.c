@@ -55,7 +55,7 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 		if(!DEBUG){
 			int res = hid_write(handle, buffer,SIZE);
 			printf("written bytes = %d \n", res);
-			//sleep(1);
+			
 			
 		}else{
 			for(int k = 0; k<SIZE;k++){ 
@@ -72,7 +72,7 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 		if(!DEBUG){
 			int res = hid_write(handle, buffer,SIZE);
 			printf("written bytes = %d \n", res);
-			//sleep(1);
+			
 			
 		}else{
 			for(int k = 0; k<SIZE;k++){ 
@@ -97,7 +97,7 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 				printf("\n\n");
 				if(!DEBUG){
 				int res = hid_write(handle, buffer,SIZE);
-				//sleep(1);
+				
 				printf("written bytes = %d \n", res);
 				
 				}else{
@@ -122,7 +122,7 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 				}			
 			if(!DEBUG){
 				int res = hid_write(handle, buffer,SIZE);
-				//sleep(1);
+				
 				printf("written bytes = %d \n", res);
 				
 			}else{
@@ -143,194 +143,6 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 }
 
 
-int command_(hid_device *handle, const char &mode, const char &sequencebyte, const char &com1, const char &com2, const char *data, const int &sizeData){
-	FILE * pFile = fopen("cCommand.txt", "a");
-	unsigned char buffer[SIZE];
-	char flagstring[8];	
-	if(mode == 'r')
-		flagstring[0]='1';
-	else
-		flagstring[0]='0';
-	flagstring[1]='1';
-	for(int i=2; i<8;i++)
-		flagstring[i] ='0';
-	buffer[0]=0x0;
-	int *tmp = bitsToBytes(flagstring,8);
-	buffer[1]=tmp[0];
-	free(tmp);
-	buffer[2]=sequencebyte;
-	char *tmpChar;
-	tmpChar = convlen(sizeData+2,16);
-	tmp =bitsToBytes(tmpChar,16);
-	buffer[3]=tmp[0];
-	buffer[4]=tmp[1];
-	free(tmp);
-	free(tmpChar);
-	buffer[5]= com2;
-	buffer[6]=com1;
-	long unsigned int tot = 7;
-	int j = 0;
-	if((tot+sizeData)<SIZE){
-		for(int i = 0;i<sizeData;i++ ) buffer[tot+i] =data[i];
-		for(int i = tot+sizeData; i<SIZE; i++) buffer[i] = 0x00;
-		if(!DEBUG){
-			int res = hid_read(handle, buffer,SIZE);
-			printf("read = %d \n", res);
-			
-		}else{
-			for(int k = 0; k<SIZE;k++){ 
-				printf("%d, ", buffer[k]);
-				fprintf(pFile, "%d\n", buffer[k]);
-			}
-			fprintf(pFile, "\n\n");
-			printf("\n\n");
-		}
-
-	}else{
-		for(int i = 0; i<SIZE-tot; i++) buffer[i+tot]= data[i];
-		
-		if(!DEBUG){
-			int res = hid_read(handle, buffer,SIZE);
-			printf("read = %d \n", res);
-			
-		}else{
-			for(int k = 0; k<SIZE;k++){ 
-				printf("%d, ", buffer[k]);
-				fprintf(pFile, "%d\n", buffer[k]);
-			}
-			fprintf(pFile, "\n\n");
-			printf("\n\n");
-		}
-		buffer[0] = 0x00;
-		for(int i = 0; i<SIZE; i++) buffer[i]= 0;
-		int i = 1;
-		j = 58;
-		while(j<sizeData){
-			buffer[i] = data[j];
-			
-
-			j++;
-			i++;
-			if(i%65==0){
-				
-				printf("\n\n");
-				if(!DEBUG){
-				int res = hid_read(handle, buffer,SIZE);
-				printf("read = %d \n", res);
-				
-				}else{
-					for(int k = 0; k<SIZE;k++){ 
-						printf("%d, ", buffer[k]);
-						fprintf(pFile, "%d\n", buffer[k]);
-					}
-					fprintf(pFile, "\n\n");
-					printf("\n\n");
-				}
-			
-				i =1;
-				
-			}
-		}
-		if(i%65 !=0 && i != 1){
-			while(i%65!=0){
-				
-				buffer[i] =0x00;
-				j++;
-				i++;
-				}			
-			if(!DEBUG){
-				int res = hid_read(handle, buffer,SIZE);
-				printf("read = %d \n", res);
-				
-			}else{
-				for(int k = 0; k<SIZE;k++){ 
-					printf("%d, ", buffer[k]);
-					fprintf(pFile, "%d\n", buffer[k]);
-				}
-				fprintf(pFile, "\n\n");
-				printf("\n\n");
-			}
-		}
-	}
-
-	
-	fclose(pFile);
-	return 0;	
-}
-
-/*
-int command(hid_device *handle, const char &mode, const char &sequencebyte, const char &com1, const char &com2, const char *data, const int &sizeData){
-		
-	unsigned char buffer[SIZE];
-	char flagstring[8];	
-	if(mode == 'r')
-		flagstring[0]='1';
-	else
-		flagstring[0]='0';
-	flagstring[1]='1';
-	for(int i=2; i<8;i++)
-		flagstring[i] ='0';
-	buffer[0]=0x0;
-	int *tmp = bitsToBytes(flagstring,8);
-	buffer[1]=tmp[0];
-	free(tmp);
-	buffer[2]=sequencebyte;
-	char *tmpChar;
-	tmpChar = convlen(sizeData+2,16);
-	tmp =bitsToBytes(tmpChar,16);
-	buffer[3]=tmp[0];
-	buffer[4]=tmp[1];
-	free(tmp);
-	free(tmpChar);
-	buffer[5]= com2;
-	buffer[6]=com1;
-	long unsigned int tot = 7;
-	int cont = 0;
-	for(int i = 0; i<sizeData; i++){
-		buffer[(tot-1)%(SIZE-1)+1]=data[i];//è un char non so cosa fare
-		if(tot%SIZE == 0 ){
-			cont++;
-			
-			for(int k = 0; k< SIZE; k++) printf("%d, ", buffer[k]);
-			printf("\n");
-			if(!DEBUG){
-				int res = hid_write(handle, buffer,SIZE);
-				printf("written bytes = %d \n", res);
-				
-				}
-			buffer[0]=0x00;
-			i--;
-		}
-		tot++;
-	}
-	while(tot%SIZE != 0) {
-		buffer[tot%SIZE] = 0x00;
-		tot++;
-		}
-	for(int k = 0; k< SIZE; k++) printf("%d, ", buffer[k]);
-			printf("\n");
-	if(!DEBUG){
-		int res = hid_write(handle, buffer,SIZE);
-		printf("written bytes = %d \n", res);
-		
-		}
-
-		
-
-	/*
-	if((7+size_data)<=SIZE){
-		int i;
-		for(i =0; i<size_data;i++)
-			buffer[7+i]=data[i]-'0';//è un char non so cosa fare
-		for(i = i+7; i<SIZE; i++)
-			buffer[i]=0x00;
-		}
-	*/
-	
-/*
-	return 0;	
-}
-*/
 void checkForErrors(hid_device *handle){
 	if( hid_error(handle)==NULL)
 		printf("errori");
@@ -344,10 +156,10 @@ void checkForErrors(hid_device *handle){
 	//if(flag[2]== '1'){
 		//printf("errori");
 		char *a= NULL;
-		command_(handle, 'r',0x22,0x01,0x00, a, 0);
+		command(handle, 'r',0x22,0x01,0x00, a, 0);
 		int error = hid_read(handle, message,1);
 		printf("error = %d \n", error);
-		command_(handle, 'r',0x22,0x01,0x01,a, 0);
+		command(handle, 'r',0x22,0x01,0x01,a, 0);
 		message[0] = 128;
 		int response = hid_read(handle, message,1);
 		printf("response = %d \n", response);
@@ -613,13 +425,17 @@ void defSequence(hid_device *handle,int ***matrixes,int *exposure,int *trigger_i
 			for(int i = 0; i<1080; i++){
 				mergedImagesint[i] = (int **)malloc(1920*sizeof(int*));
 				for(int j = 0; j<1920; j++ ){
+					
 					mergedImagesint[i][j] = (int*)malloc(3* sizeof(int));
 				}
 			}
 
-			mergeImages(imageData,mergedImagesint);//ci sono dei problemi
 			struct Node *bitString=NULL;
 			int bytecount=0;
+			/*
+			mergeImages(imageData,mergedImagesint);
+			
+			
 			FILE * pFile = fopen("cMerged.txt", "a");
 			
 				for(int i = 0; i<1080; i++){
@@ -630,8 +446,16 @@ void defSequence(hid_device *handle,int ***matrixes,int *exposure,int *trigger_i
 				}
 			}
 			fclose(pFile);
+			*/
 			newEncode2(mergedImagesint, &bitString, bytecount);
-			
+			for(int i = 0; i<1080; i++){
+				for(int j = 0; j<1920; j++) free(mergedImagesint[i][j]);
+			}
+
+			for(int i = 0; i<1080; i++){
+				free(mergedImagesint[i]);
+			}
+			free(mergedImagesint);
 			//e qui dovrò creare un array da bitString
 			int *tmp;
 			tmp =(int*)malloc(bytecount*sizeof(int));
@@ -699,8 +523,14 @@ void defSequence(hid_device *handle,int ***matrixes,int *exposure,int *trigger_i
 		j++;
 	}
 	//disallocare sizes e encodedImagesList
-	
+	for(int i = 0; i<24;i++){
+		for(int j = 0; j<1080; j++) free(imageData[i][j]);
+	}
 
+	for(int i = 0; i<24;i++){
+		free(imageData[i]);
+	}
+	free(imageData);
 }
 
 
@@ -1333,5 +1163,15 @@ void getBasis(const int &nBasis, const int &nMeas, int ***basis){
 		
 	}
 }
+int min(const int &a,const int &b){
+	if(a>b)	return b;
+	else return a;
+
+}
+int celing(const int &a, const int &b){
+	if(a%b == 0)
+		return a/b;
+	return a/b +1;
 
 
+}
