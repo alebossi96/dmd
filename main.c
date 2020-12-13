@@ -1,7 +1,7 @@
 #include"dmd.h"
 int main(){
 	int nBasis =32;
-	int nMeas =25;
+	int nMeas =3;
 	int exp = 1000000;
 	int nSet = celing(nMeas,24);
 	
@@ -19,10 +19,11 @@ int main(){
 	int trigger_in = 0;
 	int trigger_out = 1;
 	int ***basis;
-	struct Patterns * pattern = NULL;
+	struct Patterns * pattern;
+	pattern = (Patterns *)malloc(nSet*sizeof(Patterns));
 	for (int q = 0; q < nSet; q++){
 		int nB = min(24, nMeas-q*24);
-		push(&pattern,nB);
+		allocatePattern(&(pattern[q]),nB);
 		//allocate memory
 		exposure = (int *) malloc(nB * sizeof(int));
 		basis = (int***)malloc(nB*sizeof(int**));
@@ -45,7 +46,7 @@ int main(){
 		printf("da qui inizia defSequence\n");
 		//fill pattern		
 
-		defSequence(handle,&pattern,basis,exposure,trigger_in,dark_time,trigger_out, nB,nB);
+		defSequence(handle,&(pattern[q]),basis,exposure,trigger_in,dark_time,trigger_out, nB,nB);
 
 		//free memory
 		for(int i = 0; i<nB; i++){
@@ -57,6 +58,13 @@ int main(){
 		free(exposure); 
 		//fare free pattern
 	}
+	for (int q = 0; q < nSet; q++){
+		for(int i = 0; i<pattern[q].nB; i++)
+			free(pattern[q].defPatterns[i]);
+		free(pattern[q].defPatterns);
+	}
+	free(pattern);
+	hid_close(handle);
 	return 0;
 }
 

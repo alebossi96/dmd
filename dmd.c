@@ -183,24 +183,24 @@ char * convlen(int a, int l){//a<2^l
 	*/
 	char * res;
 	res = (char*)malloc(l * sizeof(char));
-	l--;//mi muovo all'ultima posizione
-	while(a!=1 && l>-1){
-		if(a%2==0)
-			res[l]='0';
-		else
-			res[l]='1';
-		a/=2;
+	if(res){
+		l--;//mi muovo all'ultima posizione
+		while(a!=1 && l>-1){
+			if(a%2==0)
+				res[l]='0';
+			else
+				res[l]='1';
+			a/=2;
 
-		l--;
-	}
-	res[l]='1';
-	while(l>0){
-		l--;
-		res[l]='0';
-
+			l--;
 		}
+		res[l]='1';
+		while(l>0){
+			l--;
+			res[l]='0';
 
-
+			}
+	}//else bho!
 	return res;
 }
 
@@ -306,14 +306,17 @@ void mergeImages(int ***images, int ***res){
 	}
 
 }
-void definePatterns(hid_device *handle,struct Patterns ** pattern, const int &index,const int &exposure,const int &bitdepth, const char *color,const int &triggerIn,const int &darkTime,const int &triggerOut,const int &patInd,const int &bitPos){
+void definePatterns(hid_device *handle,struct Patterns * pattern, const int &index,const int &exposure,const int &bitdepth, const char *color,const int &triggerIn,const int &darkTime,const int &triggerOut,const int &patInd,const int &bitPos){
 	char payload[12];
-	char * tmpChar = convlen(index,16);
+	char * tmpChar= NULL;
+	tmpChar = convlen(index,16);
+	free(tmpChar);//da eliinare!
+	
 	int *index_ = bitsToBytes(tmpChar,16);
 	payload[0]=index_[0];
 	payload[1]=index_[1];
 	free(index_);
-	//free(tmpChar);
+	free(tmpChar);
 
 	tmpChar = convlen(exposure,24);
 	int *exposure_ = bitsToBytes(tmpChar,24);
@@ -322,13 +325,13 @@ void definePatterns(hid_device *handle,struct Patterns ** pattern, const int &in
 	free(exposure_);
 	char optionsByte[8];
 	optionsByte[7] = '1';
-	char *bitDepth = convlen(bitdepth-1,3);
+	char *bitDepth = NULL;
+	bitDepth = convlen(bitdepth-1,3);
 	for(int i = 0; i<3; i++) optionsByte[4+i] = bitDepth[i];
-	
+	free(bitDepth);
 	for(int i = 0; i<3; i++) optionsByte[1+i] = color[i];
 	if(triggerIn) optionsByte[0]='1';
 	else optionsByte[0]='0';
-
 	int *tmp;
 	tmp =bitsToBytes(optionsByte,8);
 	payload[5]= tmp[0];
@@ -343,7 +346,7 @@ void definePatterns(hid_device *handle,struct Patterns ** pattern, const int &in
 	tmp = bitsToBytes(tmpChar,8);
 	payload[9] = tmp[0];
 	free(tmp);
-	//free(tmpChar);
+	free(tmpChar);
 	char lastBits[16];
 	char *patInd_;
 	patInd_ = convlen(patInd,11);
@@ -359,12 +362,16 @@ void definePatterns(hid_device *handle,struct Patterns ** pattern, const int &in
 	payload[10]= tmp[0];
 	payload[11]=tmp[1];
 	for(int i = 0; i<12; i++)
-		(*pattern)->defPatterns[bitPos][i] = payload[i];
+		pattern->defPatterns[bitPos][i] = payload[i];
 	command(handle, 'w',0x00,0x1a,0x34,payload,12);
+	free(tmp);
+	free(bitPos_);
+	free(patInd_);
+
 	
 }
 
-void defSequence(hid_device *handle,struct Patterns ** pattern,int ***matrixes,int *exposure,int trigger_in, int dark_time, int trigger_out, int repetition, const int &size){
+void defSequence(hid_device *handle,struct Patterns * pattern,int ***matrixes,int *exposure,int trigger_in, int dark_time, int trigger_out, int repetition, const int &size){
 	int *encoded;
 	//stopSequence(handle);
 	struct Node * sizes=NULL;
@@ -451,18 +458,20 @@ void defSequence(hid_device *handle,struct Patterns ** pattern,int ***matrixes,i
 			//push(&sizes,bytecount);
 			//sizeList++;
 			char c111[3]={'1','1','1'};
-
-			for(int j = (i/24-1)*24; j<i && j<size; j++){
+			free(encoded);//DA CANCELLARE
+			
+			for(int j = (i/24-1)*24; j<i && j<size; j++)
 				definePatterns(handle, pattern, j, exposure[j],1,c111,trigger_in,dark_time,trigger_out,(i-1)/24,j-(i/24-1)*24);	
-			}
+			
 			
 		}
 	}
+	/*<-----------------
 	configureLut(handle,pattern,size,repetition);
 	setBmp(handle, pattern, (i-1)/24,size);	
 
 	bmpLoad(handle,pattern,encoded,size);
-	
+	<-------------------*/
 	//encodedImagesList = encodedImagesList->next;
 	//sizes = sizes->next;
 	
@@ -511,14 +520,11 @@ void push(struct List **head, int *data){
 	newRef->next =(*head);
 	(*head) = newRef;
 }
-void push(struct Patterns **head, int nB){
-	struct Patterns* newRef= (struct Patterns*)malloc(sizeof(struct Patterns));
-	newRef->defPatterns=(char **)malloc(nB*sizeof(char *));
+void allocatePattern(struct Patterns *p, int nB){
+	p->nB = nB;
+	p->defPatterns=(char **)malloc(nB*sizeof(char *));
 	for(int i = 0; i<nB; i++)
-		newRef->defPatterns[i]=(char *)malloc(12*sizeof(char ));
-	newRef->next =(*head);
-	(*head) = newRef;
-
+		p->defPatterns[i]=(char *)malloc(12*sizeof(char ));
 }
 int isRowEqual(const int *a, const int *b){
 	for(int i=0; i<3;i++)
@@ -646,7 +652,6 @@ void newEncodeSimpleRLE(int ***image, struct Node **bitString, int &byteCount){
 }
 
 void newEncode2(int ***image, struct Node **bitString, int &byteCount){
-	printf("image[0][0][0]=%d\n", image[0][0][0]);
 	byteCount=48;
 	push(bitString, 0x53);
 	push(bitString, 0x70);
@@ -683,7 +688,6 @@ void newEncode2(int ***image, struct Node **bitString, int &byteCount){
 
 	while(i<1080){
 		while(j<1920){
-			printf("i = %d j = %d \n",i, j);
 			if(i>0 && isRowEqual(image[i][j],image[i-1][j])){
 				for(;j<1920&&isRowEqual(image[i][j],image[i-1][j]);j++,n++);
 			push(bitString, 0x00);
@@ -814,7 +818,6 @@ void newEncode2(int ***image, struct Node **bitString, int &byteCount){
 
 
 void newEncode(int ***image, struct Node **bitString, int &byteCount){
-	printf("image[0][0][0]=%d\n", image[0][0][0]);
 	byteCount=48;
 	push(bitString, 0x53);
 	push(bitString, 0x70);
