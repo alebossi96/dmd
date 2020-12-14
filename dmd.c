@@ -183,8 +183,13 @@ char * convlen(int a, int l){//a<2^l
 	*/
 	char * res;
 	res = (char*)malloc(l * sizeof(char));
-	if(res){
+	if(a== 0){
+		for(; l>0; l--)
+			res[l-1]='0';
+	}
+	else{
 		l--;//mi muovo all'ultima posizione
+
 		while(a!=1 && l>-1){
 			if(a%2==0)
 				res[l]='0';
@@ -200,10 +205,10 @@ char * convlen(int a, int l){//a<2^l
 			res[l]='0';
 
 			}
-	}//else bho!
+
+	}
 	return res;
 }
-
 int * bitsToBytes(const char *a,const int &size){
 	int *bits_int;
 	bits_int = (int*)malloc(size * sizeof(int));	
@@ -260,7 +265,7 @@ void reset(hid_device *handle){
 	
 }
 
-void configureLut(hid_device *handle,struct Patterns ** pattern,int size, int rep){
+void configureLut(hid_device *handle,struct Patterns * pattern,int size, int rep){
 	char *im =convlen(size,11); //ho size in bit lunghezza 11
 	char *r=convlen(rep,32);
 	char string[48];
@@ -277,7 +282,7 @@ void configureLut(hid_device *handle,struct Patterns ** pattern,int size, int re
 	free(im);
 	free(r);
 	int *tmp =  bitsToBytes(string,48);
-	for(int i = 0; i<6; i++) (*pattern)->configureLut[i]= tmp[i];
+	for(int i = 0; i<6; i++) pattern->configureLut[i]= tmp[i];
 	command(handle, 'w',0x00,0x1a,0x31,tmp,6);
 	
 	free(tmp);
@@ -310,7 +315,6 @@ void definePatterns(hid_device *handle,struct Patterns * pattern, const int &ind
 	char payload[12];
 	char * tmpChar= NULL;
 	tmpChar = convlen(index,16);
-	free(tmpChar);//da eliinare!
 	
 	int *index_ = bitsToBytes(tmpChar,16);
 	payload[0]=index_[0];
@@ -329,6 +333,7 @@ void definePatterns(hid_device *handle,struct Patterns * pattern, const int &ind
 	bitDepth = convlen(bitdepth-1,3);
 	for(int i = 0; i<3; i++) optionsByte[4+i] = bitDepth[i];
 	free(bitDepth);
+	
 	for(int i = 0; i<3; i++) optionsByte[1+i] = color[i];
 	if(triggerIn) optionsByte[0]='1';
 	else optionsByte[0]='0';
@@ -336,7 +341,9 @@ void definePatterns(hid_device *handle,struct Patterns * pattern, const int &ind
 	tmp =bitsToBytes(optionsByte,8);
 	payload[5]= tmp[0];
 	free(tmp);
-	tmp = bitsToBytes(convlen(darkTime,24),24);
+	tmpChar = convlen(darkTime,24);
+	tmp = bitsToBytes(tmpChar,24);
+	free(tmpChar);
 	for(int i = 0; i<3; i++) payload[6+i] = tmp[i];
 	free(tmp);
 	if(triggerOut==1)
@@ -367,7 +374,7 @@ void definePatterns(hid_device *handle,struct Patterns * pattern, const int &ind
 	free(tmp);
 	free(bitPos_);
 	free(patInd_);
-
+	
 	
 }
 
@@ -466,12 +473,12 @@ void defSequence(hid_device *handle,struct Patterns * pattern,int ***matrixes,in
 			
 		}
 	}
-	/*<-----------------
+	
 	configureLut(handle,pattern,size,repetition);
 	setBmp(handle, pattern, (i-1)/24,size);	
 
 	bmpLoad(handle,pattern,encoded,size);
-	<-------------------*/
+	
 	//encodedImagesList = encodedImagesList->next;
 	//sizes = sizes->next;
 	
@@ -532,7 +539,7 @@ int isRowEqual(const int *a, const int *b){
 	return 1;
 }
 
-void setBmp(hid_device *handle,struct Patterns ** pattern,const int  &index,const int &size){
+void setBmp(hid_device *handle,struct Patterns * pattern,const int  &index,const int &size){
 	int payload[6];
 	char index_[16];
 	char *tmp;
@@ -553,15 +560,15 @@ void setBmp(hid_device *handle,struct Patterns ** pattern,const int  &index,cons
 	total = bitsToBytes(tmp,32);
 	free(tmp);
 	for(int i = 0; i<4; i++) payload[i+2]= total[i];
-	for(int i = 0; i<6; i++) (*pattern)->setBmp[i]=payload[i];
+	for(int i = 0; i<6; i++) pattern->setBmp[i]=payload[i];
 	command(handle, 'w',0x00,0x1a,0x2a,payload,6);
 }
-void bmpLoad(hid_device *handle,struct Patterns ** pattern,const int *image, const int &size){
+void bmpLoad(hid_device *handle,struct Patterns * pattern,const int *image, const int &size){
 	
 	printf("\n");
 	int packNum= size/504 +1;
 	int cont = 0;
-	(*pattern)->bmpLoad=(int **)malloc(packNum*sizeof(int*));
+	pattern->bmpLoad=(int **)malloc(packNum*sizeof(int*));
 	for(int i = 0; i<packNum; i++){
 		printf("\n%d\n", i);
 		if(i%100 == 0) printf("%d di %d\n", i, packNum);
@@ -580,8 +587,8 @@ void bmpLoad(hid_device *handle,struct Patterns ** pattern,const int *image, con
 		payload= (int*)malloc((bits+2)*sizeof(int));
 		for(int j = 0; j<2; j++) payload[j] = tmp[j];
 		for(int j = 0; j<bits; j++) payload[j+2] = image[504*i+j];
-		(*pattern)->bmpLoad[i]=(int *)malloc((bits+2)*sizeof(int));
-		for(int j = 0;j<bits+2;j++) (*pattern)->bmpLoad[i][j]=payload[j];
+		pattern->bmpLoad[i]=(int *)malloc((bits+2)*sizeof(int));
+		for(int j = 0;j<bits+2;j++) pattern->bmpLoad[i][j]=payload[j];
 		command(handle, 'w',0x11,0x1a,0x2b, payload, bits+2);
 		
 	}
