@@ -37,6 +37,8 @@ struct Patterns{
 	int setBmp[6];
 	int **bmpLoad;
 	int nB;
+	int packNum;
+	int *bitsPackNum;
 	//to link
 	struct Patterns *next;
 	struct Patterns *previous;

@@ -211,11 +211,12 @@ char * convlen(int a, int l){//a<2^l
 }
 int * bitsToBytes(const char *a,const int &size){
 	int *bits_int;
-	bits_int = (int*)malloc(size * sizeof(int));	
+	bits_int = (int*)malloc(size * sizeof(int));
+		
 	for(int i = 0; i< size; i++){
 		bits_int[i]=a[i]-'0';
 		}
-
+	
 	int *res;
 	res=bitsToBytes(bits_int,size);
 
@@ -384,6 +385,7 @@ void defSequence(hid_device *handle,struct Patterns * pattern,int ***matrixes,in
 	struct Node * sizes=NULL;
 	int i = 0;
 	int ***imageData;
+	int szEncoded;
 	imageData = (int ***)malloc(24*sizeof(int**));
 	for(int i = 0; i<24; i++){
 		imageData[i] = (int **)malloc(1080*sizeof(int*));
@@ -452,10 +454,15 @@ void defSequence(hid_device *handle,struct Patterns * pattern,int ***matrixes,in
 			
 			encoded =(int*)malloc(bytecount*sizeof(int));
 			j=bytecount;
+			szEncoded = bytecount;
 			while(j>0){
 				j--;
+				
 				encoded[bytecount-j-1]=tmp[j];
 			}
+				
+			for(int j = 0; j<szEncoded; j++)
+				printf("%d \n", encoded[j]);
 			
 			printf("\n\n\n bytecount = %d \n\n\n", bytecount);
 
@@ -465,7 +472,7 @@ void defSequence(hid_device *handle,struct Patterns * pattern,int ***matrixes,in
 			//push(&sizes,bytecount);
 			//sizeList++;
 			char c111[3]={'1','1','1'};
-			free(encoded);//DA CANCELLARE
+			//free(encoded);//DA CANCELLARE
 			
 			for(int j = (i/24-1)*24; j<i && j<size; j++)
 				definePatterns(handle, pattern, j, exposure[j],1,c111,trigger_in,dark_time,trigger_out,(i-1)/24,j-(i/24-1)*24);	
@@ -476,9 +483,10 @@ void defSequence(hid_device *handle,struct Patterns * pattern,int ***matrixes,in
 	
 	configureLut(handle,pattern,size,repetition);
 	setBmp(handle, pattern, (i-1)/24,size);	
-
-	bmpLoad(handle,pattern,encoded,size);
-	
+	for(int j = 0; j<size; j++)
+		printf("%d \n", encoded[j]);
+	bmpLoad(handle,pattern,encoded,szEncoded);
+	free(encoded);
 	//encodedImagesList = encodedImagesList->next;
 	//sizes = sizes->next;
 	
@@ -549,7 +557,7 @@ void setBmp(hid_device *handle,struct Patterns * pattern,const int  &index,const
 	for(int i =0; i<11; i++) index_[i] = '0';
 	for(int i = 0; i<5; i++) index_[i+11] = tmp[i];
 
-	//free(tmp);
+	free(tmp);
 	int *tmp2;
 	tmp2= bitsToBytes(index_,16);
 	for(int i = 0; i<2; i++) payload[i]= tmp2[i];
@@ -560,6 +568,7 @@ void setBmp(hid_device *handle,struct Patterns * pattern,const int  &index,const
 	total = bitsToBytes(tmp,32);
 	free(tmp);
 	for(int i = 0; i<4; i++) payload[i+2]= total[i];
+	free(total);
 	for(int i = 0; i<6; i++) pattern->setBmp[i]=payload[i];
 	command(handle, 'w',0x00,0x1a,0x2a,payload,6);
 }
@@ -569,12 +578,15 @@ void bmpLoad(hid_device *handle,struct Patterns * pattern,const int *image, cons
 	int packNum= size/504 +1;
 	int cont = 0;
 	pattern->bmpLoad=(int **)malloc(packNum*sizeof(int*));
+	pattern->packNum=packNum;
+	pattern->bitsPackNum =(int *)malloc(packNum*sizeof(int));
 	for(int i = 0; i<packNum; i++){
 		printf("\n%d\n", i);
 		if(i%100 == 0) printf("%d di %d\n", i, packNum);
 		int *payload;
 		int bits;
 		char *leng;
+		printf("size = %d\n", size);
 		if(i<packNum-1){
 			leng = convlen(504,16);
 			bits =504;	
@@ -582,17 +594,34 @@ void bmpLoad(hid_device *handle,struct Patterns * pattern,const int *image, cons
 			leng= convlen(size%504,16);
 			bits = size%504;
 		}
+		
+		pattern->bitsPackNum[i] = bits+2;
+		
 		int *tmp;
+		//stampa leng
 		tmp = bitsToBytes(leng,16);
+		for(int j = 0; j<2; j++)
+			printf("%d ",tmp[j]);
+
+		free(leng);
 		payload= (int*)malloc((bits+2)*sizeof(int));
 		for(int j = 0; j<2; j++) payload[j] = tmp[j];
+		free(tmp);
+		
 		for(int j = 0; j<bits; j++) payload[j+2] = image[504*i+j];
 		pattern->bmpLoad[i]=(int *)malloc((bits+2)*sizeof(int));
 		for(int j = 0;j<bits+2;j++) pattern->bmpLoad[i][j]=payload[j];
 		command(handle, 'w',0x11,0x1a,0x2b, payload, bits+2);
+		free(payload);
+			
 		
 	}
-
+	
+	for(int i = 0; i<packNum; i++)//<---da mettere dopo
+		free(pattern->bmpLoad[i]);
+	
+	free(pattern->bmpLoad);
+	free(pattern->bitsPackNum);
 }
 void newEncodeSimpleRLE(int ***image, struct Node **bitString, int &byteCount){
 	printf("image[0][0][0]=%d\n", image[0][0][0]);
