@@ -30,6 +30,7 @@ int main(){
 		for(int i = 0; i<nB; i++) basis[i] = (int**)malloc(1080*sizeof(int*));
 		for(int i = 0; i<nB; i++){
 			for(int j = 0;j<1080; j++) basis[i][j]= (int*)malloc(1920*sizeof(int));
+			exposure[i] = 1000000;
 		}
 		// insert data
 		for (int i = 0; i<nB; i++) exposure[i] = exp;
@@ -47,7 +48,7 @@ int main(){
 		//fill pattern		
 
 		defSequence(handle,&(pattern[q]),basis,exposure,trigger_in,dark_time,trigger_out, nB,nB);
-
+		startSequence(handle);
 		//free memory
 		for(int i = 0; i<nB; i++){
 			for(int j = 0; j<1080; j++)free(basis[i][j]);

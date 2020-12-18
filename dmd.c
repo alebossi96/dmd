@@ -381,7 +381,7 @@ void definePatterns(hid_device *handle,struct Patterns * pattern, const int &ind
 
 void defSequence(hid_device *handle,struct Patterns * pattern,int ***matrixes,int *exposure,int trigger_in, int dark_time, int trigger_out, int repetition, const int &size){
 	int *encoded;
-	//stopSequence(handle);
+	stopSequence(handle);
 	struct Node * sizes=NULL;
 	int i = 0;
 	int ***imageData;
@@ -461,9 +461,6 @@ void defSequence(hid_device *handle,struct Patterns * pattern,int ***matrixes,in
 				encoded[bytecount-j-1]=tmp[j];
 			}
 				
-			for(int j = 0; j<szEncoded; j++)
-				printf("%d \n", encoded[j]);
-			
 			printf("\n\n\n bytecount = %d \n\n\n", bytecount);
 
 			
@@ -483,8 +480,6 @@ void defSequence(hid_device *handle,struct Patterns * pattern,int ***matrixes,in
 	
 	configureLut(handle,pattern,size,repetition);
 	setBmp(handle, pattern, (i-1)/24,size);	
-	for(int j = 0; j<size; j++)
-		printf("%d \n", encoded[j]);
 	bmpLoad(handle,pattern,encoded,szEncoded);
 	free(encoded);
 	//encodedImagesList = encodedImagesList->next;
@@ -600,8 +595,6 @@ void bmpLoad(hid_device *handle,struct Patterns * pattern,const int *image, cons
 		int *tmp;
 		//stampa leng
 		tmp = bitsToBytes(leng,16);
-		for(int j = 0; j<2; j++)
-			printf("%d ",tmp[j]);
 
 		free(leng);
 		payload= (int*)malloc((bits+2)*sizeof(int));
