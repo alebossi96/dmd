@@ -1131,14 +1131,21 @@ void getBasis(const int &nBasis, const int &nMeas, int ***basis){
 	for(int i = 0; i<nBasis; i++)
 		H [i] = (int *)malloc(nBasis*sizeof(int));
 
-
+	printf("nBasis = %d\n",nBasis);
 	hadamard(H, nBasis);
+	for(int i = 0; i<nMeas; i++){
+		for(int j = 0; j<WIDTH; j++){
+			for(int k = 0; k<HEIGHT; k++)
+				basis[i][k][j]= 0;
 
+		}
+
+	}
 
 	//come inserire? nel senso binning? padding?/ transformazione?
 
 	//int mult = 32/nBasis;//devo cercare la più vicina potenza del 2
-	
+	/*
 	int logN = log(nBasis)/log(2);
 	int mult=WIDTH/pow2_i(logN);
 	int idxZeros = (WIDTH-mult*nBasis)/2;
@@ -1155,6 +1162,11 @@ void getBasis(const int &nBasis, const int &nMeas, int ***basis){
 		}
 		
 	}
+	*/
+	for(int i = 0; i<nBasis; i++)
+		free(H[i]);
+	free(H);
+
 }
 int min(const int &a,const int &b){
 	if(a>b)	return b;
@@ -1165,6 +1177,49 @@ int celing(const int &a, const int &b){
 	if(a%b == 0)
 		return a/b;
 	return a/b +1;
-
-
 }
+
+
+
+int numberOfCakes(const int ** matrix,const int &rows,const int &cols){
+	int **tmp;
+	tmp =(int **)malloc(rows*sizeof(int*));
+	for(int i = 0; i<rows; i++){
+		tmp[i]=(int *)malloc(cols*sizeof(int));
+	}
+
+	//check around
+	int cont = 0;
+	for(int i = 0; i<rows; i++){
+		for(int j = 0; j<cols; j++) {
+			if(matrix[i][j]){//cerca a _|
+				if((i== 0 && j == 0) ||
+				( i>0 && j == 0 &&!matrix[i-1][j]) ||
+				(i == 0 && j>0 && !matrix[i][j-1]) ||
+				(i> 0 && j > 0 && !matrix[i][j-1] && !matrix[i-1][j])){
+					cont++;
+				}
+				tmp[i][j]= cont;
+			/* la configuarzione   _|_
+						|
+				non viene conssiderata qui la tengo in considerazione */
+
+				if(i> 0 && j > 0 && tmp[i-1][j]!= 0 && tmp[i][j-1]!= 0 && tmp[i-1][j] !=tmp[i][j-1]){
+					if(tmp[i-1][j]>tmp[i][j-1]) {
+						tmp[i-1][j] = tmp[i][j-1];
+						cont = tmp[i][j-1];
+						}
+					else{
+						tmp[i][j-1] = tmp[i-1][j];
+						cont = tmp[i][j-1];
+						}
+				}
+			}
+		}
+	}
+	for(int i = 0;i<rows;i++)
+		free(tmp[i]);
+	free(tmp);
+	return cont;
+}
+

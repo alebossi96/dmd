@@ -1,5 +1,5 @@
 #ifndef DMD_H
-#define DEBUG false
+#define DEBUG true
 #define WIDTH 1920
 #define HEIGHT 1080
 #include<hidapi.h>
@@ -62,5 +62,6 @@ void startSequence(hid_device *handle);
 void hadamard(int **matrix, const int &nBasis);
 void getBasis(const int &nBasis, const int &nMeas, int ***Basis);
 void cake_cutting(const int &nBasis, int **matrix);
+int numberOfCakes(const int ** matrix,const int &rows,const int &cols);
 #endif
 
