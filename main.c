@@ -1,7 +1,7 @@
 #include"dmd.h"
 int main(){
-	int nBasis =32;
-	int nMeas =3;
+	int nBasis =1024;
+	int nMeas =1024;
 	int exp = 1000000;
 	int nSet = celing(nMeas,24);
 	
@@ -34,6 +34,7 @@ int main(){
 		}
 		// insert data
 		for (int i = 0; i<nB; i++) exposure[i] = exp;
+		/*
 		for (int k = 0; (k+q*24)<nMeas && k<24; k++){
 			for(int i = 0; i<HEIGHT; i++){
 				for(int j = 0; j<WIDTH; j++){
@@ -42,12 +43,22 @@ int main(){
 				}	
 			}
 		}
-
-		//getBasis(nBasis,nMeas, basis);
+		*/
+		int nEl;
+		if(nMeas>(q+1)*24)
+			nEl = 24;
+		else
+			nEl = nMeas-q*24;
+		getBasis(nBasis,nEl, basis);
 		printf("da qui inizia defSequence\n");
 		//fill pattern		
-
-		defSequence(handle,&(pattern[q]),basis,exposure,trigger_in,dark_time,trigger_out, nB,nB);
+		for (int k = 0; k<nEl ; k++){
+			for(int i = 0; i<WIDTH; i+=100)
+				printf("%d ",basis[k][0][i]);
+						
+			printf("\n");
+		}
+		defSequence(handle,&(pattern[q]),basis,exposure,trigger_in,dark_time,trigger_out, 1,nEl);
 		startSequence(handle);
 		//free memory
 		for(int i = 0; i<nB; i++){
@@ -65,6 +76,7 @@ int main(){
 		free(pattern[q].defPatterns);
 	}
 	free(pattern);
+	if(!DEBUG) getchar();
 	hid_close(handle);
 	return 0;
 }
