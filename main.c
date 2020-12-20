@@ -1,7 +1,7 @@
 #include"dmd.h"
 int main(){
-	int nBasis =1024;
-	int nMeas =1024;
+	int nBasis =512;
+	int nMeas =3;
 	int exp = 1000000;
 	int nSet = celing(nMeas,24);
 	
@@ -49,7 +49,7 @@ int main(){
 			nEl = 24;
 		else
 			nEl = nMeas-q*24;
-		getBasis(nBasis,nEl, basis);
+		getBasis(nBasis,q*24,q*24+nEl, basis);
 		printf("da qui inizia defSequence\n");
 		//fill pattern		
 		for (int k = 0; k<nEl ; k++){
@@ -58,6 +58,7 @@ int main(){
 						
 			printf("\n");
 		}
+		pattern[q].nEl =nEl;
 		defSequence(handle,&(pattern[q]),basis,exposure,trigger_in,dark_time,trigger_out, 1,nEl);
 		startSequence(handle);
 		//free memory
@@ -70,10 +71,20 @@ int main(){
 		free(exposure); 
 		//fare free pattern
 	}
+	/*ora ho finito di caricare su pattern*/
+	//commandPattern(handle,pattern, nSet);
+
+
+	
 	for (int q = 0; q < nSet; q++){
 		for(int i = 0; i<pattern[q].nB; i++)
 			free(pattern[q].defPatterns[i]);
 		free(pattern[q].defPatterns);
+		for(int i = 0; i<pattern[q].packNum; i++)
+			free(pattern[q].bmpLoad[i]);
+	
+		free(pattern[q].bmpLoad);
+		free(pattern[q].bitsPackNum);
 	}
 	free(pattern);
 	if(!DEBUG) getchar();

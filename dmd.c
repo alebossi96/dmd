@@ -142,7 +142,26 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 	return 0;	
 }
 
+void commandPattern(hid_device *handle,struct Patterns * pattern, const int &szPattern){
+	//solo quel che succede in defSequence devo comandare	
+	for(int i = 0; i<szPattern; i++){
+		stopSequence(handle);
+		//scrivo definePattern
+		for(int j = 0; j<pattern[i].nEl; j++)
+			command(handle,'w',0x00,0x1a,0x34,pattern[i].defPatterns[j],12);
+		//configureLut
+		command(handle,'w',0x00,0x1a,0x31,pattern[i].configureLut,6);
+		//setBmp
+		command(handle,'w',0x00,0x1a,0x2a,pattern[i].setBmp,6);
+		//bmpLoad
+		for(int j = 0; j<pattern[i].packNum; j++){
+			command(handle,'w',0x11,0x1a,0x2b,pattern[i].bmpLoad[j],pattern[i].bitsPackNum[j]);
+		}
+		startSequence(handle);
+		//sleep(pattern[i].nEl);//aspetta che abbia finito
+	}
 
+}
 void checkForErrors(hid_device *handle){
 	if( hid_error(handle)==NULL)
 		printf("errori");
@@ -610,11 +629,7 @@ void bmpLoad(hid_device *handle,struct Patterns * pattern,const int *image, cons
 		
 	}
 	
-	for(int i = 0; i<packNum; i++)//<---da mettere dopo
-		free(pattern->bmpLoad[i]);
-	
-	free(pattern->bmpLoad);
-	free(pattern->bitsPackNum);
+
 }
 void newEncodeSimpleRLE(int ***image, struct Node **bitString, int &byteCount){
 	printf("image[0][0][0]=%d\n", image[0][0][0]);
@@ -1124,7 +1139,7 @@ void hadamard(int **matrix, const int &nBasis){
 
 }
 
-void getBasis(const int &nBasis, const int &nMeas, int ***basis){
+void getBasis(const int &nBasis, const int &fromBasis,const int &toBasis, int ***basis){
 	int **H;
 
 	H =(int **)malloc(nBasis*sizeof(int*));
@@ -1180,15 +1195,15 @@ void getBasis(const int &nBasis, const int &nMeas, int ***basis){
 	int logN = log(nBasis)/log(2);
 	int mult=WIDTH/pow2_i(logN);
 	int idxZeros = (WIDTH-mult*nBasis)/2;
-	for(int i = 0; i <nMeas; i++){
+	for(int i = fromBasis; i <toBasis; i++){
 		for(int j = 0; j<WIDTH;j++){
 			
 			if(j>(idxZeros-1) && j<(WIDTH-idxZeros)){
 				int el =(H[i][(j-idxZeros)/mult]+1)/2;
 				 for(int k = 0; k<HEIGHT; k++)
-					basis[i][k][j] = el;
+					basis[i-fromBasis][k][j] = el;
 			}
-			else for(int k = 0; k<HEIGHT; k++) basis[i][k][j] = 0;	
+			else for(int k = 0; k<HEIGHT; k++) basis[i-fromBasis][k][j] = 0;	
 			
 		}
 		

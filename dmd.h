@@ -1,5 +1,5 @@
 #ifndef DMD_H
-#define DEBUG true
+#define DEBUG false
 #define WIDTH 1920
 #define HEIGHT 1080
 #include<hidapi.h>
@@ -11,6 +11,7 @@
 #include <string.h> 
 int command(hid_device *handle, const char &mode, const char &sequencebyte, const char &com2, const char &com1, const char *data, const int &sizeData);
 int command(hid_device *handle, const char &mode, const char &sequencebyte, const char &com2, const char &com1, const int *data, const int &sizeData);
+void commandPattern(hid_device *handle,struct Patterns * pattern, const int &szPattern);
 void checkForErrors(hid_device *handle);
 int pow2_i(const int &exp);
 char * convlen(int a, int l);
@@ -40,6 +41,7 @@ struct Patterns{
 	int **bmpLoad;
 	int nB;
 	int packNum;
+	int nEl;
 	int *bitsPackNum;
 	//to link
 	struct Patterns *next;
@@ -62,10 +64,9 @@ void setBmp(hid_device *handle,struct Patterns * pattern,const int  &index,const
 void bmpLoad(hid_device *handle,struct Patterns * pattern, const int *image, const int &size);
 void startSequence(hid_device *handle);
 void hadamard(int **matrix, const int &nBasis);
-void getBasis(const int &nBasis, const int &nMeas, int ***Basis);
+void getBasis(const int &nBasis, const int &fromBasis,const int &toBasis, int ***Basis);
 void cake_cutting(const int &nBasis, int **matrix);
 int numberOfCakes(int ** matrix,const int &rows,const int &cols);
-
 int isSafe(int **M, int row, int col, bool **visited, int ROW, int COL);
 void DFS(int **M, int row, int col, bool **visited, int ROW, int COL);
 int countIslands(int **M,int ROW, int COL);
