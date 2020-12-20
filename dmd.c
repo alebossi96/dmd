@@ -1150,6 +1150,7 @@ void getBasis(const int &nBasis, const int &fromBasis,const int &toBasis, int **
 	hadamard(H, nBasis);
 	int cols = 8;
 	int rows = nBasis/cols;
+/*
 	//matrix serve per riarrangiare H
 	int **matrix;
 	matrix =(int**)malloc(rows*sizeof(int*));
@@ -1186,7 +1187,7 @@ void getBasis(const int &nBasis, const int &fromBasis,const int &toBasis, int **
 
 	free(pieciesOfCake);
 
-
+*/
 
 	//come inserire? nel senso binning? padding?/ transformazione?
 

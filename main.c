@@ -1,6 +1,6 @@
 #include"dmd.h"
 int main(){
-	int nBasis =512;
+	int nBasis =128;
 	int nMeas =3;
 	int exp = 1000000;
 	int nSet = celing(nMeas,24);
@@ -25,12 +25,11 @@ int main(){
 		int nB = min(24, nMeas-q*24);
 		allocatePattern(&(pattern[q]),nB);
 		//allocate memory
-		exposure = (int *) malloc(nB * sizeof(int));
+		exposure = (int *) malloc(nB * sizeof(int));//deve essere lunga solo nEl
 		basis = (int***)malloc(nB*sizeof(int**));
 		for(int i = 0; i<nB; i++) basis[i] = (int**)malloc(1080*sizeof(int*));
 		for(int i = 0; i<nB; i++){
 			for(int j = 0;j<1080; j++) basis[i][j]= (int*)malloc(1920*sizeof(int));
-			exposure[i] = 1000000;
 		}
 		// insert data
 		for (int i = 0; i<nB; i++) exposure[i] = exp;
@@ -59,8 +58,9 @@ int main(){
 			printf("\n");
 		}
 		pattern[q].nEl =nEl;
-		defSequence(handle,&(pattern[q]),basis,exposure,trigger_in,dark_time,trigger_out, 1,nEl);
+		defSequence(handle,&(pattern[q]),basis,exposure,trigger_in,dark_time,trigger_out, nEl,nEl);
 		startSequence(handle);
+		sleep(nEl);
 		//free memory
 		for(int i = 0; i<nB; i++){
 			for(int j = 0; j<1080; j++)free(basis[i][j]);
