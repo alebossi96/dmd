@@ -1,7 +1,7 @@
 #include"dmd.h"
 int main(){
 	int nBasis =128;
-	int nMeas =3;
+	int nMeas =24;
 	int exp = 1000000;
 	int nSet = celing(nMeas,24);
 	
@@ -60,7 +60,8 @@ int main(){
 		pattern[q].nEl =nEl;
 		defSequence(handle,&(pattern[q]),basis,exposure,trigger_in,dark_time,trigger_out, nEl,nEl);
 		startSequence(handle);
-		sleep(nEl);
+		//sleep(nEl);
+		getchar();
 		//free memory
 		for(int i = 0; i<nB; i++){
 			for(int j = 0; j<1080; j++)free(basis[i][j]);

@@ -1,5 +1,5 @@
 #ifndef DMD_H
-#define DEBUG false
+#define DEBUG true
 #define WIDTH 1920
 #define HEIGHT 1080
 #include<hidapi.h>

@@ -304,6 +304,11 @@ void configureLut(hid_device *handle,struct Patterns * pattern,int size, int rep
 	int *tmp =  bitsToBytes(string,48);
 	for(int i = 0; i<6; i++) pattern->configureLut[i]= tmp[i];
 	command(handle, 'w',0x00,0x1a,0x31,tmp,6);
+			FILE * pFile = fopen("cConfigureLut.txt", "a");
+	for(int i = 0; i<6; i++)
+		fprintf(pFile, "%d\n", tmp[i]);
+
+	fclose(pFile);
 	
 	free(tmp);
 }
@@ -391,6 +396,11 @@ void definePatterns(hid_device *handle,struct Patterns * pattern, const int &ind
 	for(int i = 0; i<12; i++)
 		pattern->defPatterns[bitPos][i] = payload[i];
 	command(handle, 'w',0x00,0x1a,0x34,payload,12);
+		FILE * pFile = fopen("cdefinePatterns.txt", "a");
+	for(int i = 0; i<12; i++)
+		fprintf(pFile, "%d\n", payload[i]);
+
+	fclose(pFile);
 	free(tmp);
 	free(bitPos_);
 	free(patInd_);
@@ -498,7 +508,7 @@ void defSequence(hid_device *handle,struct Patterns * pattern,int ***matrixes,in
 	}
 	
 	configureLut(handle,pattern,size,repetition);
-	setBmp(handle, pattern, (i-1)/24,size);	
+	setBmp(handle, pattern, (i-1)/24,szEncoded);	
 	bmpLoad(handle,pattern,encoded,szEncoded);
 	free(encoded);
 	//encodedImagesList = encodedImagesList->next;
@@ -584,6 +594,11 @@ void setBmp(hid_device *handle,struct Patterns * pattern,const int  &index,const
 	for(int i = 0; i<4; i++) payload[i+2]= total[i];
 	free(total);
 	for(int i = 0; i<6; i++) pattern->setBmp[i]=payload[i];
+	FILE * pFile = fopen("cSetBmp.txt", "a");
+	for(int i = 0; i<6; i++)
+		fprintf(pFile, "%d\n", payload[i]);
+
+	fclose(pFile);
 	command(handle, 'w',0x00,0x1a,0x2a,payload,6);
 }
 void bmpLoad(hid_device *handle,struct Patterns * pattern,const int *image, const int &size){
@@ -623,6 +638,7 @@ void bmpLoad(hid_device *handle,struct Patterns * pattern,const int *image, cons
 		for(int j = 0; j<bits; j++) payload[j+2] = image[504*i+j];
 		pattern->bmpLoad[i]=(int *)malloc((bits+2)*sizeof(int));
 		for(int j = 0;j<bits+2;j++) pattern->bmpLoad[i][j]=payload[j];
+	
 		command(handle, 'w',0x11,0x1a,0x2b, payload, bits+2);
 		free(payload);
 			
@@ -1150,7 +1166,7 @@ void getBasis(const int &nBasis, const int &fromBasis,const int &toBasis, int **
 	hadamard(H, nBasis);
 	int cols = 8;
 	int rows = nBasis/cols;
-/*
+
 	//matrix serve per riarrangiare H
 	int **matrix;
 	matrix =(int**)malloc(rows*sizeof(int*));
@@ -1187,7 +1203,7 @@ void getBasis(const int &nBasis, const int &fromBasis,const int &toBasis, int **
 
 	free(pieciesOfCake);
 
-*/
+
 
 	//come inserire? nel senso binning? padding?/ transformazione?
 
