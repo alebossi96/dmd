@@ -1,10 +1,11 @@
 #include"dmd.h"
 int main(){
-	int nBasis =128;
-	int nMeas =24;
-	int exp = 1000000;
+	int nBasis =1024;
+	int nMeas =56;
+	int exp = 41666;
 	int nSet = celing(nMeas,24);
-	
+	int res;
+	res= hid_init();
 	hid_device *handle = hid_open(0x0451, 0xc900, NULL);
 	sleep(2);
 	if (!handle) {
@@ -48,6 +49,15 @@ int main(){
 			nEl = 24;
 		else
 			nEl = nMeas-q*24;
+		/*
+		for (int k = q*24; k<nMeas && k<(q+1)*24; k++){
+			for(int i = 0; i<HEIGHT; i++){
+				for(int j = 0; j<WIDTH; j++){
+					if(abs(j -5*k)<100 ) basis[k-q*24][i][j]=1;
+					else basis[k-q*24][i][j]=0;
+				}	
+			}
+		}*/
 		getBasis(nBasis,q*24,q*24+nEl, basis);
 		printf("da qui inizia defSequence\n");
 		//fill pattern		
@@ -61,7 +71,8 @@ int main(){
 		defSequence(handle,&(pattern[q]),basis,exposure,trigger_in,dark_time,trigger_out, nEl,nEl);
 		startSequence(handle);
 		//sleep(nEl);
-		getchar();
+		//sleep(3);
+		
 		//free memory
 		for(int i = 0; i<nB; i++){
 			for(int j = 0; j<1080; j++)free(basis[i][j]);
@@ -72,8 +83,9 @@ int main(){
 		free(exposure); 
 		//fare free pattern
 	}
+	getchar();
 	/*ora ho finito di caricare su pattern*/
-	//commandPattern(handle,pattern, nSet);
+	commandPattern(handle,pattern, nSet);
 
 
 	
@@ -88,8 +100,9 @@ int main(){
 		free(pattern[q].bitsPackNum);
 	}
 	free(pattern);
-	if(!DEBUG) getchar();
+	//if(!DEBUG) getchar();
 	hid_close(handle);
+	res=hid_exit();
 	return 0;
 }
 

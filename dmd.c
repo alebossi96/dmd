@@ -145,7 +145,7 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 void commandPattern(hid_device *handle,struct Patterns * pattern, const int &szPattern){
 	//solo quel che succede in defSequence devo comandare	
 	for(int i = 0; i<szPattern; i++){
-		stopSequence(handle);
+		//stopSequence(handle);ma qui
 		//scrivo definePattern
 		for(int j = 0; j<pattern[i].nEl; j++)
 			command(handle,'w',0x00,0x1a,0x34,pattern[i].defPatterns[j],12);
@@ -157,8 +157,10 @@ void commandPattern(hid_device *handle,struct Patterns * pattern, const int &szP
 		for(int j = 0; j<pattern[i].packNum; j++){
 			command(handle,'w',0x11,0x1a,0x2b,pattern[i].bmpLoad[j],pattern[i].bitsPackNum[j]);
 		}
+		stopSequence(handle);//forse non va qui 
 		startSequence(handle);
 		//sleep(pattern[i].nEl);//aspetta che abbia finito
+		sleep(1);
 	}
 
 }
@@ -782,7 +784,11 @@ void newEncode2(int ***image, struct Node **bitString, int &byteCount){
 					n=0;
 					j++;
 				}else{
-					if(j>1917 || isRowEqual(image[i][j+1],image[i][j+2]) || isRowEqual(image[i][j+1],image[i-1][j+1])){
+					if(j>1917 || 
+						isRowEqual(image[i][j+1],image[i][j+2]) || 
+						(i >0 && isRowEqual(image[i][j+1],image[i-1][j+1])) || 
+						(i == 0 && isRowEqual(image[i][j+1],image[1079][j+1]))){
+
 						push(bitString, 0x01);
 						byteCount++;
 						push(bitString, image[i][j][0]);
