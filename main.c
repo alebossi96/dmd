@@ -1,8 +1,8 @@
 #include"dmd.h"
 int main(){
-	int nBasis =1024;
-	int nMeas =56;
-	int exp = 41666;
+	int nBasis =128;
+	int nMeas =24;
+	int exp = 1000000;
 	int nSet = celing(nMeas,24);
 	int res;
 	res= hid_init();
@@ -59,6 +59,7 @@ int main(){
 			}
 		}*/
 		getBasis(nBasis,q*24,q*24+nEl, basis);
+		//readBMP("test.bmp",&basis[0]);
 		printf("da qui inizia defSequence\n");
 		//fill pattern		
 		for (int k = 0; k<nEl ; k++){
@@ -100,6 +101,7 @@ int main(){
 		free(pattern[q].bitsPackNum);
 	}
 	free(pattern);
+	reset(handle);//bho elimina porcate?
 	//if(!DEBUG) getchar();
 	hid_close(handle);
 	res=hid_exit();

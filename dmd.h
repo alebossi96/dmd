@@ -1,5 +1,5 @@
 #ifndef DMD_H
-#define DEBUG true
+#define DEBUG false
 #define WIDTH 1920
 #define HEIGHT 1080
 #include<hidapi.h>
@@ -70,6 +70,6 @@ int numberOfCakes(int ** matrix,const int &rows,const int &cols);
 int isSafe(int **M, int row, int col, bool **visited, int ROW, int COL);
 void DFS(int **M, int row, int col, bool **visited, int ROW, int COL);
 int countIslands(int **M,int ROW, int COL);
- 
+void readBMP(char* filename, int *** image);
 #endif
 

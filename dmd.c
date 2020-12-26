@@ -801,7 +801,7 @@ void newEncode2(int ***image, struct Node **bitString, int &byteCount){
 						push(bitString, 0x00);
 						byteCount++;
 						struct Node *toAppend=NULL;
-						for(; !isRowEqual(image[i][j],image[i][j+1]) && isRowEqual(image[i][j],image[i-1][j]); n++, j++){
+						for(; !isRowEqual(image[i][j],image[i][j+1]) &&( (i >0 && isRowEqual(image[i][j],image[i-1][j])) || (i == 0 && isRowEqual(image[i][j],image[1079][j]))) ; n++, j++){//cambiato qui
 							push(&toAppend, image[i][j][0]);
 							push(&toAppend, image[i][j][1]);
 							push(&toAppend, image[i][j][2]);
@@ -1364,4 +1364,39 @@ int countIslands(int **M,int ROW, int COL)
     return count; 
 } 
 
+
+
+void readBMP(char* filename, int *** image)
+{
+	//https://stackoverflow.com/questions/9296059/read-pixel-value-in-bmp-file
+	//io uso 3 canali qui 
+	//ma può essere solo b/n
+
+    int i;
+    FILE* f = fopen(filename, "rb");
+    unsigned char info[54];
+
+    // read the 54-byte header
+    fread(info, sizeof(unsigned char), 54, f); 
+
+    // extract image height and width from header
+    int width = *(int*)&info[18];//devo fare assert che sia uguale a mio widthS
+    int height = *(int*)&info[22];
+    
+    // allocate 3 bytes per pixel
+    int size = 3 * width * height;
+    unsigned char* data = (unsigned char*)malloc(size*sizeof(unsigned char));
+
+    // read the rest of the data at once
+    fread(data, sizeof(unsigned char), size, f); 
+    fclose(f);
+
+    for(i = 0; i < size; i += 3)
+    {
+            // prendo solo da un canale.(se è rgb mi interessa solo 1)
+	    int idx = i/3;
+	    (*image)[idx/width][idx%width]=data[i];
+    }
+
+}
 
