@@ -85,14 +85,14 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 		buffer[0] = 0x00;
 		for(int i = 0; i<SIZE; i++) buffer[i]= 0;
 		int i = 1;
-		j = 58;
+		j = SIZE-tot;
 		while(j<sizeData){
 			buffer[i] = data[j];
 			
 
 			j++;
 			i++;
-			if(i%65==0){
+			if(i%SIZE==0){
 				
 				printf("\n\n");
 				if(!DEBUG){
@@ -113,8 +113,8 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 				
 			}
 		}
-		if(i%65 !=0 && i != 1){
-			while(i%65!=0){
+		if(i%SIZE !=0 && i != 1){
+			while(i%SIZE!=0){
 				
 				buffer[i] =0x00;
 				j++;
@@ -321,17 +321,17 @@ int pow_i(const int &b,const int &exp){
 	return res;
 }
 void mergeImages(int ***images, int ***res){
-	for(int i=0; i<24; i++){
-		for(int j=0; j<1080; j++){
-			for(int k=0; k<1920;k++){
+	for(int i=0; i<SIZE_PATTERN; i++){
+		for(int j=0; j<HEIGHT; j++){
+			for(int k=0; k<WIDTH;k++){
 				res[j][k][(2-i/8)]=0;	
 			}		
 		}
 		
 	}
-	for(int i=0; i<24; i++){
-		for(int j=0; j<1080; j++){
-			for(int k=0; k<1920;k++){
+	for(int i=0; i<SIZE_PATTERN; i++){
+		for(int j=0; j<HEIGHT; j++){
+			for(int k=0; k<WIDTH;k++){
 				res[j][k][(2-i/8)]+=images[i][j][k]*pow_i(2,i%8);	
 			}		
 		}
@@ -417,49 +417,49 @@ void defSequence(hid_device *handle,struct Patterns * pattern,int ***matrixes,in
 	int i = 0;
 	int ***imageData;
 	int szEncoded;
-	imageData = (int ***)malloc(24*sizeof(int**));
-	for(int i = 0; i<24; i++){
-		imageData[i] = (int **)malloc(1080*sizeof(int*));
-		for(int j = 0; j<1080; j++ ){
-			imageData[i][j] = (int*)malloc(1920* sizeof(int));
+	imageData = (int ***)malloc(SIZE_PATTERN*sizeof(int**));
+	for(int i = 0; i<SIZE_PATTERN; i++){
+		imageData[i] = (int **)malloc(HEIGHT*sizeof(int*));
+		for(int j = 0; j<HEIGHT; j++ ){
+			imageData[i][j] = (int*)malloc(WIDTH* sizeof(int));
 		}
 	}
 	int ***mergedImagesint;	
 
-	mergedImagesint = (int ***)malloc(1080*sizeof(int**));
-	for(int i = 0; i<1080; i++){
-		mergedImagesint[i] = (int **)malloc(1920*sizeof(int*));
-		for(int j = 0; j<1920; j++ ){			
+	mergedImagesint = (int ***)malloc(HEIGHT*sizeof(int**));
+	for(int i = 0; i<HEIGHT; i++){
+		mergedImagesint[i] = (int **)malloc(WIDTH*sizeof(int*));
+		for(int j = 0; j<WIDTH; j++ ){			
 			mergedImagesint[i][j] = (int*)malloc(3* sizeof(int));
 		}
 	}
 	
-	while(i<size || i%24!=0){
+	while(i<size || i%SIZE_PATTERN!=0){
 		//	sizePkg++;	
 
-		if(i%24==0){
-			for(int j=0; j<1080; j++){
-				for(int k=0; k<1920; k++){
-					imageData[i%24][j][k]=0;
+		if(i%SIZE_PATTERN==0){
+			for(int j=0; j<HEIGHT; j++){
+				for(int k=0; k<WIDTH; k++){
+					imageData[i%SIZE_PATTERN][j][k]=0;
 					}		
 				}
 			}
 		if(i<size){
-			for(int j=0; j<1080; j++){
-				for(int k=0; k<1920; k++){
-					imageData[i%24][j][k]=matrixes[i][j][k];
+			for(int j=0; j<HEIGHT; j++){
+				for(int k=0; k<WIDTH; k++){
+					imageData[i%SIZE_PATTERN][j][k]=matrixes[i][j][k];
 					}		
 				}
 			}
 		else{
-			for(int j=0; j<1080; j++){
-				for(int k=0; k<1920; k++){
-					imageData[i%24][j][k]=0;
+			for(int j=0; j<HEIGHT; j++){
+				for(int k=0; k<WIDTH; k++){
+					imageData[i%SIZE_PATTERN][j][k]=0;
 					}		
 				}
 		}
 		i++;
-		if(i%24 == 0){//int mergedImagesint[1080][1920][3]
+		if(i%SIZE_PATTERN == 0){//int mergedImagesint[HEIGHT][WIDTH][3]
 			
 
 	
@@ -502,15 +502,15 @@ void defSequence(hid_device *handle,struct Patterns * pattern,int ***matrixes,in
 			char c111[3]={'1','1','1'};
 			//free(encoded);//DA CANCELLARE
 			
-			for(int j = (i/24-1)*24; j<i && j<size; j++)
-				definePatterns(handle, pattern, j, exposure[j],1,c111,trigger_in,dark_time,trigger_out,(i-1)/24,j-(i/24-1)*24);	
+			for(int j = (i/SIZE_PATTERN-1)*SIZE_PATTERN; j<i && j<size; j++)
+				definePatterns(handle, pattern, j, exposure[j],1,c111,trigger_in,dark_time,trigger_out,(i-1)/SIZE_PATTERN,j-(i/SIZE_PATTERN-1)*SIZE_PATTERN);	
 			
 			
 		}
 	}
 	
 	configureLut(handle,pattern,size,repetition);
-	setBmp(handle, pattern, (i-1)/24,szEncoded);	
+	setBmp(handle, pattern, (i-1)/SIZE_PATTERN,szEncoded);	
 	bmpLoad(handle,pattern,encoded,szEncoded);
 	free(encoded);
 	//encodedImagesList = encodedImagesList->next;
@@ -520,20 +520,20 @@ void defSequence(hid_device *handle,struct Patterns * pattern,int ***matrixes,in
 	//disallocare sizes e encodedImagesList
 
 	
-	for(int i = 0; i<24;i++){
-		for(int j = 0; j<1080; j++) free(imageData[i][j]);
+	for(int i = 0; i<SIZE_PATTERN;i++){
+		for(int j = 0; j<HEIGHT; j++) free(imageData[i][j]);
 	}
 
-	for(int i = 0; i<24;i++){
+	for(int i = 0; i<SIZE_PATTERN;i++){
 		free(imageData[i]);
 	}
 	free(imageData);
 	
-	for(int i = 0; i<1080; i++){
-		for(int j = 0; j<1920; j++) free(mergedImagesint[i][j]);
+	for(int i = 0; i<HEIGHT; i++){
+		for(int j = 0; j<WIDTH; j++) free(mergedImagesint[i][j]);
 	}
 
-	for(int i = 0; i<1080; i++){
+	for(int i = 0; i<HEIGHT; i++){
 		free(mergedImagesint[i]);
 	}
 	free(mergedImagesint);
@@ -657,13 +657,13 @@ void newEncodeSimpleRLE(int ***image, struct Node **bitString, int &byteCount){
 	push(bitString, 0x6c);
 	push(bitString, 0x64);
 	char*tmpChar;
-	tmpChar = convlen(1080,16);//inverto altezza con larghezza
+	tmpChar = convlen(HEIGHT,16);//inverto altezza con larghezza
 	int *res= bitsToBytes(tmpChar,16);
 	push(bitString, res[0]);//dovrebbero essere solo 2 byte
 	push(bitString, res[1]);
 	free(res);
 	free(tmpChar);
-	tmpChar=convlen(1920,16);
+	tmpChar=convlen(WIDTH,16);
 	res= bitsToBytes(tmpChar,16);
 	free(tmpChar);
 	push(bitString, res[0]);//dovrebbero essere solo 2 byte
@@ -682,11 +682,11 @@ void newEncodeSimpleRLE(int ***image, struct Node **bitString, int &byteCount){
 	push(bitString, 0x01);
 	for(int i = 0; i<21; i++) push(bitString, 0x00);
 	int n=0;
-	for(int i = 0; i<1920; i++){
+	for(int i = 0; i<WIDTH; i++){
 		//sono tutte uguali le colonne!!CREDO
-		for(int j = 0; j<1080/255; j+=1){
-			if(j*255<1080) push(bitString, 255);
-			else push(bitString,1080-(j-1)*255);
+		for(int j = 0; j<HEIGHT/255; j+=1){
+			if(j*255<HEIGHT) push(bitString, 255);
+			else push(bitString,HEIGHT-(j-1)*255);
 			push(bitString, image[0][i][0]);
 			push(bitString, image[0][i][1]);
 			push(bitString, image[0][i][2]);
@@ -720,13 +720,13 @@ void newEncode2(int ***image, struct Node **bitString, int &byteCount){
 	push(bitString, 0x6c);
 	push(bitString, 0x64);
 	char*tmpChar;
-	tmpChar = convlen(1920,16);
+	tmpChar = convlen(WIDTH,16);
 	int *res= bitsToBytes(tmpChar,16);
 	push(bitString, res[0]);//dovrebbero essere solo 2 byte
 	push(bitString, res[1]);
 	free(res);
 	free(tmpChar);
-	tmpChar=convlen(1080,16);
+	tmpChar=convlen(HEIGHT,16);
 	res= bitsToBytes(tmpChar,16);
 	free(tmpChar);
 	push(bitString, res[0]);//dovrebbero essere solo 2 byte
@@ -748,10 +748,10 @@ void newEncode2(int ***image, struct Node **bitString, int &byteCount){
 	int i = 0;
 	int j = 0;
 
-	while(i<1080){
-		while(j<1920){
+	while(i<HEIGHT){
+		while(j<WIDTH){
 			if(i>0 && isRowEqual(image[i][j],image[i-1][j])){
-				for(;j<1920&&isRowEqual(image[i][j],image[i-1][j]);j++,n++);
+				for(;j<WIDTH&&isRowEqual(image[i][j],image[i-1][j]);j++,n++);
 			push(bitString, 0x00);
 			push(bitString, 0x01);
 			byteCount+=2;
@@ -768,7 +768,7 @@ void newEncode2(int ***image, struct Node **bitString, int &byteCount){
 			}else{
 				if(j<1919 && isRowEqual(image[i][j],image[i][j+1])){
 					n++;
-					for(;j<1919 && isRowEqual(image[i][j],image[i][j+1]); n++, j++);
+					for(;j<WIDTH-1 && isRowEqual(image[i][j],image[i][j+1]); n++, j++);
 					if(n>=128){
 						push(bitString, (n & 0x7f) | 0x80);
 						push(bitString, n>>7);
@@ -784,10 +784,10 @@ void newEncode2(int ***image, struct Node **bitString, int &byteCount){
 					n=0;
 					j++;
 				}else{
-					if(j>1917 || 
+					if(j>WIDTH-3 || 
 						isRowEqual(image[i][j+1],image[i][j+2]) || 
 						(i >0 && isRowEqual(image[i][j+1],image[i-1][j+1])) || 
-						(i == 0 && isRowEqual(image[i][j+1],image[1079][j+1]))){
+						(i == 0 && isRowEqual(image[i][j+1],image[HEIGHT-1][j+1]))){
 
 						push(bitString, 0x01);
 						byteCount++;
@@ -801,7 +801,7 @@ void newEncode2(int ***image, struct Node **bitString, int &byteCount){
 						push(bitString, 0x00);
 						byteCount++;
 						struct Node *toAppend=NULL;
-						for(; !isRowEqual(image[i][j],image[i][j+1]) &&( (i >0 && isRowEqual(image[i][j],image[i-1][j])) || (i == 0 && isRowEqual(image[i][j],image[1079][j]))) ; n++, j++){//cambiato qui
+						for(; !isRowEqual(image[i][j],image[i][j+1]) &&( (i >0 && isRowEqual(image[i][j],image[i-1][j])) || (i == 0 && isRowEqual(image[i][j],image[HEIGHT-1][j]))) ; n++, j++){//cambiato qui
 							push(&toAppend, image[i][j][0]);
 							push(&toAppend, image[i][j][1]);
 							push(&toAppend, image[i][j][2]);
@@ -890,13 +890,13 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 	push(bitString, 0x6c);
 	push(bitString, 0x64);
 	char*tmpChar;
-	tmpChar = convlen(1920,16);
+	tmpChar = convlen(WIDTH,16);
 	int *res= bitsToBytes(tmpChar,16);
 	push(bitString, res[0]);//dovrebbero essere solo 2 byte
 	push(bitString, res[1]);
 	free(res);
 	free(tmpChar);
-	tmpChar=convlen(1080,16);
+	tmpChar=convlen(HEIGHT,16);
 	res= bitsToBytes(tmpChar,16);
 	free(tmpChar);
 	push(bitString, res[0]);//dovrebbero essere solo 2 byte
@@ -917,11 +917,11 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 	int n=0;
 	//fino a qui va bene
 	//da qui bho
-	for(int i = 0; i<1080; i++){
-		for(int j = 0; j<1920; j++){
+	for(int i = 0; i<HEIGHT; i++){
+		for(int j = 0; j<WIDTH; j++){
 			if(i>0){
 				if(isRowEqual(image[i][j],image[i-1][j])){
-					while(j<1920 &&isRowEqual(image[i][j],image[i-1][j])){
+					while(j<WIDTH &&isRowEqual(image[i][j],image[i-1][j])){
 						n++;
 						j++;}
 					push(bitString, 0x00);
@@ -938,7 +938,7 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 					}
 					n=0;
 				}else{//if(isRowEqual(image[i][j],image[i-1][j]))
-					if(j<1919){
+					if(j<WIDTH-1){
 						if(isRowEqual(image[i][j],image[i][j+1])){
 							n++;
 							while(j<1919 && isRowEqual(image[i][j],image[i][j+1])){
@@ -960,7 +960,7 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 							byteCount+=3;
 							//j++;<-----------------------
 							n=0;
-						}else if(j>1917 || isRowEqual(image[i][j+1],image[i][j+2]) || isRowEqual(image[i][j+1],image[i-1][j+1])){
+						}else if(j>WIDTH-3 || isRowEqual(image[i][j+1],image[i][j+2]) || isRowEqual(image[i][j+1],image[i-1][j+1])){
 							push(bitString, 0x01);
 							byteCount++;
 							push(bitString, image[i][j][0]);
@@ -974,7 +974,7 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 							
 							byteCount++;
 							struct Node *toAppend=NULL;
-							while(j<1919 && !isRowEqual(image[i][j],image[i][j+1])){
+							while(j<WIDTH-1 && !isRowEqual(image[i][j],image[i][j+1])){
 								n++;//tutti quelli che sono diversi
 								push(&toAppend, image[i][j][0]);
 								push(&toAppend, image[i][j][1]);
@@ -1020,12 +1020,12 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 					}
 				}//else di if(isRowEqual(image[i][j],image[i-1][j]))
 			}else{//if(i>0) quindi i == 0
-				if(j<1919){
+				if(j<WIDTH-1){
 					printf("\n initial  j= %d \n",j);
 					if(isRowEqual(image[i][j],image[i][j+1])){
 						
 						n++;
-						while(j<1919 && isRowEqual(image[i][j],image[i][j+1])){
+						while(j<WIDTH-1 && isRowEqual(image[i][j],image[i][j+1])){
 							//printf("\n j= %d  n = %d\n",j, n);
 							
 							n++;
@@ -1047,7 +1047,7 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 						byteCount+=3;
 						//j++;<--------------------
 						n=0;
-					}else if(j>1917 || isRowEqual(image[i][j+1],image[i][j+2]) /*|| isRowEqual(image[i][j+1],image[i-1][j+1])*/){						push(bitString, 0x01);
+					}else if(j>WIDTH-3 || isRowEqual(image[i][j+1],image[i][j+2]) /*|| isRowEqual(image[i][j+1],image[i-1][j+1])*/){						push(bitString, 0x01);
 						byteCount++;
 						push(bitString, image[i][j][0]);
 						push(bitString, image[i][j][1]);
@@ -1059,7 +1059,7 @@ void newEncode(int ***image, struct Node **bitString, int &byteCount){
 						push(bitString, 0x00);
 						byteCount++;
 						struct Node *toAppend=NULL;
-						while(j<1919 && !isRowEqual(image[i][j],image[i][j+1])){
+						while(j<WIDTH-1 && !isRowEqual(image[i][j],image[i][j+1])){
 							n++;//aggiungo tutti quelli diversi
 							push(&toAppend, image[i][j][0]);
 							push(&toAppend, image[i][j][1]);

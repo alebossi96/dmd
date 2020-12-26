@@ -1,7 +1,8 @@
 #ifndef DMD_H
-#define DEBUG false
+#define DEBUG true
 #define WIDTH 1920
 #define HEIGHT 1080
+#define SIZE_PATTERN 24
 #include<hidapi.h>
 #include<stdlib.h>
 #include<stdio.h>

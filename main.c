@@ -23,7 +23,7 @@ int main(){
 	struct Patterns * pattern;
 	pattern = (Patterns *)malloc(nSet*sizeof(Patterns));
 	for (int q = 0; q < nSet; q++){
-		int nB = min(24, nMeas-q*24);
+		int nB = min(SIZE_PATTERN, nMeas-q*SIZE_PATTERN);
 		allocatePattern(&(pattern[q]),nB);
 		//allocate memory
 		exposure = (int *) malloc(nB * sizeof(int));//deve essere lunga solo nEl
@@ -44,21 +44,21 @@ int main(){
 			}
 		}
 		*/
-		int nEl;
-		if(nMeas>(q+1)*24)
-			nEl = 24;
+		int nEl;//ma è la stessa roba di nb <----
+		if(nMeas>(q+1)*SIZE_PATTERN)
+			nEl = SIZE_PATTERN;
 		else
-			nEl = nMeas-q*24;
+			nEl = nMeas-q*SIZE_PATTERN;
 		/*
-		for (int k = q*24; k<nMeas && k<(q+1)*24; k++){
+		for (int k = q*SIZE_PATTERN; k<nMeas && k<(q+1)*SIZE_PATTERN; k++){
 			for(int i = 0; i<HEIGHT; i++){
 				for(int j = 0; j<WIDTH; j++){
-					if(abs(j -5*k)<100 ) basis[k-q*24][i][j]=1;
-					else basis[k-q*24][i][j]=0;
+					if(abs(j -5*k)<100 ) basis[k-q*SIZE_PATTERN][i][j]=1;
+					else basis[k-q*SIZE_PATTERN][i][j]=0;
 				}	
 			}
 		}*/
-		getBasis(nBasis,q*24,q*24+nEl, basis);
+		getBasis(nBasis,q*SIZE_PATTERN,q*SIZE_PATTERN+nEl, basis);
 		//readBMP("test.bmp",&basis[0]);
 		printf("da qui inizia defSequence\n");
 		//fill pattern		
@@ -69,14 +69,14 @@ int main(){
 			printf("\n");
 		}
 		pattern[q].nEl =nEl;
-		defSequence(handle,&(pattern[q]),basis,exposure,trigger_in,dark_time,trigger_out, nEl,nEl);
+		defSequence(handle,&(pattern[q]),basis,exposure,trigger_in,dark_time,trigger_out, nEl,nEl);//il penultimo o 1 o nEl
 		startSequence(handle);
 		//sleep(nEl);
 		//sleep(3);
 		
 		//free memory
 		for(int i = 0; i<nB; i++){
-			for(int j = 0; j<1080; j++)free(basis[i][j]);
+			for(int j = 0; j<HEIGHT; j++)free(basis[i][j]);
 			free(basis[i]);
 		}
 
