@@ -1,4 +1,5 @@
 #ifndef DMD_H
+#define DMD_H
 #define DEBUG true
 #define WIDTH 1920
 #define HEIGHT 1080
@@ -9,7 +10,8 @@
 #include<unistd.h>
 #include<math.h>
 #include <stdbool.h> 
-#include <string.h> 
+#include <string.h>
+#include"ordering.h" 
 int command(hid_device *handle, const char &mode, const char &sequencebyte, const char &com2, const char &com1, const char *data, const int &sizeData);
 int command(hid_device *handle, const char &mode, const char &sequencebyte, const char &com2, const char &com1, const int *data, const int &sizeData);
 void commandPattern(hid_device *handle,struct Patterns * pattern, const int &szPattern);
@@ -66,11 +68,6 @@ void bmpLoad(hid_device *handle,struct Patterns * pattern, const int *image, con
 void startSequence(hid_device *handle);
 void hadamard(int **matrix, const int &nBasis);
 void getBasis(const int &nBasis, const int &fromBasis,const int &toBasis, int ***Basis);
-void cake_cutting(const int &nBasis, int **matrix);
-int numberOfCakes(int ** matrix,const int &rows,const int &cols);
-int isSafe(int **M, int row, int col, bool **visited, int ROW, int COL);
-void DFS(int **M, int row, int col, bool **visited, int ROW, int COL);
-int countIslands(int **M,int ROW, int COL);
 void readBMP(char* filename, int *** image);
 #endif
 
