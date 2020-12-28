@@ -9,6 +9,10 @@
 #include<math.h>
 #include <stdbool.h> 
 #include <string.h>
+#ifdef _WIN32
+	#include<windows.h>
+#endif
+	
 #include"getbasis/getbasis.h"
 int command(hid_device *handle, const char &mode, const char &sequencebyte, const char &com2, const char &com1, const char *data, const int &sizeData);
 int command(hid_device *handle, const char &mode, const char &sequencebyte, const char &com2, const char &com1, const int *data, const int &sizeData);
