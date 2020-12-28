@@ -1,8 +1,6 @@
 #ifndef DMD_H
 #define DMD_H
 #define DEBUG true
-#define WIDTH 1920
-#define HEIGHT 1080
 #define SIZE_PATTERN 24
 #include<hidapi.h>
 #include<stdlib.h>
@@ -11,7 +9,7 @@
 #include<math.h>
 #include <stdbool.h> 
 #include <string.h>
-#include"ordering.h" 
+#include"getbasis/getbasis.h"
 int command(hid_device *handle, const char &mode, const char &sequencebyte, const char &com2, const char &com1, const char *data, const int &sizeData);
 int command(hid_device *handle, const char &mode, const char &sequencebyte, const char &com2, const char &com1, const int *data, const int &sizeData);
 void commandPattern(hid_device *handle,struct Patterns * pattern, const int &szPattern);
@@ -66,8 +64,7 @@ void definePatterns(hid_device *handle,struct Patterns * pattern,const int &inde
 void setBmp(hid_device *handle,struct Patterns * pattern,const int  &index,const int &size);
 void bmpLoad(hid_device *handle,struct Patterns * pattern, const int *image, const int &size);
 void startSequence(hid_device *handle);
-void hadamard(int **matrix, const int &nBasis);
-void getBasis(const int &nBasis, const int &fromBasis,const int &toBasis, int ***Basis);
+
 void readBMP(char* filename, int *** image);
 #endif
 

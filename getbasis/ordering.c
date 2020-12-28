@@ -1,5 +1,39 @@
 //fonte:https://www.geeksforgeeks.org/find-number-of-islands/
 #include "ordering.h"
+int pow2_i(const int &exp){
+	int res=1;
+	for(int i =0; i<exp; i++)
+		res*=2;
+	return res;
+}
+int pow_i(const int &b,const int &exp){
+	int res=1;
+	for(int i=0; i<exp; i++)
+		res*=b;
+	return res;
+}
+void hadamard(int **matrix, const int &nBasis){
+	int logN = log(nBasis)/log(2);
+
+	if( nBasis%pow_i(2,logN) != 0)
+		return;
+
+	matrix[0][0] = 1;
+	for(int i = 0; i< logN; i++){
+		int size = pow2_i(i);
+		for(int j =0; j<size; j++){
+			for(int k = 0; k<size; k++){
+				//matrix[j][j] = matrix[j][j]
+				matrix [j+size][k+size] = -matrix[j][k];
+				matrix [j][k+size] = matrix[j][k];
+				matrix [j+size][k] = matrix[j][k];
+			}
+		}
+	}
+
+
+
+}
 
 int isSafe(int **M, int row, int col, bool **visited, int ROW, int COL) 
 { 
