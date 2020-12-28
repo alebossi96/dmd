@@ -44,9 +44,7 @@ struct Patterns{
 	int packNum;
 	int nEl;
 	int *bitsPackNum;
-	//to link
-	struct Patterns *next;
-	struct Patterns *previous;
+	int *exposure;
 
 };
 int celing(const int &a, const int &b);
@@ -57,9 +55,7 @@ void allocatePattern(struct Patterns *p, int nB);
 int isRowEqual(const int *a, const int *b);
 void push(struct Node **head, int data);
 void push(struct List **head, int* data);
-void newEncode(int ***image, struct Node **n, int &bytecount);
 void newEncode2(int ***image, struct Node **n, int &bytecount);
-void newEncodeSimpleRLE(int ***image, struct Node **n, int &bytecount);
 void definePatterns(hid_device *handle,struct Patterns * pattern,const int &index,const int &exposure,const int &bitdepth, const char *color,const int &triggerIn,const int &darkTime,const int &triggerout,const int &patInd,const int &bitpos);
 void setBmp(hid_device *handle,struct Patterns * pattern,const int  &index,const int &size);
 void bmpLoad(hid_device *handle,struct Patterns * pattern, const int *image, const int &size);

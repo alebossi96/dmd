@@ -47,7 +47,7 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 	free(tmpChar);
 	buffer[5]= com2;
 	buffer[6]=com1;
-	long unsigned int tot = 7;
+	long int tot = 7;
 	int j = 0;
 	if((tot+sizeData)<SIZE){
 		for(int i = 0;i<sizeData;i++ ) buffer[tot+i] =data[i];
@@ -147,8 +147,11 @@ void commandPattern(hid_device *handle,struct Patterns * pattern, const int &szP
 	for(int i = 0; i<szPattern; i++){
 		//stopSequence(handle);ma qui
 		//scrivo definePattern
-		for(int j = 0; j<pattern[i].nEl; j++)
+		int totExposure = 0;
+		for(int j = 0; j<pattern[i].nEl; j++){
+			totExposure +=pattern[i].exposure[j];
 			command(handle,'w',0x00,0x1a,0x34,pattern[i].defPatterns[j],12);
+			}
 		//configureLut
 		command(handle,'w',0x00,0x1a,0x31,pattern[i].configureLut,6);
 		//setBmp
@@ -159,8 +162,8 @@ void commandPattern(hid_device *handle,struct Patterns * pattern, const int &szP
 		}
 		stopSequence(handle);//forse non va qui 
 		startSequence(handle);
-		//sleep(pattern[i].nEl);//aspetta che abbia finito
-		sleep(1);
+		sleep(totExposure/1e6);//aspetta che abbia finito
+					//deve essere >0.01!
 	}
 
 }
@@ -258,7 +261,7 @@ int * bitsToBytes(const int *a,const int &size){
 	int * bytes;
 	bytes = (int*)malloc(size_bytes * sizeof(int));
 	int j=size-1;
-	for(size_t i = 0; i<size_bytes; i++){
+	for(int i = 0; i<size_bytes; i++){
 		bytes[i]=0;
 		int cont = 0;
 		while(j>-1 && cont<8){
@@ -270,7 +273,8 @@ int * bitsToBytes(const int *a,const int &size){
 	return bytes;		
 }
 void changeMode(hid_device *handle, int mode_){
-	char mode[1]={mode_};
+	char mode[1];
+	mode[0]=mode_;
 	command(handle, 'w', 0x00, 0x1a, 0x1b, mode,1);
 	
 }
@@ -413,7 +417,6 @@ void definePatterns(hid_device *handle,struct Patterns * pattern, const int &ind
 void defSequence(hid_device *handle,struct Patterns * pattern,int ***matrixes,int *exposure,int trigger_in, int dark_time, int trigger_out, int repetition, const int &size){
 	int *encoded;
 	stopSequence(handle);
-	struct Node * sizes=NULL;
 	int i = 0;
 	int ***imageData;
 	int szEncoded;
@@ -501,10 +504,11 @@ void defSequence(hid_device *handle,struct Patterns * pattern,int ***matrixes,in
 			//sizeList++;
 			char c111[3]={'1','1','1'};
 			//free(encoded);//DA CANCELLARE
-			
-			for(int j = (i/SIZE_PATTERN-1)*SIZE_PATTERN; j<i && j<size; j++)
+			pattern->exposure=(int*)malloc(size*sizeof(int));
+			for(int j = (i/SIZE_PATTERN-1)*SIZE_PATTERN; j<i && j<size; j++){
+				pattern->exposure[j]=exposure[j];
 				definePatterns(handle, pattern, j, exposure[j],1,c111,trigger_in,dark_time,trigger_out,(i-1)/SIZE_PATTERN,j-(i/SIZE_PATTERN-1)*SIZE_PATTERN);	
-			
+			}
 			
 		}
 	}
@@ -607,7 +611,6 @@ void bmpLoad(hid_device *handle,struct Patterns * pattern,const int *image, cons
 	
 	printf("\n");
 	int packNum= size/504 +1;
-	int cont = 0;
 	pattern->bmpLoad=(int **)malloc(packNum*sizeof(int*));
 	pattern->packNum=packNum;
 	pattern->bitsPackNum =(int *)malloc(packNum*sizeof(int));
@@ -648,69 +651,6 @@ void bmpLoad(hid_device *handle,struct Patterns * pattern,const int *image, cons
 	}
 	
 
-}
-void newEncodeSimpleRLE(int ***image, struct Node **bitString, int &byteCount){
-	printf("image[0][0][0]=%d\n", image[0][0][0]);
-	byteCount=48;
-	push(bitString, 0x53);
-	push(bitString, 0x70);
-	push(bitString, 0x6c);
-	push(bitString, 0x64);
-	char*tmpChar;
-	tmpChar = convlen(HEIGHT,16);//inverto altezza con larghezza
-	int *res= bitsToBytes(tmpChar,16);
-	push(bitString, res[0]);//dovrebbero essere solo 2 byte
-	push(bitString, res[1]);
-	free(res);
-	free(tmpChar);
-	tmpChar=convlen(WIDTH,16);
-	res= bitsToBytes(tmpChar,16);
-	free(tmpChar);
-	push(bitString, res[0]);//dovrebbero essere solo 2 byte
-	push(bitString, res[1]);
-	free(res);
-	//tmpChar = convlen(0,32);
-	//res=bitsToBytes(tmpChar,32);
-	//free(tmpChar);
-	
-	for(int i = 0; i<4; i++) push(bitString, 0x00);
-	struct Node *link = *bitString;
-	//free(res);
-	for(int i = 0; i<8; i++) push(bitString, 0xff);
-	for(int i = 0; i<5; i++) push(bitString, 0x00);
-	push(bitString, 0x01);//RLE compression
-	push(bitString, 0x01);
-	for(int i = 0; i<21; i++) push(bitString, 0x00);
-	int n=0;
-	for(int i = 0; i<WIDTH; i++){
-		//sono tutte uguali le colonne!!CREDO
-		for(int j = 0; j<HEIGHT/255; j+=1){
-			if(j*255<HEIGHT) push(bitString, 255);
-			else push(bitString,HEIGHT-(j-1)*255);
-			push(bitString, image[0][i][0]);
-			push(bitString, image[0][i][1]);
-			push(bitString, image[0][i][2]);
-			byteCount+=4;
-		}
-		push(bitString, 0x00);
-		push(bitString, 0x00);
-		byteCount+=2;
-	}
-	push(bitString, 0x00);
-	push(bitString, 0x01);
-	byteCount+=2;
-	int size = byteCount;
-	int *total;
-	
-	tmpChar = convlen(size,32);
-	total = bitsToBytes(tmpChar,32);
-	
-	for(int q = 0; q<4; q++){//per riempiere i primi 4 
-		link->data=total[3-q];
-		link = link->next;
-	}
-	free(tmpChar);
-	free(total);
 }
 
 void newEncode2(int ***image, struct Node **bitString, int &byteCount){
@@ -882,259 +822,6 @@ void newEncode2(int ***image, struct Node **bitString, int &byteCount){
 
 
 
-
-void newEncode(int ***image, struct Node **bitString, int &byteCount){
-	byteCount=48;
-	push(bitString, 0x53);
-	push(bitString, 0x70);
-	push(bitString, 0x6c);
-	push(bitString, 0x64);
-	char*tmpChar;
-	tmpChar = convlen(WIDTH,16);
-	int *res= bitsToBytes(tmpChar,16);
-	push(bitString, res[0]);//dovrebbero essere solo 2 byte
-	push(bitString, res[1]);
-	free(res);
-	free(tmpChar);
-	tmpChar=convlen(HEIGHT,16);
-	res= bitsToBytes(tmpChar,16);
-	free(tmpChar);
-	push(bitString, res[0]);//dovrebbero essere solo 2 byte
-	push(bitString, res[1]);
-	free(res);
-	//tmpChar = convlen(0,32);
-	//res=bitsToBytes(tmpChar,32);
-	//free(tmpChar);
-	
-	for(int i = 0; i<4; i++) push(bitString, 0x00);
-	struct Node *link = *bitString;
-	//free(res);
-	for(int i = 0; i<8; i++) push(bitString, 0xff);
-	for(int i = 0; i<5; i++) push(bitString, 0x00);
-	push(bitString, 0x02);
-	push(bitString, 0x01);
-	for(int i = 0; i<21; i++) push(bitString, 0x00);
-	int n=0;
-	//fino a qui va bene
-	//da qui bho
-	for(int i = 0; i<HEIGHT; i++){
-		for(int j = 0; j<WIDTH; j++){
-			if(i>0){
-				if(isRowEqual(image[i][j],image[i-1][j])){
-					while(j<WIDTH &&isRowEqual(image[i][j],image[i-1][j])){
-						n++;
-						j++;}
-					push(bitString, 0x00);
-					push(bitString, 0x01);				
-					byteCount+=2;
-					if(n>=128){
-
-						push(bitString, (n & 0x7f) | 0x80);
-						push(bitString, n>>7);
-						byteCount+=2;
-					}else{
-						push(bitString, n);					
-						byteCount++;
-					}
-					n=0;
-				}else{//if(isRowEqual(image[i][j],image[i-1][j]))
-					if(j<WIDTH-1){
-						if(isRowEqual(image[i][j],image[i][j+1])){
-							n++;
-							while(j<1919 && isRowEqual(image[i][j],image[i][j+1])){
-								n++;
-								j++;							
-							}
-							if(n>=128){
-
-								push(bitString, (n & 0x7f) | 0x80);
-								push(bitString, n>>7);
-								byteCount+=2;
-							}else{
-								push(bitString, n);					
-								byteCount++;
-							}
-							push(bitString, image[i][j][0]);
-							push(bitString, image[i][j][1]);
-							push(bitString, image[i][j][2]);
-							byteCount+=3;
-							//j++;<-----------------------
-							n=0;
-						}else if(j>WIDTH-3 || isRowEqual(image[i][j+1],image[i][j+2]) || isRowEqual(image[i][j+1],image[i-1][j+1])){
-							push(bitString, 0x01);
-							byteCount++;
-							push(bitString, image[i][j][0]);
-							push(bitString, image[i][j][1]);
-							push(bitString, image[i][j][2]);
-							byteCount+=3;
-							//j++;<----------------
-							n=0;					
-						}else{//se j<1919e le condizioni isRowEqual non si verificano
-							push(bitString, 0x00);
-							
-							byteCount++;
-							struct Node *toAppend=NULL;
-							while(j<WIDTH-1 && !isRowEqual(image[i][j],image[i][j+1])){
-								n++;//tutti quelli che sono diversi
-								push(&toAppend, image[i][j][0]);
-								push(&toAppend, image[i][j][1]);
-								push(&toAppend, image[i][j][2]);
-								j++;
-							}
-							if(n>=128){
-
-								push(bitString, (n & 0x7f) | 0x80);
-								push(bitString, n>>7);
-								byteCount+=2;
-							}else{
-								push(bitString, n);					
-								byteCount++;
-							}
-							//aggiungere le cose contenute in toAppend
-							//problema==sono aggiunti al contrario
-							int *tmp;
-							tmp =(int*)malloc(n*sizeof(n));
-							struct Node *next;
-							for(int k = 0; toAppend!=NULL; k++){
-								tmp[k]=toAppend->data;
-								next = toAppend->next;
-								free(toAppend);
-								toAppend = next;
-							}
-							for(int k =n; k>0; k++)
-								push(bitString, tmp[k-1]);
-							byteCount+=n;
-							free(tmp);
-							n=0;
-						}
-					
-					}else{ //if(j==1919)
-						push(bitString, 0x01);
-						byteCount++;
-						push(bitString, image[i][j][0]);
-						push(bitString, image[i][j][1]);
-						push(bitString, image[i][j][2]);
-						byteCount+=3;
-						j++;
-						n=0;
-					}
-				}//else di if(isRowEqual(image[i][j],image[i-1][j]))
-			}else{//if(i>0) quindi i == 0
-				if(j<WIDTH-1){
-					printf("\n initial  j= %d \n",j);
-					if(isRowEqual(image[i][j],image[i][j+1])){
-						
-						n++;
-						while(j<WIDTH-1 && isRowEqual(image[i][j],image[i][j+1])){
-							//printf("\n j= %d  n = %d\n",j, n);
-							
-							n++;
-							j++;							
-						}
-						if(n>=128){
-							//printf("\n j= %d  n = %d\n",j, n);
-							//getchar();
-							push(bitString, (n & 0x7f) | 0x80);
-							push(bitString, n>>7);
-							byteCount+=2;
-						}else{
-							push(bitString, n);					
-							byteCount++;
-						}
-						push(bitString, image[i][j][0]);
-						push(bitString, image[i][j][1]);
-						push(bitString, image[i][j][2]);
-						byteCount+=3;
-						//j++;<--------------------
-						n=0;
-					}else if(j>WIDTH-3 || isRowEqual(image[i][j+1],image[i][j+2]) /*|| isRowEqual(image[i][j+1],image[i-1][j+1])*/){						push(bitString, 0x01);
-						byteCount++;
-						push(bitString, image[i][j][0]);
-						push(bitString, image[i][j][1]);
-						push(bitString, image[i][j][2]);
-						byteCount+=3;
-						//j++;<------------------
-						n=0;					
-					}else{//se j<1919e le condizioni isRowEqual non si verificano
-						push(bitString, 0x00);
-						byteCount++;
-						struct Node *toAppend=NULL;
-						while(j<WIDTH-1 && !isRowEqual(image[i][j],image[i][j+1])){
-							n++;//aggiungo tutti quelli diversi
-							push(&toAppend, image[i][j][0]);
-							push(&toAppend, image[i][j][1]);
-							push(&toAppend, image[i][j][2]);
-							j++;
-						}
-						if(n>=128){
-
-							push(bitString, (n & 0x7f) | 0x80);
-							push(bitString, n>>7);
-							byteCount+=2;
-						}else{
-							push(bitString, n);					
-							byteCount++;
-						}
-						//aggiungere le cose contenute in toAppend
-						//problema==sono aggiunti al contrario
-						int *tmp;
-						tmp =(int*)malloc(n*sizeof(n));
-						struct Node *next;
-						for(int k = 0; toAppend!=NULL; k++){
-							tmp[k]=toAppend->data;
-							next = toAppend->next;
-							free(toAppend);
-							toAppend = next;
-						}
-						for(int k =n; k>0; k--)
-							push(bitString, tmp[k-1]);
-						byteCount+=n;
-						free(tmp);
-						n=0;
-					}
-					
-				}else{ //if(j==1919)
-					push(bitString, 0x01);
-					byteCount++;
-					push(bitString, image[i][j][0]);
-					push(bitString, image[i][j][1]);
-					push(bitString, image[i][j][2]);
-					byteCount+=3;
-					//j++;<---------------
-					n=0;
-				}
-
-
-			}
-		}//while(j<SIZE_H)
-		push(bitString, 0x00);
-		push(bitString, 0x00);
-		byteCount+=2;
-	
-	}//while(i<SIZE_W)	
-	push(bitString, 0x00);
-	push(bitString, 0x01);
-	push(bitString, 0x00);
-	byteCount+=3;	
-	while(byteCount%4!=0){
-		
-		push(bitString, 0x00);
-		byteCount++;	
-	}
-	int size = byteCount;
-	int *total;
-	
-	tmpChar = convlen(size,32);
-	total = bitsToBytes(tmpChar,32);
-	
-	for(int q = 0; q<4; q++){//per riempiere i primi 4 
-		link->data=total[3-q];
-		link = link->next;
-	}
-	free(tmpChar);
-	free(total);
-
-}//function
 
 
 

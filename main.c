@@ -4,8 +4,7 @@ int main(){
 	int nMeas =24;
 	int exp = 1000000;
 	int nSet = celing(nMeas,24);
-	int res;
-	res= hid_init();
+	hid_init();
 	hid_device *handle = hid_open(0x0451, 0xc900, NULL);
 	sleep(2);
 	if (!handle) {
@@ -104,7 +103,7 @@ int main(){
 	reset(handle);//bho elimina porcate?
 	//if(!DEBUG) getchar();
 	hid_close(handle);
-	res=hid_exit();
+	hid_exit();
 	return 0;
 }
 
