@@ -1,7 +1,7 @@
 #include"dmd.h"
 int main(){
-	int nBasis =128;
-	int nMeas =24;
+	int nBasis =512;
+	int nMeas = 100;
 	int exp = 1000000;
 	int nSet = celing(nMeas,24);
 	hid_init();

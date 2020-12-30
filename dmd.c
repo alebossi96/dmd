@@ -874,7 +874,8 @@ void readBMP(char* filename, int *** image)
     {
             // prendo solo da un canale.(se è rgb mi interessa solo 1)
 	    int idx = i/3;
-	    (*image)[idx/width][idx%width]=data[i];
+	    if(data[i]>127) (*image)[idx/width][idx%width]=1;
+	    else (*image)[idx/width][idx%width]=0;
     }
 
 }
