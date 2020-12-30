@@ -17,13 +17,7 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 
 
 int command(hid_device *handle, const char &mode, const char &sequencebyte, const char &com1, const char &com2, const char *data, const int &sizeData){
-	FILE * pData = fopen("cData.txt", "a");	
-	for(int k = 0; k<sizeData;k++){ 
-		
-		fprintf(pData, "%d\n", data[k]);
-	}
-	fclose(pData);
-	FILE * pFile = fopen("cCommand.txt", "a");
+	if(DEBUG) FILE * pFile = fopen("cCommand.txt", "a");
 	unsigned char buffer[SIZE];
 	char flagstring[8];	
 	if(mode == 'r')
@@ -93,8 +87,7 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 			j++;
 			i++;
 			if(i%SIZE==0){
-				
-				printf("\n\n");
+
 				if(!DEBUG){
 				int res = hid_write(handle, buffer,SIZE);
 				
@@ -310,11 +303,6 @@ void configureLut(hid_device *handle,struct Patterns * pattern,int size, int rep
 	int *tmp =  bitsToBytes(string,48);
 	for(int i = 0; i<6; i++) pattern->configureLut[i]= tmp[i];
 	command(handle, 'w',0x00,0x1a,0x31,tmp,6);
-			FILE * pFile = fopen("cConfigureLut.txt", "a");
-	for(int i = 0; i<6; i++)
-		fprintf(pFile, "%d\n", tmp[i]);
-
-	fclose(pFile);
 	
 	free(tmp);
 }
@@ -402,11 +390,6 @@ void definePatterns(hid_device *handle,struct Patterns * pattern, const int &ind
 	for(int i = 0; i<12; i++)
 		pattern->defPatterns[bitPos][i] = payload[i];
 	command(handle, 'w',0x00,0x1a,0x34,payload,12);
-		FILE * pFile = fopen("cdefinePatterns.txt", "a");
-	for(int i = 0; i<12; i++)
-		fprintf(pFile, "%d\n", payload[i]);
-
-	fclose(pFile);
 	free(tmp);
 	free(bitPos_);
 	free(patInd_);
@@ -494,10 +477,7 @@ void defSequence(hid_device *handle,struct Patterns * pattern,int ***matrixes,in
 				
 				encoded[bytecount-j-1]=tmp[j];
 			}
-				
-			printf("\n\n\n bytecount = %d \n\n\n", bytecount);
 
-			
 			free(tmp);
 			//push(&encodedImagesList,encoded);
 			//push(&sizes,bytecount);
@@ -581,8 +561,6 @@ void setBmp(hid_device *handle,struct Patterns * pattern,const int  &index,const
 	int payload[6];
 	char index_[16];
 	char *tmp;
-	printf("index =%d \n",index);
-	//getchar();
 	tmp = convlen(index,5);
 	for(int i =0; i<11; i++) index_[i] = '0';
 	for(int i = 0; i<5; i++) index_[i+11] = tmp[i];
@@ -600,27 +578,19 @@ void setBmp(hid_device *handle,struct Patterns * pattern,const int  &index,const
 	for(int i = 0; i<4; i++) payload[i+2]= total[i];
 	free(total);
 	for(int i = 0; i<6; i++) pattern->setBmp[i]=payload[i];
-	FILE * pFile = fopen("cSetBmp.txt", "a");
-	for(int i = 0; i<6; i++)
-		fprintf(pFile, "%d\n", payload[i]);
-
-	fclose(pFile);
 	command(handle, 'w',0x00,0x1a,0x2a,payload,6);
 }
 void bmpLoad(hid_device *handle,struct Patterns * pattern,const int *image, const int &size){
-	
-	printf("\n");
+
 	int packNum= size/504 +1;
 	pattern->bmpLoad=(int **)malloc(packNum*sizeof(int*));
 	pattern->packNum=packNum;
 	pattern->bitsPackNum =(int *)malloc(packNum*sizeof(int));
 	for(int i = 0; i<packNum; i++){
-		printf("\n%d\n", i);
 		if(i%100 == 0) printf("%d di %d\n", i, packNum);
 		int *payload;
 		int bits;
 		char *leng;
-		printf("size = %d\n", size);
 		if(i<packNum-1){
 			leng = convlen(504,16);
 			bits =504;	
