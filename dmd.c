@@ -1,6 +1,13 @@
 #define SIZE 65
 
 #include"dmd.h"
+
+
+/*
+command is the function that does the comunication with the dmd, every other function that wants to comunicate with the dmd need to use this function
+There are two command function implemented because one could want to pass a vector of int and char
+*/
+
 int command(hid_device *handle, const char &mode, const char &sequencebyte, const char &com1, const char &com2, const int *data, const int &sizeData){
 	char *tmp;
 	tmp = (char *)malloc(sizeData*sizeof(char));
@@ -135,11 +142,18 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 	return 0;	
 }
 
+
+/*
+We want to use command pattern if we want a fast comunication with the dmd.
+all the data is processed before the execution.
+This function only perform the upload to the dmd(via the command function)
+*/
+
 void commandPattern(hid_device *handle,struct Patterns * pattern, const int &szPattern){
-	//solo quel che succede in defSequence devo comandare	
+	//I only need to pass the data that we got from defSequence
+	//all the rest must be processed during initialization or garbage collection
 	for(int i = 0; i<szPattern; i++){
-		//stopSequence(handle);ma qui
-		//scrivo definePattern
+		//stopSequence(handle); 
 		int totExposure = 0;
 		for(int j = 0; j<pattern[i].nEl; j++){
 			totExposure +=pattern[i].exposure[j];
@@ -153,17 +167,17 @@ void commandPattern(hid_device *handle,struct Patterns * pattern, const int &szP
 		for(int j = 0; j<pattern[i].packNum; j++){
 			command(handle,'w',0x11,0x1a,0x2b,pattern[i].bmpLoad[j],pattern[i].bitsPackNum[j]);
 		}
-		stopSequence(handle);//forse non va qui 
+		stopSequence(handle);/
 		startSequence(handle);
-		sleep(totExposure/1e6);//aspetta che abbia finito
-					//deve essere >0.01!
+		sleep(totExposure/1e6);//need to wait for the pattern to finish
+					//sleep must be in input a number >0.001
 	}
 
 }
 void checkForErrors(hid_device *handle){
+	/* it does not work. Probably not implemented correctly*/
 	if( hid_error(handle)==NULL)
 		printf("errori");
-		//cosa intende per string nella documentazione
 	unsigned char message[1] = {1};
 	int res = hid_read(handle, message,1);
 	char * flag = convlen(res, 8);
@@ -226,6 +240,9 @@ char * convlen(int a, int l){//a<2^l
 	}
 	return res;
 }
+/* returns a vector of int and we start from the bits and we get the byte corresponding
+*/
+
 int * bitsToBytes(const char *a,const int &size){
 	int *bits_int;
 	bits_int = (int*)malloc(size * sizeof(int));
@@ -285,7 +302,7 @@ void reset(hid_device *handle){
 }
 
 void configureLut(hid_device *handle,struct Patterns * pattern,int size, int rep){
-	char *im =convlen(size,11); //ho size in bit lunghezza 11
+	char *im =convlen(size,11); 
 	char *r=convlen(rep,32);
 	char string[48];
 	for(int i=0; i<48; i++){
@@ -312,6 +329,11 @@ int pow_i(const int &b,const int &exp){
 		res*=b;
 	return res;
 }
+
+/*to process the image we need to compress it to a 3D 8bit array such that we can encode in each bit a pixel of an image,
+we can store here 24 images.
+It is the reason why I go on a step of 24 for uploading the images
+*/
 void mergeImages(int ***images, int ***res){
 	for(int i=0; i<SIZE_PATTERN; i++){
 		for(int j=0; j<HEIGHT; j++){
@@ -330,6 +352,12 @@ void mergeImages(int ***images, int ***res){
 	}
 
 }
+
+/* 
+It defines the characteristic of a single pattern. most importantly its duration 
+
+*/
+
 void definePatterns(hid_device *handle,struct Patterns * pattern, const int &index,const int &exposure,const int &bitdepth, const char *color,const int &triggerIn,const int &darkTime,const int &triggerOut,const int &patInd,const int &bitPos){
 	char payload[12];
 	char * tmpChar= NULL;
@@ -396,6 +424,11 @@ void definePatterns(hid_device *handle,struct Patterns * pattern, const int &ind
 	
 	
 }
+
+/*
+all the information useful for showing the patterns is produced here.
+it requires only what pattern, the exposure, and some other less important param
+*/
 
 void defSequence(hid_device *handle,struct Patterns * pattern,int ***matrixes,int *exposure,int trigger_in, int dark_time, int trigger_out, int repetition, const int &size){
 	int *encoded;
@@ -580,6 +613,12 @@ void setBmp(hid_device *handle,struct Patterns * pattern,const int  &index,const
 	for(int i = 0; i<6; i++) pattern->setBmp[i]=payload[i];
 	command(handle, 'w',0x00,0x1a,0x2a,payload,6);
 }
+
+
+/*
+	load (or load to Patterns) the encoded image to the dmd
+
+*/
 void bmpLoad(hid_device *handle,struct Patterns * pattern,const int *image, const int &size){
 
 	int packNum= size/504 +1;
@@ -602,7 +641,6 @@ void bmpLoad(hid_device *handle,struct Patterns * pattern,const int *image, cons
 		pattern->bitsPackNum[i] = bits+2;
 		
 		int *tmp;
-		//stampa leng
 		tmp = bitsToBytes(leng,16);
 
 		free(leng);
@@ -623,6 +661,14 @@ void bmpLoad(hid_device *handle,struct Patterns * pattern,const int *image, cons
 
 }
 
+/* 
+this function encodes the images into something the dmd is able to read.
+
+This function is the translation into C of the function "encode" present in https://github.com/csi-dcsc/Pycrafter6500
+
+it uses a method called enhanced run lenght encoding described in the programming manual of the DMD6500/DMD9000
+*/
+
 void newEncode2(int ***image, struct Node **bitString, int &byteCount){
 	byteCount=48;
 	push(bitString, 0x53);
@@ -642,18 +688,18 @@ void newEncode2(int ***image, struct Node **bitString, int &byteCount){
 	push(bitString, res[0]);//dovrebbero essere solo 2 byte
 	push(bitString, res[1]);
 	free(res);
-	//tmpChar = convlen(0,32);
-	//res=bitsToBytes(tmpChar,32);
-	//free(tmpChar);
-	
 	for(int i = 0; i<4; i++) push(bitString, 0x00);
 	struct Node *link = *bitString;
-	//free(res);
+
 	for(int i = 0; i<8; i++) push(bitString, 0xff);
 	for(int i = 0; i<5; i++) push(bitString, 0x00);
 	push(bitString, 0x02);
 	push(bitString, 0x01);
 	for(int i = 0; i<21; i++) push(bitString, 0x00);
+
+
+	//all of the above is just the header
+	//below we have the actual encoding
 	int n=0;
 	int i = 0;
 	int j = 0;
