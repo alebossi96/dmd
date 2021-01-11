@@ -24,7 +24,6 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 
 
 int command(hid_device *handle, const char &mode, const char &sequencebyte, const char &com1, const char &com2, const char *data, const int &sizeData){
-	if(DEBUG) FILE * pFile = fopen("cCommand.txt", "a");
 	unsigned char buffer[SIZE];
 	char flagstring[8];	
 	if(mode == 'r')
@@ -61,10 +60,9 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 		}else{
 			for(int k = 0; k<SIZE;k++){ 
 				printf("%d, ", buffer[k]);
-				fprintf(pFile, "%d\n", buffer[k]);
+
 			}
-			fprintf(pFile, "\n\n");
-			printf("\n\n");
+			printf("\n");
 		}
 
 	}else{
@@ -78,10 +76,8 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 		}else{
 			for(int k = 0; k<SIZE;k++){ 
 				printf("%d, ", buffer[k]);
-				fprintf(pFile, "%d\n", buffer[k]);
 			}
-			fprintf(pFile, "\n\n");
-			printf("\n\n");
+			printf("\n");
 		}
 		buffer[0] = 0x00;
 		for(int i = 0; i<SIZE; i++) buffer[i]= 0;
@@ -103,10 +99,10 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 				}else{
 					for(int k = 0; k<SIZE;k++){ 
 						printf("%d, ", buffer[k]);
-						fprintf(pFile, "%d\n", buffer[k]);
+
 					}
-					fprintf(pFile, "\n\n");
-					printf("\n\n");
+
+					printf("\n");
 				}
 			
 				i =1;
@@ -128,17 +124,15 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 			}else{
 				for(int k = 0; k<SIZE;k++){ 
 					printf("%d, ", buffer[k]);
-					fprintf(pFile, "%d\n", buffer[k]);
 				}
-				fprintf(pFile, "\n\n");
-				printf("\n\n");
+
+				printf("\n");
 			}
 		}
 	}
 	/*if(!DEBUG)
 		checkForErrors(handle);*/
 	
-	fclose(pFile);
 	return 0;	
 }
 
@@ -167,7 +161,7 @@ void commandPattern(hid_device *handle,struct Patterns * pattern, const int &szP
 		for(int j = 0; j<pattern[i].packNum; j++){
 			command(handle,'w',0x11,0x1a,0x2b,pattern[i].bmpLoad[j],pattern[i].bitsPackNum[j]);
 		}
-		stopSequence(handle);/
+		stopSequence(handle);
 		startSequence(handle);
 		sleep(totExposure/1e6);//need to wait for the pattern to finish
 					//sleep must be in input a number >0.001
@@ -301,7 +295,7 @@ void reset(hid_device *handle){
 	
 }
 
-void configureLut(hid_device *handle,struct Patterns * pattern,int size, int rep){
+void configureLut(struct Patterns * pattern,int size, int rep){
 	char *im =convlen(size,11); 
 	char *r=convlen(rep,32);
 	char string[48];
@@ -319,7 +313,7 @@ void configureLut(hid_device *handle,struct Patterns * pattern,int size, int rep
 	free(r);
 	int *tmp =  bitsToBytes(string,48);
 	for(int i = 0; i<6; i++) pattern->configureLut[i]= tmp[i];
-	command(handle, 'w',0x00,0x1a,0x31,tmp,6);
+	//command(handle, 'w',0x00,0x1a,0x31,tmp,6);
 	
 	free(tmp);
 }
@@ -358,7 +352,7 @@ It defines the characteristic of a single pattern. most importantly its duration
 
 */
 
-void definePatterns(hid_device *handle,struct Patterns * pattern, const int &index,const int &exposure,const int &bitdepth, const char *color,const int &triggerIn,const int &darkTime,const int &triggerOut,const int &patInd,const int &bitPos){
+void definePatterns(struct Patterns * pattern, const int &index,const int &exposure,const int &bitdepth, const char *color,const int &triggerIn,const int &darkTime,const int &triggerOut,const int &patInd,const int &bitPos){
 	char payload[12];
 	char * tmpChar= NULL;
 	tmpChar = convlen(index,16);
@@ -417,7 +411,7 @@ void definePatterns(hid_device *handle,struct Patterns * pattern, const int &ind
 	payload[11]=tmp[1];
 	for(int i = 0; i<12; i++)
 		pattern->defPatterns[bitPos][i] = payload[i];
-	command(handle, 'w',0x00,0x1a,0x34,payload,12);
+	//command(handle, 'w',0x00,0x1a,0x34,payload,12);
 	free(tmp);
 	free(bitPos_);
 	free(patInd_);
@@ -430,9 +424,9 @@ all the information useful for showing the patterns is produced here.
 it requires only what pattern, the exposure, and some other less important param
 */
 
-void defSequence(hid_device *handle,struct Patterns * pattern,int ***matrixes,int *exposure,int trigger_in, int dark_time, int trigger_out, int repetition, const int &size){
+void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int trigger_in, int dark_time, int trigger_out, int repetition, const int &size){
 	int *encoded;
-	stopSequence(handle);
+	//stopSequence(handle);
 	int i = 0;
 	int ***imageData;
 	int szEncoded;
@@ -520,15 +514,15 @@ void defSequence(hid_device *handle,struct Patterns * pattern,int ***matrixes,in
 			pattern->exposure=(int*)malloc(size*sizeof(int));
 			for(int j = (i/SIZE_PATTERN-1)*SIZE_PATTERN; j<i && j<size; j++){
 				pattern->exposure[j]=exposure[j];
-				definePatterns(handle, pattern, j, exposure[j],1,c111,trigger_in,dark_time,trigger_out,(i-1)/SIZE_PATTERN,j-(i/SIZE_PATTERN-1)*SIZE_PATTERN);	
+				definePatterns( pattern, j, exposure[j],1,c111,trigger_in,dark_time,trigger_out,(i-1)/SIZE_PATTERN,j-(i/SIZE_PATTERN-1)*SIZE_PATTERN);	
 			}
 			
 		}
 	}
 	
-	configureLut(handle,pattern,size,repetition);
-	setBmp(handle, pattern, (i-1)/SIZE_PATTERN,szEncoded);	
-	bmpLoad(handle,pattern,encoded,szEncoded);
+	configureLut(pattern,size,repetition);
+	setBmp(pattern, (i-1)/SIZE_PATTERN,szEncoded);	
+	bmpLoad(pattern,encoded,szEncoded);
 	free(encoded);
 	//encodedImagesList = encodedImagesList->next;
 	//sizes = sizes->next;
@@ -590,7 +584,7 @@ int isRowEqual(const int *a, const int *b){
 	return 1;
 }
 
-void setBmp(hid_device *handle,struct Patterns * pattern,const int  &index,const int &size){
+void setBmp(struct Patterns * pattern,const int  &index,const int &size){
 	int payload[6];
 	char index_[16];
 	char *tmp;
@@ -611,7 +605,7 @@ void setBmp(hid_device *handle,struct Patterns * pattern,const int  &index,const
 	for(int i = 0; i<4; i++) payload[i+2]= total[i];
 	free(total);
 	for(int i = 0; i<6; i++) pattern->setBmp[i]=payload[i];
-	command(handle, 'w',0x00,0x1a,0x2a,payload,6);
+	//command(handle, 'w',0x00,0x1a,0x2a,payload,6);
 }
 
 
@@ -619,7 +613,7 @@ void setBmp(hid_device *handle,struct Patterns * pattern,const int  &index,const
 	load (or load to Patterns) the encoded image to the dmd
 
 */
-void bmpLoad(hid_device *handle,struct Patterns * pattern,const int *image, const int &size){
+void bmpLoad(struct Patterns * pattern,const int *image, const int &size){
 
 	int packNum= size/504 +1;
 	pattern->bmpLoad=(int **)malloc(packNum*sizeof(int*));
@@ -652,7 +646,7 @@ void bmpLoad(hid_device *handle,struct Patterns * pattern,const int *image, cons
 		pattern->bmpLoad[i]=(int *)malloc((bits+2)*sizeof(int));
 		for(int j = 0;j<bits+2;j++) pattern->bmpLoad[i][j]=payload[j];
 	
-		command(handle, 'w',0x11,0x1a,0x2b, payload, bits+2);
+		//command(handle, 'w',0x11,0x1a,0x2b, payload, bits+2);
 		free(payload);
 			
 		

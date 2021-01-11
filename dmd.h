@@ -1,14 +1,14 @@
 #ifndef DMD_H
 #define DMD_H
-#define DEBUG false
+#define DEBUG true
 #define SIZE_PATTERN 24
-#include<hidapi.h>
 #include<stdlib.h>
 #include<stdio.h>
 #include<unistd.h>
 #include<math.h>
 #include <stdbool.h> 
 #include <string.h>
+#include<hidapi.h>//probabilmente devo cancellarla dopo
 #ifdef _WIN32
 	#include<windows.h>
 #endif
@@ -24,8 +24,8 @@ int * bitsToBytes(const char *a, const int &size);
 int * bitsToBytes(const int *a, const int &size);
 void changeMode(hid_device *handle, int mode);
 void stopSequence(hid_device *handle);
-void configureLut(hid_device *handle,struct Patterns * pattern,int size, int rep);
-void defSequence(hid_device *handle,struct Patterns * pattern,int ***matrixes,int *exposure,int trigger_in, int dark_time, int trigger_out, int repetition, const int &size);
+void configureLut(struct Patterns * pattern,int size, int rep);
+void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int trigger_in, int dark_time, int trigger_out, int repetition, const int &size);
 void reset(hid_device *handle);
 void mergeImages(int ***images, int ***res);
 int pow_i(const int &b,const int &exp);
@@ -60,9 +60,9 @@ int isRowEqual(const int *a, const int *b);
 void push(struct Node **head, int data);
 void push(struct List **head, int* data);
 void newEncode2(int ***image, struct Node **n, int &bytecount);
-void definePatterns(hid_device *handle,struct Patterns * pattern,const int &index,const int &exposure,const int &bitdepth, const char *color,const int &triggerIn,const int &darkTime,const int &triggerout,const int &patInd,const int &bitpos);
-void setBmp(hid_device *handle,struct Patterns * pattern,const int  &index,const int &size);
-void bmpLoad(hid_device *handle,struct Patterns * pattern, const int *image, const int &size);
+void definePatterns(struct Patterns * pattern,const int &index,const int &exposure,const int &bitdepth, const char *color,const int &triggerIn,const int &darkTime,const int &triggerout,const int &patInd,const int &bitpos);
+void setBmp(struct Patterns * pattern,const int  &index,const int &size);
+void bmpLoad(struct Patterns * pattern, const int *image, const int &size);
 void startSequence(hid_device *handle);
 
 void readBMP(char* filename, int *** image);

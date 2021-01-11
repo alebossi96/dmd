@@ -1,15 +1,11 @@
 #include"measure.h"
 
 
-struct DMD{
-	hid_device *handle;
-	struct Patterns * pattern;
-	int szPattern;
-};
+
 void initDMD(DMD &dmd){
-	DMD dmd;
+	
 	int nBasis =512;
-	int nMeas = 100;
+	int nMeas = 10;
 	int exp = 1000000;
 	int nSet = celing(nMeas,24);
 	dmd.szPattern=nSet;
@@ -19,7 +15,7 @@ void initDMD(DMD &dmd){
 	if (!dmd.handle) {
 		printf("unable to open device\n");
 		dmd.handle = NULL;
-		if(!DEBUG) return 1;
+		if(!DEBUG) return;// 1;
 	}
 	stopSequence(dmd.handle);
 	changeMode(dmd.handle, 3);
@@ -28,7 +24,6 @@ void initDMD(DMD &dmd){
 	int trigger_in = 0;
 	int trigger_out = 1;
 	int ***basis;
-	struct Patterns * pattern;
 	dmd.pattern = (Patterns *)malloc(nSet*sizeof(Patterns));
 	for (int q = 0; q < nSet; q++){
 		int nB = min(SIZE_PATTERN, nMeas-q*SIZE_PATTERN);
@@ -96,7 +91,7 @@ void moveDMD(const DMD &dmd){
 		for(int j = 0; j<dmd.pattern[i].packNum; j++){
 			talkDMD(dmd.handle,'w',0x11,0x1a,0x2b,dmd.pattern[i].bmpLoad[j],dmd.pattern[i].bitsPackNum[j]);
 		}
-		stopSequence(dmd.handle);/
+		stopSequence(dmd.handle);//
 		startSequence(dmd.handle);
 		sleep(totExposure/1e6);//need to wait for the pattern to finish
 					//sleep must be in input a number >0.001
@@ -110,7 +105,7 @@ int talkDMD(hid_device *handle, const char &mode, const char &sequencebyte, cons
 	for(int i = 0; i<sizeData; i++)
 		tmp[i] = (char)data[i];
 
-	int res = command(handle, mode, sequencebyte, com1,com2,tmp,sizeData);
+	int res = talkDMD(handle, mode, sequencebyte, com1,com2,tmp,sizeData);
 
 	free(tmp);
 	return res;
@@ -120,7 +115,7 @@ int talkDMD(hid_device *handle, const char &mode, const char &sequencebyte, cons
 
 
 int talkDMD(hid_device *handle, const char &mode, const char &sequencebyte, const char &com1, const char &com2, const char *data, const int &sizeData){
-	if(DEBUG) FILE * pFile = fopen("cCommand.txt", "a");
+	//if(DEBUG) FILE * pFile = fopen("cCommand.txt", "a");
 	unsigned char buffer[SIZE];
 	char flagstring[8];	
 	if(mode == 'r')
@@ -157,9 +152,9 @@ int talkDMD(hid_device *handle, const char &mode, const char &sequencebyte, cons
 		}else{
 			for(int k = 0; k<SIZE;k++){ 
 				printf("%d, ", buffer[k]);
-				fprintf(pFile, "%d\n", buffer[k]);
+				//fprintf(pFile, "%d\n", buffer[k]);
 			}
-			fprintf(pFile, "\n\n");
+			//fprintf(pFile, "\n\n");
 			printf("\n\n");
 		}
 
@@ -174,9 +169,9 @@ int talkDMD(hid_device *handle, const char &mode, const char &sequencebyte, cons
 		}else{
 			for(int k = 0; k<SIZE;k++){ 
 				printf("%d, ", buffer[k]);
-				fprintf(pFile, "%d\n", buffer[k]);
+				//fprintf(pFile, "%d\n", buffer[k]);
 			}
-			fprintf(pFile, "\n\n");
+			//fprintf(pFile, "\n\n");
 			printf("\n\n");
 		}
 		buffer[0] = 0x00;
@@ -199,9 +194,9 @@ int talkDMD(hid_device *handle, const char &mode, const char &sequencebyte, cons
 				}else{
 					for(int k = 0; k<SIZE;k++){ 
 						printf("%d, ", buffer[k]);
-						fprintf(pFile, "%d\n", buffer[k]);
+						//fprintf(pFile, "%d\n", buffer[k]);
 					}
-					fprintf(pFile, "\n\n");
+					//fprintf(pFile, "\n\n");
 					printf("\n\n");
 				}
 			
@@ -224,9 +219,9 @@ int talkDMD(hid_device *handle, const char &mode, const char &sequencebyte, cons
 			}else{
 				for(int k = 0; k<SIZE;k++){ 
 					printf("%d, ", buffer[k]);
-					fprintf(pFile, "%d\n", buffer[k]);
+					//fprintf(pFile, "%d\n", buffer[k]);
 				}
-				fprintf(pFile, "\n\n");
+				//fprintf(pFile, "\n\n");
 				printf("\n\n");
 			}
 		}
@@ -234,7 +229,7 @@ int talkDMD(hid_device *handle, const char &mode, const char &sequencebyte, cons
 	/*if(!DEBUG)
 		checkForErrors(handle);*/
 	
-	fclose(pFile);
+	//fclose(pFile);
 	return 0;	
 }
 void closeDMD(DMD &dmd){
@@ -246,8 +241,11 @@ void closeDMD(DMD &dmd){
 			free(dmd.pattern[q].bmpLoad[i]);
 	
 		free(dmd.pattern[q].bmpLoad);
-		free(pattern[q].bitsPackNum);
+		free(dmd.pattern[q].exposure);
+		free(dmd.pattern[q].bitsPackNum);
+		
 	}
+
 	free(dmd.pattern);
 	reset(dmd.handle);//bho elimina porcate?
 	//if(!DEBUG) getchar();
