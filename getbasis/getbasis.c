@@ -1,7 +1,15 @@
 #include "getbasis.h"
 #include "ordering.h"
 
-void getBasis(const int &nBasis, const int &fromBasis,const int &toBasis, int ***basis){
+//void getBasis(const int &nBasis, const int &fromBasis,const int &toBasis, int ***basis){
+void getBasis(const int &hadamard_raster, const int &dim, const int *idx, const int &szIdx, int ***output){
+	if(hadamard_raster == 1)
+		getBasisHadamard(dim, idx, szIdx, output);//output non so se magari devo passare in maniera diversa
+	else if(hadamard_raster == 0)
+		getBasisRaster(dim, idx, szIdx, output);//output non so se magari devo passare in maniera diversa
+
+}
+void getBasisHadamard(const int &nBasis, const int *idx, const int &szIdx, int ***basis){
 	int **H;
 
 	H =(int **)malloc(nBasis*sizeof(int*));
@@ -58,11 +66,12 @@ void getBasis(const int &nBasis, const int &fromBasis,const int &toBasis, int **
 	int logN = log(nBasis)/log(2);
 	int mult=WIDTH/pow2_i(logN);
 	int idxZeros = (WIDTH-mult*nBasis)/2;
-	for(int i = fromBasis; i <toBasis; i++){
+	for(int i = 0; i <szIdx; i++){
+		int indexBasis = idx[i];
 		for(int j = 0; j<WIDTH;j++){
 			
 			if(j>(idxZeros-1) && j<(WIDTH-idxZeros)){
-				int el =(H[i][(j-idxZeros)/mult]+1)/2;
+				int el =(H[indexBasis][(j-idxZeros)/mult]+1)/2;
 				 for(int k = 0; k<HEIGHT; k++)
 					basis[i-fromBasis][k][j] = el;
 			}
@@ -77,3 +86,17 @@ void getBasis(const int &nBasis, const int &fromBasis,const int &toBasis, int **
 	free(H);
 
 }
+
+
+void getBasisRaster(const int &dim, const int *idx, const int &szIdx, int ***basis){
+	for(k= 0; k<szIdx; k++){
+		int indexRaster = idx[k];
+		for(int i = 0; i<HEIGHT; i++){
+			for(int j = 0; j<WIDTH; j++){
+				if(abs(j -dim*k)<100 ) basis[indexRaster-q*SIZE_PATTERN][i][j]=1;
+				else basis[indexRaster-q*SIZE_PATTERN][i][j]=0;
+			}	
+		}
+	}
+}
+
