@@ -42,24 +42,18 @@ void initDMD(DMD &dmd){
 			nEl = SIZE_PATTERN;
 		else
 			nEl = nMeas-q*SIZE_PATTERN;
-		/*
-		for (int k = q*SIZE_PATTERN; k<nMeas && k<(q+1)*SIZE_PATTERN; k++){
-			for(int i = 0; i<HEIGHT; i++){
-				for(int j = 0; j<WIDTH; j++){
-					if(abs(j -5*k)<100 ) basis[k-q*SIZE_PATTERN][i][j]=1;
-					else basis[k-q*SIZE_PATTERN][i][j]=0;
-				}	
-			}
-		}*/
-		getBasis(nBasis,q*SIZE_PATTERN,q*SIZE_PATTERN+nEl, basis);//devo scrivere dentro se voglio fare raster!
-		/*	
+		int *idx;
+		idx =(int* )malloc((nEl)*sizeof(int));
+		for(int i = 0; i<nEl; i++)
+			idx[i]=q*SIZE_PATTERN+i;
+		getBasis(1,nBasis,idx,nEl, basis);
 		for (int k = 0; k<nEl ; k++){
 			for(int i = 0; i<WIDTH; i+=100)
 				printf("%d ",basis[k][0][i]);
 						
 			printf("\n");
 		}
-		*/
+		
 		dmd.pattern[q].nEl =nEl;
 		defSequence(&(dmd.pattern[q]),basis,exposure,trigger_in,dark_time,trigger_out, nEl,nEl);//il penultimo o 1 o nEl
 		for(int i = 0; i<nB; i++){

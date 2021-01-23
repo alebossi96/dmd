@@ -73,9 +73,9 @@ void getBasisHadamard(const int &nBasis, const int *idx, const int &szIdx, int *
 			if(j>(idxZeros-1) && j<(WIDTH-idxZeros)){
 				int el =(H[indexBasis][(j-idxZeros)/mult]+1)/2;
 				 for(int k = 0; k<HEIGHT; k++)
-					basis[i-fromBasis][k][j] = el;
+					basis[i][k][j] = el; // prima era basis[i-fromBasis][k][j] = el; non mi ricordo perchè
 			}
-			else for(int k = 0; k<HEIGHT; k++) basis[i-fromBasis][k][j] = 0;	
+			else for(int k = 0; k<HEIGHT; k++) basis[i][k][j] = 0;	
 			
 		}
 		
@@ -88,13 +88,13 @@ void getBasisHadamard(const int &nBasis, const int *idx, const int &szIdx, int *
 }
 
 
-void getBasisRaster(const int &dim, const int *idx, const int &szIdx, int ***basis){
-	for(k= 0; k<szIdx; k++){
+void getBasisRaster(const int &dim, const int *idx, const int &szIdx, int ***basis){//possibile farlo a scatti o continuo
+	for(int k= 0; k<szIdx; k++){
 		int indexRaster = idx[k];
 		for(int i = 0; i<HEIGHT; i++){
 			for(int j = 0; j<WIDTH; j++){
-				if(abs(j -dim*k)<100 ) basis[indexRaster-q*SIZE_PATTERN][i][j]=1;
-				else basis[indexRaster-q*SIZE_PATTERN][i][j]=0;
+				if(abs(indexRaster -j)<dim ) basis[k][i][j]=1;
+				else basis[k][i][j]=0;
 			}	
 		}
 	}
