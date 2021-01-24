@@ -1,14 +1,14 @@
-CCFLAGS =  -g -Wall -pedantic -fPIC
+CCFLAGS =  -g -Wall -pedantic -fPIC -lm
 
 SRCS = $(wildcard *.c)
 OBJS = $(SRCS:.c=.o)
 
 main: $(OBJS)
-	g++ -shared -Wl,-soname,libgetbasis.so  -o libgetbasis.so $(OBJS)
+	gcc -shared -Wl,-soname,libgetbasis.so -lm -o libgetbasis.so $(OBJS)
 	$(RM) *.o
 
 $(OBJS) : $(SRCS)
-	g++ $(CCFLAGS) -c $(SRCS)
+	gcc $(CCFLAGS) -c $(SRCS)
 
 
 

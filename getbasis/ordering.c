@@ -1,18 +1,18 @@
 //fonte:https://www.geeksforgeeks.org/find-number-of-islands/
 #include "ordering.h"
-int pow2_i(const int &exp){
+int pow2_i(const int exp){
 	int res=1;
 	for(int i =0; i<exp; i++)
 		res*=2;
 	return res;
 }
-int pow_i(const int &b,const int &exp){
+int pow_i(const int b,const int exp){
 	int res=1;
 	for(int i=0; i<exp; i++)
 		res*=b;
 	return res;
 }
-void hadamard(int **matrix, const int &nBasis){
+void hadamard(int **matrix, const int nBasis){
 	int logN = log(nBasis)/log(2);
 
 	if( nBasis%pow_i(2,logN) != 0)

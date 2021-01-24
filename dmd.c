@@ -7,8 +7,8 @@
 command is the function that does the comunication with the dmd, every other function that wants to comunicate with the dmd need to use this function
 There are two command function implemented because one could want to pass a vector of int and char
 */
-
-int command(hid_device *handle, const char &mode, const char &sequencebyte, const char &com1, const char &com2, const int *data, const int &sizeData){
+/*
+int command(hid_device *handle, const char mode, const char sequencebyte, const char com1, const char com2, const int *data, const int sizeData){
 	char *tmp;
 	tmp = (char *)malloc(sizeData*sizeof(char));
 	for(int i = 0; i<sizeData; i++)
@@ -19,11 +19,11 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 	free(tmp);
 	return res;
 }
+*/
 
 
 
-
-int command(hid_device *handle, const char &mode, const char &sequencebyte, const char &com1, const char &com2, const char *data, const int &sizeData){
+int command(hid_device *handle, const char mode, const char sequencebyte, const char com1, const char com2, const char *data, const int sizeData){
 	unsigned char buffer[SIZE];
 	char flagstring[8];	
 	if(mode == 'r')
@@ -34,13 +34,13 @@ int command(hid_device *handle, const char &mode, const char &sequencebyte, cons
 	for(int i=2; i<8;i++)
 		flagstring[i] ='0';
 	buffer[0]=0x0;
-	int *tmp = bitsToBytes(flagstring,8);
+	int *tmp = bitsToBytes_char(flagstring,8);
 	buffer[1]=tmp[0];
 	free(tmp);
 	buffer[2]=sequencebyte;
 	char *tmpChar;
 	tmpChar = convlen(sizeData+2,16);
-	tmp =bitsToBytes(tmpChar,16);
+	tmp =bitsToBytes_char(tmpChar,16);
 	buffer[3]=tmp[0];
 	buffer[4]=tmp[1];
 	free(tmp);
@@ -142,8 +142,8 @@ We want to use command pattern if we want a fast comunication with the dmd.
 all the data is processed before the execution.
 This function only perform the upload to the dmd(via the command function)
 */
-
-void commandPattern(hid_device *handle,struct Patterns * pattern, const int &szPattern){
+/*
+void commandPattern(hid_device *handle,struct Patterns * pattern, const int szPattern){
 	//I only need to pass the data that we got from defSequence
 	//all the rest must be processed during initialization or garbage collection
 	for(int i = 0; i<szPattern; i++){
@@ -167,7 +167,7 @@ void commandPattern(hid_device *handle,struct Patterns * pattern, const int &szP
 					//sleep must be in input a number >0.001
 	}
 
-}
+}*/
 void checkForErrors(hid_device *handle){
 	/* it does not work. Probably not implemented correctly*/
 	if( hid_error(handle)==NULL)
@@ -195,7 +195,7 @@ void checkForErrors(hid_device *handle){
 
 
 
-int pow2_i(const int &exp){
+int pow2_i(const int exp){
 	int res=1;
 	for(int i =0; i<exp; i++)
 		res*=2;
@@ -237,7 +237,7 @@ char * convlen(int a, int l){//a<2^l
 /* returns a vector of int and we start from the bits and we get the byte corresponding
 */
 
-int * bitsToBytes(const char *a,const int &size){
+int * bitsToBytes_char(const char *a,const int size){
 	int *bits_int;
 	bits_int = (int*)malloc(size * sizeof(int));
 		
@@ -246,7 +246,7 @@ int * bitsToBytes(const char *a,const int &size){
 		}
 	
 	int *res;
-	res=bitsToBytes(bits_int,size);
+	res=bitsToBytes_int(bits_int,size);
 
 	free(bits_int);
 
@@ -255,7 +255,7 @@ int * bitsToBytes(const char *a,const int &size){
 
 
 
-int * bitsToBytes(const int *a,const int &size){
+int * bitsToBytes_int(const int *a,const int size){
 	int size_bytes;
 	if(size%8>0)
 		size_bytes = size/8+1;
@@ -311,13 +311,13 @@ void configureLut(struct Patterns * pattern,int size, int rep){
 	
 	free(im);
 	free(r);
-	int *tmp =  bitsToBytes(string,48);
+	int *tmp =  bitsToBytes_char(string,48);
 	for(int i = 0; i<6; i++) pattern->configureLut[i]= tmp[i];
 	//command(handle, 'w',0x00,0x1a,0x31,tmp,6);
 	
 	free(tmp);
 }
-int pow_i(const int &b,const int &exp){
+int pow_i(const int b,const int exp){
 	int res=1;
 	for(int i=0; i<exp; i++)
 		res*=b;
@@ -352,19 +352,19 @@ It defines the characteristic of a single pattern. most importantly its duration
 
 */
 
-void definePatterns(struct Patterns * pattern, const int &index,const int &exposure,const int &bitdepth, const char *color,const int &triggerIn,const int &darkTime,const int &triggerOut,const int &patInd,const int &bitPos){
+void definePatterns(struct Patterns * pattern, const int index,const int exposure,const int bitdepth, const char *color,const int triggerIn,const int darkTime,const int triggerOut,const int patInd,const int bitPos){
 	char payload[12];
 	char * tmpChar= NULL;
 	tmpChar = convlen(index,16);
 	
-	int *index_ = bitsToBytes(tmpChar,16);
+	int *index_ = bitsToBytes_char(tmpChar,16);
 	payload[0]=index_[0];
 	payload[1]=index_[1];
 	free(index_);
 	free(tmpChar);
 
 	tmpChar = convlen(exposure,24);
-	int *exposure_ = bitsToBytes(tmpChar,24);
+	int *exposure_ = bitsToBytes_char(tmpChar,24);
 	for(int i=0;i<3; i++)	payload[2+i] = exposure_[i];
 	free(tmpChar);
 	free(exposure_);
@@ -379,11 +379,11 @@ void definePatterns(struct Patterns * pattern, const int &index,const int &expos
 	if(triggerIn) optionsByte[0]='1';
 	else optionsByte[0]='0';
 	int *tmp;
-	tmp =bitsToBytes(optionsByte,8);
+	tmp =bitsToBytes_char(optionsByte,8);
 	payload[5]= tmp[0];
 	free(tmp);
 	tmpChar = convlen(darkTime,24);
-	tmp = bitsToBytes(tmpChar,24);
+	tmp = bitsToBytes_char(tmpChar,24);
 	free(tmpChar);
 	for(int i = 0; i<3; i++) payload[6+i] = tmp[i];
 	free(tmp);
@@ -391,7 +391,7 @@ void definePatterns(struct Patterns * pattern, const int &index,const int &expos
 	tmpChar = convlen(0,8);
 	else
 	tmpChar = convlen(1,8);
-	tmp = bitsToBytes(tmpChar,8);
+	tmp = bitsToBytes_char(tmpChar,8);
 	payload[9] = tmp[0];
 	free(tmp);
 	free(tmpChar);
@@ -405,7 +405,7 @@ void definePatterns(struct Patterns * pattern, const int &index,const int &expos
 	for(int i = 0; i<5; i++) lastBits[i] =bitPos_[i];
 	for(int i = 0; i<11; i++) lastBits[i+5] =patInd_[i];
 
-	tmp = bitsToBytes(lastBits,16);
+	tmp = bitsToBytes_char(lastBits,16);
 
 	payload[10]= tmp[0];
 	payload[11]=tmp[1];
@@ -424,7 +424,7 @@ all the information useful for showing the patterns is produced here.
 it requires only what pattern, the exposure, and some other less important param
 */
 
-void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int trigger_in, int dark_time, int trigger_out, int repetition, const int &size){
+void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int trigger_in, int dark_time, int trigger_out, int repetition, const int size){
 	int *encoded;
 	//stopSequence(handle);
 	int i = 0;
@@ -480,10 +480,11 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int tri
 			struct Node *bitString=NULL;
 			int bytecount=0;
 			mergeImages(imageData,mergedImagesint);
-			newEncode2(mergedImagesint, &bitString, bytecount);
+			bytecount = newEncode2(mergedImagesint, &bitString);
 			
 
 			int *tmp;
+			printf("bytecount = %d \n",bytecount);
 			tmp =(int*)malloc(bytecount*sizeof(int));
 			struct Node *next;
 			int j = 0;
@@ -566,12 +567,7 @@ void push(struct Node **head, int data){
 	(*head) = newRef;
 
 }
-void push(struct List **head, int *data){
-	struct List* newRef= (struct List*)malloc(sizeof(struct List));
-	newRef->data =data;
-	newRef->next =(*head);
-	(*head) = newRef;
-}
+
 void allocatePattern(struct Patterns *p, int nB){
 	p->nB = nB;
 	p->defPatterns=(char **)malloc(nB*sizeof(char *));
@@ -584,7 +580,7 @@ int isRowEqual(const int *a, const int *b){
 	return 1;
 }
 
-void setBmp(struct Patterns * pattern,const int  &index,const int &size){
+void setBmp(struct Patterns * pattern,const int  index,const int size){
 	int payload[6];
 	char index_[16];
 	char *tmp;
@@ -594,13 +590,13 @@ void setBmp(struct Patterns * pattern,const int  &index,const int &size){
 
 	free(tmp);
 	int *tmp2;
-	tmp2= bitsToBytes(index_,16);
+	tmp2= bitsToBytes_char(index_,16);
 	for(int i = 0; i<2; i++) payload[i]= tmp2[i];
 	free(tmp2);
 	int *total;
 
 	tmp = convlen(size,32);
-	total = bitsToBytes(tmp,32);
+	total = bitsToBytes_char(tmp,32);
 	free(tmp);
 	for(int i = 0; i<4; i++) payload[i+2]= total[i];
 	free(total);
@@ -613,7 +609,7 @@ void setBmp(struct Patterns * pattern,const int  &index,const int &size){
 	load (or load to Patterns) the encoded image to the dmd
 
 */
-void bmpLoad(struct Patterns * pattern,const int *image, const int &size){
+void bmpLoad(struct Patterns * pattern,const int *image, const int size){
 
 	int packNum= size/504 +1;
 	pattern->bmpLoad=(int **)malloc(packNum*sizeof(int*));
@@ -635,7 +631,7 @@ void bmpLoad(struct Patterns * pattern,const int *image, const int &size){
 		pattern->bitsPackNum[i] = bits+2;
 		
 		int *tmp;
-		tmp = bitsToBytes(leng,16);
+		tmp = bitsToBytes_char(leng,16);
 
 		free(leng);
 		payload= (int*)malloc((bits+2)*sizeof(int));
@@ -663,21 +659,21 @@ This function is the translation into C of the function "encode" present in http
 it uses a method called enhanced run lenght encoding described in the programming manual of the DMD6500/DMD9000
 */
 
-void newEncode2(int ***image, struct Node **bitString, int &byteCount){
-	byteCount=48;
+int newEncode2(int ***image, struct Node **bitString){
+	int byteCount=48;
 	push(bitString, 0x53);
 	push(bitString, 0x70);
 	push(bitString, 0x6c);
 	push(bitString, 0x64);
 	char*tmpChar;
 	tmpChar = convlen(WIDTH,16);
-	int *res= bitsToBytes(tmpChar,16);
+	int *res= bitsToBytes_char(tmpChar,16);
 	push(bitString, res[0]);//dovrebbero essere solo 2 byte
 	push(bitString, res[1]);
 	free(res);
 	free(tmpChar);
 	tmpChar=convlen(HEIGHT,16);
-	res= bitsToBytes(tmpChar,16);
+	res= bitsToBytes_char(tmpChar,16);
 	free(tmpChar);
 	push(bitString, res[0]);//dovrebbero essere solo 2 byte
 	push(bitString, res[1]);
@@ -818,7 +814,7 @@ void newEncode2(int ***image, struct Node **bitString, int &byteCount){
 	int *total;
 	
 	tmpChar = convlen(size,32);
-	total = bitsToBytes(tmpChar,32);
+	total = bitsToBytes_char(tmpChar,32);
 	
 	for(int q = 0; q<4; q++){//per riempiere i primi 4 
 		link->data=total[3-q];
@@ -826,6 +822,7 @@ void newEncode2(int ***image, struct Node **bitString, int &byteCount){
 	}
 	free(tmpChar);
 	free(total);
+	return byteCount;
 
 }
 
@@ -838,12 +835,12 @@ void newEncode2(int ***image, struct Node **bitString, int &byteCount){
 
 
 
-int min(const int &a,const int &b){
+int min(const int a,const int b){
 	if(a>b)	return b;
 	else return a;
 
 }
-int celing(const int &a, const int &b){
+int celing(const int a, const int b){
 	if(a%b == 0)
 		return a/b;
 	return a/b +1;

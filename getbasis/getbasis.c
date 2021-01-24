@@ -1,15 +1,15 @@
 #include "getbasis.h"
 #include "ordering.h"
 
-//void getBasis(const int &nBasis, const int &fromBasis,const int &toBasis, int ***basis){
-void getBasis(const int &hadamard_raster, const int &dim, const int *idx, const int &szIdx, int ***output){
+//void getBasis(const int nBasis, const int fromBasis,const int toBasis, int ***basis){
+void getBasis(const int hadamard_raster, const int dim, const int *idx, const int szIdx, int ***output){
 	if(hadamard_raster == 1)
 		getBasisHadamard(dim, idx, szIdx, output);//output non so se magari devo passare in maniera diversa
 	else if(hadamard_raster == 0)
 		getBasisRaster(dim, idx, szIdx, output);//output non so se magari devo passare in maniera diversa
 
 }
-void getBasisHadamard(const int &nBasis, const int *idx, const int &szIdx, int ***basis){
+void getBasisHadamard(const int nBasis, const int *idx, const int szIdx, int ***basis){
 	int **H;
 
 	H =(int **)malloc(nBasis*sizeof(int*));
@@ -88,7 +88,7 @@ void getBasisHadamard(const int &nBasis, const int *idx, const int &szIdx, int *
 }
 
 
-void getBasisRaster(const int &dim, const int *idx, const int &szIdx, int ***basis){//possibile farlo a scatti o continuo
+void getBasisRaster(const int dim, const int *idx, const int szIdx, int ***basis){//possibile farlo a scatti o continuo
 	for(int k= 0; k<szIdx; k++){
 		int indexRaster = idx[k];
 		for(int i = 0; i<HEIGHT; i++){

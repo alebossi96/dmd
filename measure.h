@@ -9,11 +9,11 @@ struct DMD{
 	struct Patterns * pattern;
 	int szPattern;
 };
-void initDMD(DMD &dmd);
-void moveDMD(const DMD &dmd);
-int talkDMD(hid_device *handle, const char &mode, const char &sequencebyte, const char &com1, const char &com2, const char *data, const int &sizeData);
-int talkDMD(hid_device *handle, const char &mode, const char &sequencebyte, const char &com1, const char &com2, const int *data, const int &sizeData);
-void closeDMD(DMD &dmd);
+void initDMD(struct DMD *dmd);
+void moveDMD(const struct DMD dmd);
+int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, const char com1, const char com2, const char *data, const int sizeData);
+int talkDMD_int(hid_device *handle, const char mode, const char sequencebyte, const char com1, const char com2, const int *data, const int sizeData);
+void closeDMD(struct DMD *dmd);
 
 
 #endif
