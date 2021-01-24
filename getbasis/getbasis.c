@@ -9,7 +9,8 @@ void getBasis(const int hadamard_raster, const int dim, const int *idx, const in
 		getBasisRaster(dim, idx, szIdx, output);//output non so se magari devo passare in maniera diversa
 
 }
-void getBasisHadamard(const int nBasis, const int *idx, const int szIdx, int ***basis){
+
+int **ordering(const int nBasis, const int *idx, const int szIdx){
 	int **H;
 
 	H =(int **)malloc(nBasis*sizeof(int*));
@@ -56,34 +57,46 @@ void getBasisHadamard(const int nBasis, const int *idx, const int szIdx, int ***
 	}
 
 	free(pieciesOfCake);
+	int **output;
+	output=(int **)malloc(szIdx*sizeof(int*));
+	
+	for(int i = 0; i <szIdx; i++){
+		output[i]=(int*)malloc(nBasis*sizeof(int));
+		int indexBasis = idx[i];
+		for(int j = 0; j<nBasis; j++) output[i][j] = H[indexBasis][j];	
+	}
 
 
 
+	for(int i = 0; i<nBasis; i++)
+		free(H[i]);
+	free(H);
+	return output;
+
+}
+void getBasisHadamard(const int nBasis, const int *idx, const int szIdx, int ***basis){
 	//come inserire? nel senso binning? padding?/ transformazione?
 
 	//int mult = 32/nBasis;//devo cercare la più vicina potenza del 2
-	
+	int ** H;
+	H =  ordering(nBasis,idx,szIdx);
 	int logN = log(nBasis)/log(2);
 	int mult=WIDTH/pow2_i(logN);
 	int idxZeros = (WIDTH-mult*nBasis)/2;
 	for(int i = 0; i <szIdx; i++){
-		int indexBasis = idx[i];
 		for(int j = 0; j<WIDTH;j++){
-			
 			if(j>(idxZeros-1) && j<(WIDTH-idxZeros)){
-				int el =(H[indexBasis][(j-idxZeros)/mult]+1)/2;
+				int el =(H[i][(j-idxZeros)/mult]+1)/2;
 				 for(int k = 0; k<HEIGHT; k++)
 					basis[i][k][j] = el; // prima era basis[i-fromBasis][k][j] = el; non mi ricordo perchè
 			}
-			else for(int k = 0; k<HEIGHT; k++) basis[i][k][j] = 0;	
-			
-		}
-		
+			else for(int k = 0; k<HEIGHT; k++) basis[i][k][j] = 0;		
+		}	
 	}
-	
-	for(int i = 0; i<nBasis; i++)
+	for(int i = 0; i<szIdx; i++)
 		free(H[i]);
 	free(H);
+
 
 }
 
