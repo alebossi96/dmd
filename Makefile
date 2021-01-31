@@ -6,7 +6,7 @@ SRCS = $(wildcard *.c)
 OBJS = $(SRCS:.c=.o)
 
 main: $(OBJS)
-	gcc $(OBJS) -o main $(LDLIBS)
+	gcc $(OBJS) $(LDLIBS) -o main 
 	$(RM) *.o
 
 $(OBJS) : $(SRCS)

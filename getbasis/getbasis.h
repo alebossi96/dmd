@@ -17,4 +17,6 @@ void getBasis(const int hadamard_raster, //1 to get hadamard basis 0 for raster 
 int **ordering(const int nBasis, const int *idx, const int szIdx);
 void getBasisHadamard(const int nBasis, const int *idx, const int szIdx, int ***basis);
 void getBasisRaster(const int dim, const int *idx, const int szIdx, int ***basis);
+int ** getBasisHadamardFromTxt(int nBasis, const int *idx, const int szIdx);
+int nDigit(int n);
 #endif

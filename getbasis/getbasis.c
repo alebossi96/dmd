@@ -1,6 +1,7 @@
 #include "getbasis.h"
 #include "ordering.h"
-
+#include<stdio.h>
+#define SIZE_BUFFER 2049
 //void getBasis(const int nBasis, const int fromBasis,const int toBasis, int ***basis){
 void getBasis(const int hadamard_raster, const int dim, const int *idx, const int szIdx, int ***output){
 	if(hadamard_raster == 1)
@@ -63,6 +64,7 @@ int **ordering(const int nBasis, const int *idx, const int szIdx){
 	for(int i = 0; i <szIdx; i++){
 		output[i]=(int*)malloc(nBasis*sizeof(int));
 		int indexBasis = idx[i];
+		printf("indexBasis = %d \n", indexBasis);
 		for(int j = 0; j<nBasis; j++) output[i][j] = H[indexBasis][j];	
 	}
 
@@ -79,7 +81,8 @@ void getBasisHadamard(const int nBasis, const int *idx, const int szIdx, int ***
 
 	//int mult = 32/nBasis;//devo cercare la più vicina potenza del 2
 	int ** H;
-	H =  ordering(nBasis,idx,szIdx);
+	//H =  ordering(nBasis,idx,szIdx); // genera automaticamente
+	H =  getBasisHadamardFromTxt(nBasis,idx,szIdx);//legge dal file
 	int logN = log(nBasis)/log(2);
 	int mult=WIDTH/pow2_i(logN);
 	int idxZeros = (WIDTH-mult*nBasis)/2;
@@ -111,5 +114,68 @@ void getBasisRaster(const int dim, const int *idx, const int szIdx, int ***basis
 			}	
 		}
 	}
+}
+
+int nDigit(int n){
+	int cont = 0;
+	while (n != 0) {
+		n =n / 10;     // n = n/10
+		cont++;
+	    }
+	return cont;
+}
+char *intToString(int n){
+	int nD = nDigit(n)+1;
+	char * res = (char *)malloc(nD*sizeof(char));
+	for(int i= 0; i<nD-1;i++)
+		res[i]='0';
+	res[nD-1]='\0';
+	
+	for(int i= 0; i<nD-1;i++){
+		res[nD-2-i] = n%10+'0';
+		n/=10;
+	} 
+	
+	printf("res = %s",res);
+	return res;
+}
+int ** getBasisHadamardFromTxt(int nBasis, const int *idx, const int szIdx){
+	int **H;
+	H =(int **)malloc(szIdx*sizeof(int*));
+	for(int i = 0; i<szIdx; i++)
+		H [i] = (int *)malloc(nBasis*sizeof(int));
+	FILE *file;
+	const char* mode = "r";
+	char *extention =".txt";
+	char  *nBasisStr = intToString(nBasis);
+	printf("n Basis = %d ",nBasis);
+	//snprintf (nBasisStr, nDigit(nBasis)+1, "%d",nBasis);
+
+	char *fileName = (char *)malloc(strlen(nBasisStr) + strlen(extention) + 1);
+	strcpy(fileName, nBasisStr);
+    	strcat(fileName, extention);
+	free(nBasisStr);
+	file = fopen(fileName,mode);//check open
+	free(fileName);
+	if(!file){
+		printf("unable to open file!");
+		return NULL;
+	}
+
+	char r[SIZE_BUFFER];
+	int i = 0;
+	for(int k = 0; fgets(r,SIZE_BUFFER,file)!=NULL && i< szIdx; k++) {//prendo solo quelle in idx!
+		int id_el=idx[i];
+		if(id_el== k) {
+			for(int j=0; j < nBasis; j++) {
+				H[i][j] = r[2*j]-'0';
+				printf("%d ", H[i][j]);			
+			}
+			printf("\n");	
+			i++;
+		}
+	}	
+	fclose(file);
+	return H;
 }
 

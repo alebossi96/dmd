@@ -4,9 +4,15 @@
 
 void initDMD(struct DMD *dmd){
 	
-	int nBasis =512;
-	int nMeas = 100;
+	int nBasis =32;
+	int nMeas = 31;
+	if(nBasis<nMeas) {
+		printf("nBasis must be larger than nMeas!\n");
+		return;
+		}
+
 	int exp = 1000000;
+	int expBlank = 1000; //1ms
 	int nSet = celing(nMeas,24);
 	dmd->szPattern=nSet;
 	hid_init();
