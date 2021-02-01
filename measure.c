@@ -11,9 +11,16 @@ void initDMD(struct DMD *dmd){
 		return;
 		}
 
-	int exp = 1000000;
+	int exp = 1000000;   //1s 
 	int expBlank = 1000; //1ms
-	int nSet = celing(nMeas,24);
+	int addBlank = 1;
+	int RasterOrHadamard = 1;
+	int sizePattern;
+	if(addBlank)
+		sizePattern = SIZE_PATTERN/2;
+	else
+		sizePattern = SIZE_PATTERN;
+	int nSet = celing(nMeas,sizePattern);
 	dmd->szPattern=nSet;
 	hid_init();
 	dmd->handle = hid_open(0x0451, 0xc900, NULL);
@@ -32,7 +39,8 @@ void initDMD(struct DMD *dmd){
 	int ***basis;
 	dmd->pattern = (struct Patterns *)malloc(nSet*sizeof(struct Patterns));
 	for (int q = 0; q < nSet; q++){
-		int nB = min(SIZE_PATTERN, nMeas-q*SIZE_PATTERN);
+		int nB = min(sizePattern, nMeas-q*sizePattern); //SBAGLIATO!
+		if(addBlank) nB*=2;
 		allocatePattern(&(dmd->pattern[q]),nB);
 		//allocate memory
 		exposure = (int *) malloc(nB * sizeof(int));//deve essere lunga solo nEl
@@ -42,17 +50,23 @@ void initDMD(struct DMD *dmd){
 			for(int j = 0;j<1080; j++) basis[i][j]= (int*)malloc(1920*sizeof(int));
 		}
 		// insert data into pattern
-		for (int i = 0; i<nB; i++) exposure[i] = exp;
+		for (int i = 0; i<nB; i++){
+			if(!addBlank || i %2 == 0) //<--non certo
+			exposure[i] = exp;
+			else
+			exposure[i] = expBlank;
+			}
 		int nEl;//ma è la stessa roba di nb <----
-		if(nMeas>(q+1)*SIZE_PATTERN)
-			nEl = SIZE_PATTERN;
+		if(nMeas>(q+1)*sizePattern)
+			nEl = sizePattern;
 		else
-			nEl = nMeas-q*SIZE_PATTERN;
+			nEl = nMeas-q*sizePattern;
 		int *idx;
 		idx =(int* )malloc((nEl)*sizeof(int));
 		for(int i = 0; i<nEl; i++)
-			idx[i]=q*SIZE_PATTERN+i;
-		getBasis(1,nBasis,idx,nEl, basis);
+			idx[i]=q*sizePattern+i;
+		printf("nEl = %d \n", nEl);
+		getBasis(RasterOrHadamard,nBasis,idx,nEl,addBlank, basis);
 		free(idx);
 		for (int k = 0; k<nEl ; k++){
 			for(int i = 0; i<WIDTH; i+=100)
@@ -62,7 +76,7 @@ void initDMD(struct DMD *dmd){
 		}
 		
 		dmd->pattern[q].nEl =nEl;
-		defSequence(&(dmd->pattern[q]),basis,exposure,trigger_in,dark_time,trigger_out, nEl,nEl);//il penultimo o 1 o nEl
+		defSequence(&(dmd->pattern[q]),basis,exposure,trigger_in,dark_time,trigger_out, nB,nB);//il penultimo o 1 o nEl
 		for(int i = 0; i<nB; i++){
 			for(int j = 0; j<HEIGHT; j++)free(basis[i][j]);
 			free(basis[i]);
