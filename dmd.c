@@ -424,7 +424,7 @@ all the information useful for showing the patterns is produced here.
 it requires only what pattern, the exposure, and some other less important param
 */
 
-void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int trigger_in, int dark_time, int trigger_out, int repetition, const int size){
+void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *trigger_in, int dark_time, int *trigger_out, int repetition, const int size){
 	int *encoded;
 	//stopSequence(handle);
 	int i = 0;
@@ -515,7 +515,7 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int tri
 			pattern->exposure=(int*)malloc(size*sizeof(int));
 			for(int j = (i/SIZE_PATTERN-1)*SIZE_PATTERN; j<i && j<size; j++){
 				pattern->exposure[j]=exposure[j];
-				definePatterns( pattern, j, exposure[j],1,c111,trigger_in,dark_time,trigger_out,(i-1)/SIZE_PATTERN,j-(i/SIZE_PATTERN-1)*SIZE_PATTERN);	
+				definePatterns( pattern, j, exposure[j],1,c111,trigger_in[j],dark_time,trigger_out[j],(i-1)/SIZE_PATTERN,j-(i/SIZE_PATTERN-1)*SIZE_PATTERN);	
 			}
 			
 		}

@@ -1,6 +1,6 @@
 #ifndef DMD_H
 #define DMD_H
-#define DEBUG true
+#define DEBUG false
 #define SIZE_PATTERN 24
 #include<stdlib.h>
 #include<stdio.h>
@@ -51,7 +51,7 @@ int * bitsToBytes_int(const int *a, const int size);
 void changeMode(hid_device *handle, int mode);
 void stopSequence(hid_device *handle);
 void configureLut(struct Patterns * pattern,int size, int rep);
-void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int trigger_in, int dark_time, int trigger_out, int repetition, const int size);
+void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *trigger_in, int dark_time, int *trigger_out, int repetition, const int size);
 void reset(hid_device *handle);
 void mergeImages(int ***images, int ***res);
 int pow_i(const int b,const int exp);

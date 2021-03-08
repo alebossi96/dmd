@@ -108,7 +108,8 @@ void getBasisHadamard(const int nBasis, const int *idx, const int szIdx, const i
 }
 
 
-void getBasisRaster(const int dim, const int *idx, const int szIdx, const int addBlank, int ***basis){//possibile farlo a scatti o continuo
+void getBasisRaster(const int dim, const int *idx, const int szIdx, const int addBlank, int ***basis){
+	//possibile farlo a scatti o continuo
 	for(int cont= 0; cont<szIdx; cont++){
 		int k;
 		if(addBlank) k = cont*2;
@@ -116,7 +117,7 @@ void getBasisRaster(const int dim, const int *idx, const int szIdx, const int ad
 		int indexRaster = idx[k];
 		for(int i = 0; i<HEIGHT; i++){
 			for(int j = 0; j<WIDTH; j++){
-				if(abs(indexRaster -j)<dim ) basis[k][i][j]=1;
+				if(abs(indexRaster -j)<dim/2 ) basis[k][i][j]=1;
 				else basis[k][i][j]=0;
 				if(addBlank) basis[k+1][i][j]=0;
 			}	

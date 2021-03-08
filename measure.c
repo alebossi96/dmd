@@ -5,22 +5,23 @@
 void initDMD(struct DMD *dmd){
 	
 	int nBasis =32;
-	int nMeas = 31;
-	if(nBasis<nMeas) {
+	int nMeas = 16;
+	int addBlank = 1;
+	int RasterOrHadamard = 1;
+	if(!(!RasterOrHadamard || nBasis>=nMeas)) {
 		printf("nBasis must be larger than nMeas!\n");
 		return;
 		}
 
 	int exp = 1000000;   //1s 
-	int expBlank = 1000; //1ms
-	int addBlank = 1;
-	int RasterOrHadamard = 1;
+	int expBlank = 100000; //1ms
 	int sizePattern;
 	if(addBlank)
 		sizePattern = SIZE_PATTERN/2;
 	else
 		sizePattern = SIZE_PATTERN;
 	int nSet = celing(nMeas,sizePattern);
+	printf("nSet = %d \n", nSet);
 	dmd->szPattern=nSet;
 	hid_init();
 	dmd->handle = hid_open(0x0451, 0xc900, NULL);
@@ -33,17 +34,19 @@ void initDMD(struct DMD *dmd){
 	stopSequence(dmd->handle);
 	changeMode(dmd->handle, 3);
 	int *exposure;
-	int dark_time = 0;
-	int trigger_in = 0;
-	int trigger_out = 1;
+	int dark_time = 0; // possibili alternativa a add blank
+	int *trigger_in; // 0 per non dovere mettere il trigger 1 per doverlo avere
+	int *trigger_out; //1 per ricever trigger in output 0 per non averlo
 	int ***basis;
 	dmd->pattern = (struct Patterns *)malloc(nSet*sizeof(struct Patterns));
 	for (int q = 0; q < nSet; q++){
-		int nB = min(sizePattern, nMeas-q*sizePattern); //SBAGLIATO!
+		int nB = min(sizePattern, nMeas-q*sizePattern); //contiene# di immagini caricate
 		if(addBlank) nB*=2;
 		allocatePattern(&(dmd->pattern[q]),nB);
 		//allocate memory
-		exposure = (int *) malloc(nB * sizeof(int));//deve essere lunga solo nEl
+		exposure = (int *) malloc(nB * sizeof(int));
+		trigger_in = (int *) malloc(nB * sizeof(int));
+		trigger_out = (int *) malloc(nB * sizeof(int));
 		basis = (int***)malloc(nB*sizeof(int**));
 		for(int i = 0; i<nB; i++) basis[i] = (int**)malloc(1080*sizeof(int*));
 		for(int i = 0; i<nB; i++){
@@ -51,12 +54,18 @@ void initDMD(struct DMD *dmd){
 		}
 		// insert data into pattern
 		for (int i = 0; i<nB; i++){
-			if(!addBlank || i %2 == 0) //<--non certo
-			exposure[i] = exp;
-			else
-			exposure[i] = expBlank;
+			if(!addBlank || i %2 == 0){ //<--non certo
+				exposure[i] = exp;
+				trigger_out[i] = 1;
+				}
+			else{
+				exposure[i] = expBlank;
+				trigger_out[i] = 0;
+				}
+			trigger_in[i] = 0;			
 			}
-		int nEl;//ma è la stessa roba di nb <----
+			
+		int nEl;//nEl contiene le info su quante info vere ci sono, # di basi caricate
 		if(nMeas>(q+1)*sizePattern)
 			nEl = sizePattern;
 		else
@@ -65,10 +74,10 @@ void initDMD(struct DMD *dmd){
 		idx =(int* )malloc((nEl)*sizeof(int));
 		for(int i = 0; i<nEl; i++)
 			idx[i]=q*sizePattern+i;
-		printf("nEl = %d \n", nEl);
+		printf("nEl = %d  nB = %d \n", nEl, nB);
 		getBasis(RasterOrHadamard,nBasis,idx,nEl,addBlank, basis);
 		free(idx);
-		for (int k = 0; k<nEl ; k++){
+		for (int k = 0; k<nB ; k++){
 			for(int i = 0; i<WIDTH; i+=100)
 				printf("%d ",basis[k][0][i]);
 						
@@ -84,6 +93,8 @@ void initDMD(struct DMD *dmd){
 
 		free(basis);
 		free(exposure); 
+		free(trigger_out);
+		free(trigger_in);
 	}
 
 
@@ -94,7 +105,7 @@ void moveDMD(const struct DMD dmd){
 	for(int i = 0; i<dmd.szPattern; i++){
 		//stopSequence(handle); 
 		int totExposure = 0;
-		for(int j = 0; j<dmd.pattern[i].nEl; j++){
+		for(int j = 0; j<dmd.pattern[i].nB; j++){//prima era nEl
 			totExposure +=dmd.pattern[i].exposure[j];
 			talkDMD_char(dmd.handle,'w',0x00,0x1a,0x34,dmd.pattern[i].defPatterns[j],12);
 			}
