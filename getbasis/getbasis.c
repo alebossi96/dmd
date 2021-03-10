@@ -7,7 +7,9 @@ void getBasis(const int hadamard_raster, const int dim, const int *idx, const in
 		getBasisHadamard(dim, idx, szIdx, addBlank, output);//output non so se magari devo passare in maniera diversa
 	else if(hadamard_raster == 0)
 		getBasisRaster(dim, idx, szIdx, addBlank, output);//output non so se magari devo passare in maniera diversa
-
+	
+	else if(hadamard_raster == 2)
+		getBasisOnes(szIdx, output);
 }
 
 int **ordering(const int nBasis, const int *idx, const int szIdx){
@@ -75,29 +77,58 @@ int **ordering(const int nBasis, const int *idx, const int szIdx){
 	return output;
 
 }
+
+int min(const int a, const int b){
+	if(a>b) return b;
+	return a;
+}
 void getBasisHadamard(const int nBasis, const int *idx, const int szIdx, const int addBlank, int ***basis){
 	//come inserire? nel senso binning? padding?/ transformazione?
 
 	//int mult = 32/nBasis;//devo cercare la più vicina potenza del 2
 	int ** H;
-	//H =  ordering(nBasis,idx,szIdx); // genera automaticamente
-	H =  getBasisHadamardFromTxt(nBasis,idx,szIdx);//legge dal file
+	H =  ordering(nBasis,idx,szIdx); // genera automaticamente
+	//H =  getBasisHadamardFromTxt(nBasis,idx,szIdx);//legge dal file
+	for(int i = 0; i<szIdx; i++ ){
+		for(int j = 0; j<nBasis; j++) printf("%d ", H[i][j]);
+		printf("\n");
+	}
 	int logN = log(nBasis)/log(2);
-	int mult=WIDTH/pow2_i(logN);
-	int idxZeros = (WIDTH-mult*nBasis)/2;
-	for(int cont = 0; cont <szIdx; cont++){
+	int mult=(WIDTH+HEIGHT)/pow2_i(logN);
+	int idxZeros = (WIDTH+HEIGHT-mult*nBasis)/2; //trova dove partire
+	for(int cont = 0; cont <szIdx; cont++){ //count on the basis
 		int i;
 		if(addBlank) i=cont*2;
 		else i = cont;
-		//printf(" i = %d\n", i);
-		for(int j = 0; j<WIDTH;j++){
-			if(j>(idxZeros-1) && j<(WIDTH-idxZeros)){
+		
+		for(int j = 0; j<WIDTH+HEIGHT;j++){
+			int i_y;
+			int i_x;
+			int lim = HEIGHT;
+			
+			if(j<HEIGHT || j >= WIDTH)
+				lim = min(j+1/*io sicuro*/, HEIGHT + WIDTH - j );
+			if(j<WIDTH){
+				i_y = j; 
+				i_x = 0;
+			 }
+			if(j>=WIDTH){
+				i_y = WIDTH-1; 
+				i_x = j-WIDTH;
+			 }
+			if(j>(idxZeros-1) && j<(WIDTH+HEIGHT-idxZeros)){
+				//printf("(j-idxZeros)/mult]+1 = %d",(j-idxZeros)/mult+1);
 				int el =(H[cont][(j-idxZeros)/mult]+1)/2;
-				 for(int k = 0; k<HEIGHT; k++)
-					basis[i][k][j] = el; // prima era basis[i-fromBasis][k][j] = el; non mi ricordo perchè
-			}
-			else for(int k = 0; k<HEIGHT; k++) basis[i][k][j] = 0;	
-			if(addBlank)	for(int k = 0; k<HEIGHT; k++) basis[i+1][k][j] = 0;
+				
+				 for(int k = 0; k<lim; k++){ // k,j se sono in obliquo deve cambiare !
+					/*if(i_x+k>=1080 || i_y-k>= 1920 )
+					printf("i_y-k = %d ----- i_x+k = %d \n", i_y-k, i_x+k);	*/				
+					basis[i][i_x+k][i_y-k] = el;
+					
+					}
+				}
+			else for(int k = 0; k<lim; k++) basis[i][i_x+k][i_y-k] = 0;	  // k,j se sono in obliquo deve cambiare !
+			if(addBlank)	for(int k = 0; k<lim; k++) basis[i+1][i_x+k][i_y-k] = 0;
 		}	
 	}
 	for(int i = 0; i<szIdx; i++)
@@ -123,6 +154,20 @@ void getBasisRaster(const int dim, const int *idx, const int szIdx, const int ad
 			}	
 		}
 	}
+}
+
+
+void getBasisOnes(const int sz, int ***basis){
+		printf("sz = %d \n", sz);
+		for(int k= 0; k<sz; k++){
+		for(int i = 0; i<HEIGHT; i++){
+			for(int j = 0; j<WIDTH; j++){
+				basis[k][i][j]=1;
+			}	
+		}
+	}
+
+
 }
 
 int nDigit(int n){
