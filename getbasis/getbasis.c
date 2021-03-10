@@ -141,18 +141,41 @@ void getBasisHadamard(const int nBasis, const int *idx, const int szIdx, const i
 
 void getBasisRaster(const int dim, const int *idx, const int szIdx, const int addBlank, int ***basis){
 	//possibile farlo a scatti o continuo
+	int idxZeros = (WIDTH+HEIGHT-dim*szIdx)/2; 
 	for(int cont= 0; cont<szIdx; cont++){
-		int k;
-		if(addBlank) k = cont*2;
-		else k = cont;
-		int indexRaster = idx[k];
-		for(int i = 0; i<HEIGHT; i++){
-			for(int j = 0; j<WIDTH; j++){
-				if(abs(indexRaster -j)<dim/2 ) basis[k][i][j]=1;
-				else basis[k][i][j]=0;
-				if(addBlank) basis[k+1][i][j]=0;
-			}	
-		}
+		int i;
+		if(addBlank) i = cont*2;
+		else i = cont;
+		int indexRaster = idx[i];
+		for(int j = 0; j<WIDTH+HEIGHT;j++){
+			int i_y;
+			int i_x;
+			int lim = HEIGHT;
+			
+			if(j<HEIGHT || j >= WIDTH)
+				lim = min(j+1/*io sicuro*/, HEIGHT + WIDTH - j );
+			if(j<WIDTH){
+				i_y = j; 
+				i_x = 0;
+			 }
+			if(j>=WIDTH){
+				i_y = WIDTH-1; 
+				i_x = j-WIDTH;
+			 }
+			if(j>(idxZeros-1) && j<(WIDTH+HEIGHT-idxZeros)){
+				int el;
+				if(j>=dim*cont && j<dim*(cont + 1))
+					el = 1;
+				else el = 0;
+				 for(int k = 0; k<lim; k++){ // k,j se sono in obliquo deve cambiare !
+									
+					basis[i][i_x+k][i_y-k] = el;
+					
+					}
+				}
+			else for(int k = 0; k<lim; k++) basis[i][i_x+k][i_y-k] = 0;	  // k,j se sono in obliquo deve cambiare !
+			if(addBlank)	for(int k = 0; k<lim; k++) basis[i+1][i_x+k][i_y-k] = 0;
+		}	
 	}
 }
 
