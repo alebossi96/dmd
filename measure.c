@@ -4,17 +4,19 @@
 
 void initDMD(struct DMD *dmd){
 	
-	int nBasis =32;
-	int nMeas = 16;
-	int addBlank = 1;
-	int RasterOrHadamard = 1;
+	int nBasis =200;
+	int nMeas = 20;
+	int addBlank = 0;
+	int numberOfRepetition = 200;
+	int RasterOrHadamard = 0;
 	if(!(!RasterOrHadamard || nBasis>=nMeas)) {
-		printf("nBasis must be larger than nMeas!\n");
+		printf("nBasis must be larger tha n nMeas!\n");
 		return;
 		}
 
 	int exp = 1000000;   //1s 
-	int expBlank = 100000; //1ms
+	int expBlank = 100000;
+	int dark_time = 10000; // possibili alternativa a add blank 
 	int sizePattern;
 	if(addBlank)
 		sizePattern = SIZE_PATTERN/2;
@@ -34,7 +36,7 @@ void initDMD(struct DMD *dmd){
 	stopSequence(dmd->handle);
 	changeMode(dmd->handle, 3);
 	int *exposure;
-	int dark_time = 0; // possibili alternativa a add blank
+	
 	int *trigger_in; // 0 per non dovere mettere il trigger 1 per doverlo avere
 	int *trigger_out; //1 per ricever trigger in output 0 per non averlo
 	int ***basis;
@@ -85,7 +87,7 @@ void initDMD(struct DMD *dmd){
 		}
 		
 		dmd->pattern[q].nEl =nEl;
-		defSequence(&(dmd->pattern[q]),basis,exposure,trigger_in,dark_time,trigger_out, nB,nB);//il penultimo o 1 o nEl
+		defSequence(&(dmd->pattern[q]),basis,exposure,trigger_in,dark_time,trigger_out, numberOfRepetition/*nB*/,nB);//il penultimo o 1 o nEl
 		for(int i = 0; i<nB; i++){
 			for(int j = 0; j<HEIGHT; j++)free(basis[i][j]);
 			free(basis[i]);
@@ -273,7 +275,7 @@ void closeDMD(struct DMD* dmd){
 	}
 
 	free(dmd->pattern);
-	reset(dmd->handle);//bho elimina porcate?
+	//reset(dmd->handle);//bho elimina porcate?
 	//if(!DEBUG) getchar();
 	hid_close(dmd->handle);
 	hid_exit();
