@@ -421,7 +421,7 @@ void definePatterns(struct Patterns * pattern, const int index,const int exposur
 
 /*
 all the information useful for showing the patterns is produced here.
-it requires only what pattern, the exposure, and some other less important param
+it requires only what pattern, the exposure and if triggers need to be presents
 */
 
 void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *trigger_in, int dark_time, int *trigger_out, int repetition, const int size){
@@ -568,10 +568,10 @@ void push(struct Node **head, int data){
 
 }
 
-void allocatePattern(struct Patterns *p, int nB){
-	p->nB = nB;
-	p->defPatterns=(char **)malloc(nB*sizeof(char *));
-	for(int i = 0; i<nB; i++)
+void allocatePattern(struct Patterns *p, int nEl){
+	p->nEl = nEl;
+	p->defPatterns=(char **)malloc(nEl*sizeof(char *));
+	for(int i = 0; i<nEl; i++)
 		p->defPatterns[i]=(char *)malloc(12*sizeof(char ));
 }
 int isRowEqual(const int *a, const int *b){

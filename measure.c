@@ -121,7 +121,7 @@ void moveDMD(const struct DMD dmd){
 		}
 		stopSequence(dmd.handle);//
 		startSequence(dmd.handle);
-		int tDead = 500; //0.5 s of dead time
+		int tDead = 0.5; //0.5 s of dead time
 		int tSleep = totExposure/1e6-tDead;
 		if(totExposure/1e6-tDead<0)
 			tSleep = 0;

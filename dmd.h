@@ -1,6 +1,6 @@
 #ifndef DMD_H
 #define DMD_H
-#define DEBUG false
+#define DEBUG true
 #define SIZE_PATTERN 24
 #include<stdlib.h>
 #include<stdio.h>
