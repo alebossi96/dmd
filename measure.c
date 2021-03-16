@@ -121,8 +121,13 @@ void moveDMD(const struct DMD dmd){
 		}
 		stopSequence(dmd.handle);//
 		startSequence(dmd.handle);
-		sleep(totExposure/1e6);//need to wait for the pattern to finish
+		int tDead = 500; //0.5 s of dead time
+		int tSleep = totExposure/1e6-tDead;
+		if(totExposure/1e6-tDead<0)
+			tSleep = 0;
+		sleep(tSleep);//need to wait for the pattern to finish
 					//sleep must be in input a number >0.001
+		//TODO:nel TRS quando ho finito di ricevere tutti i trigger
 	}
 
 
