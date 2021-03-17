@@ -426,7 +426,6 @@ it requires only what pattern, the exposure and if triggers need to be presents
 
 void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *trigger_in, int dark_time, int *trigger_out, int repetition, const int size){
 	int *encoded;
-	//stopSequence(handle);
 	int i = 0;
 	int ***imageData;
 	int szEncoded;
@@ -448,7 +447,6 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 	}
 	
 	while(i<size || i%SIZE_PATTERN!=0){
-		//	sizePkg++;	
 
 		if(i%SIZE_PATTERN==0){
 			for(int j=0; j<HEIGHT; j++){
@@ -472,7 +470,7 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 				}
 		}
 		i++;
-		if(i%SIZE_PATTERN == 0){//int mergedImagesint[HEIGHT][WIDTH][3]
+		if(i%SIZE_PATTERN == 0){
 			
 
 	
@@ -507,11 +505,7 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 			}
 
 			free(tmp);
-			//push(&encodedImagesList,encoded);
-			//push(&sizes,bytecount);
-			//sizeList++;
 			char c111[3]={'1','1','1'};
-			//free(encoded);//DA CANCELLARE
 			pattern->exposure=(int*)malloc(size*sizeof(int));
 			for(int j = (i/SIZE_PATTERN-1)*SIZE_PATTERN; j<i && j<size; j++){
 				pattern->exposure[j]=exposure[j];
@@ -525,11 +519,6 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 	setBmp(pattern, (i-1)/SIZE_PATTERN,szEncoded);	
 	bmpLoad(pattern,encoded,szEncoded);
 	free(encoded);
-	//encodedImagesList = encodedImagesList->next;
-	//sizes = sizes->next;
-	
-	
-	//disallocare sizes e encodedImagesList
 
 	
 	for(int i = 0; i<SIZE_PATTERN;i++){

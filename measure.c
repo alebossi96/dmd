@@ -3,12 +3,26 @@
 
 
 void initDMD(struct DMD *dmd){
-	
-	int nBasis =200;
-	int nMeas = 20;
+	/*
+	char key[10];
+	int value;
+		
+	FILE *fh;
+
+	fh = fopen("getVariables.txt", "r");
+	int i = 0;
+	while (i<1) {
+		i++;
+		fscanf(fh, "%s %d", key, &value);
+		printf("var = %s val = %d ", key, value)
+	}
+	fclose(fh);
+	*/
+	int nBasis =128;
+	int nMeas = 50;
 	int addBlank = 0;
-	int numberOfRepetition = 200;
-	int RasterOrHadamard = 0;
+	int numberOfRepetition = 24;
+	int RasterOrHadamard = 1;
 	if(!(!RasterOrHadamard || nBasis>=nMeas)) {
 		printf("nBasis must be larger tha n nMeas!\n");
 		return;
@@ -16,7 +30,7 @@ void initDMD(struct DMD *dmd){
 
 	int exp = 1000000;   //1s 
 	int expBlank = 100000;
-	int dark_time = 10000; // possibili alternativa a add blank 
+	int dark_time = 0; // possibili alternativa a add blank 
 	int sizePattern;
 	if(addBlank)
 		sizePattern = SIZE_PATTERN/2;
@@ -87,7 +101,7 @@ void initDMD(struct DMD *dmd){
 		}
 		
 		dmd->pattern[q].nB =nB;
-		defSequence(&(dmd->pattern[q]),basis,exposure,trigger_in,dark_time,trigger_out, numberOfRepetition/*nB*/,nEl);//il penultimo o 1 o nEl1
+		defSequence(&(dmd->pattern[q]),basis,exposure,trigger_in,dark_time,trigger_out, /*numberOfRepetition*/nEl,nEl);//il penultimo o 1 o nEl1
 		for(int i = 0; i<nEl; i++){
 			for(int j = 0; j<HEIGHT; j++)free(basis[i][j]);
 			free(basis[i]);
