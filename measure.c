@@ -33,9 +33,9 @@ void initDMD(struct DMD *dmd){
 	int dark_time = 0; // possibili alternativa a add blank 
 	int sizePattern;
 	if(addBlank)
-		sizePattern = SIZE_PATTERN/2;
+		sizePattern = SIZE_SET_PATTERN/2;
 	else
-		sizePattern = SIZE_PATTERN;
+		sizePattern = SIZE_SET_PATTERN;
 	int nSet = celing(nMeas,sizePattern);
 	printf("nSet = %d \n", nSet);
 	dmd->szPattern=nSet;
@@ -127,16 +127,21 @@ void moveDMD(const struct DMD dmd){
 			}
 		//configureLut
 		talkDMD_int(dmd.handle,'w',0x00,0x1a,0x31,dmd.pattern[i].configureLut,6);
-		//setBmp
-		talkDMD_int(dmd.handle,'w',0x00,0x1a,0x2a,dmd.pattern[i].setBmp,6);
-		//bmpLoad
-		for(int j = 0; j<dmd.pattern[i].packNum; j++){
-			talkDMD_int(dmd.handle,'w',0x11,0x1a,0x2b,dmd.pattern[i].bmpLoad[j],dmd.pattern[i].bitsPackNum[j]);
+		
+		for(int j = 0; j<dmd.pattern[i].nSetPerSet; j++){
+			//setBmp
+			talkDMD_int(dmd.handle,'w',0x00,0x1a,0x2a,dmd.pattern[i].setBmp[j],6);
+			//bmpLoad
+			for(int k = 0; k<dmd.pattern[i].packNum[j]; k++){
+				talkDMD_int(dmd.handle,'w',0x11,0x1a,0x2b,dmd.pattern[i].bmpLoad[j][k],dmd.pattern[i].bitsPackNum[j][k]);
+			}
 		}
 		stopSequence(dmd.handle);//
+		//getchar();
 		startSequence(dmd.handle);
-		int tDead = 0.5; //0.5 s of dead time
-		int tSleep = totExposure/1e6-tDead;
+		float tDead = 0.5; //0.5 s of dead time
+		printf("totExposure = %d\n",totExposure);
+		float tSleep = totExposure/1e6-tDead;
 		if(totExposure/1e6-tDead<0)
 			tSleep = 0;
 		sleep(tSleep);//need to wait for the pattern to finish
@@ -196,14 +201,14 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 			printf("written bytes = %d \n", res);
 			
 			
-		}else{
+		}/*else{
 			for(int k = 0; k<SIZE;k++){ 
 				printf("%d, ", buffer[k]);
 				//fprintf(pFile, "%d\n", buffer[k]);
 			}
 			//fprintf(pFile, "\n\n");
 			printf("\n\n");
-		}
+		}*/
 
 	}else{
 		for(int i = 0; i<SIZE-tot; i++) buffer[i+tot]= data[i];
@@ -213,14 +218,14 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 			printf("written bytes = %d \n", res);
 			
 			
-		}else{
+		}/*else{
 			for(int k = 0; k<SIZE;k++){ 
 				printf("%d, ", buffer[k]);
 				//fprintf(pFile, "%d\n", buffer[k]);
 			}
 			//fprintf(pFile, "\n\n");
 			printf("\n\n");
-		}
+		}*/
 		buffer[0] = 0x00;
 		for(int i = 0; i<SIZE; i++) buffer[i]= 0;
 		int i = 1;
@@ -238,14 +243,14 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 				
 				printf("written bytes = %d \n", res);
 				
-				}else{
+				}/*else{
 					for(int k = 0; k<SIZE;k++){ 
 						printf("%d, ", buffer[k]);
 						//fprintf(pFile, "%d\n", buffer[k]);
 					}
 					//fprintf(pFile, "\n\n");
 					printf("\n\n");
-				}
+				}*/
 			
 				i =1;
 				
@@ -263,14 +268,14 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 				
 				printf("written bytes = %d \n", res);
 				
-			}else{
+			}/*else{
 				for(int k = 0; k<SIZE;k++){ 
 					printf("%d, ", buffer[k]);
 					//fprintf(pFile, "%d\n", buffer[k]);
 				}
 				//fprintf(pFile, "\n\n");
 				printf("\n\n");
-			}
+			}*/
 		}
 	}
 	/*if(!DEBUG)
@@ -284,12 +289,18 @@ void closeDMD(struct DMD* dmd){
 		for(int i = 0; i<dmd->pattern[q].nEl; i++)
 			free(dmd->pattern[q].defPatterns[i]);
 		free(dmd->pattern[q].defPatterns);
-		for(int i = 0; i<dmd->pattern[q].packNum; i++)
-			free(dmd->pattern[q].bmpLoad[i]);
-	
+		for(int j = 0; j<dmd->pattern[q].nSetPerSet; j++){
+			for(int i = 0; i<dmd->pattern[q].packNum[j]; i++)
+				free(dmd->pattern[q].bmpLoad[j][i]);
+			
+			free(dmd->pattern[q].bmpLoad[j]);
+			free(dmd->pattern[q].bitsPackNum[j]);
+		}
+		free(dmd->pattern[q].setBmp);
 		free(dmd->pattern[q].bmpLoad);
-		free(dmd->pattern[q].exposure);
 		free(dmd->pattern[q].bitsPackNum);
+		free(dmd->pattern[q].exposure);
+		free(dmd->pattern[q].packNum);
 		
 	}
 

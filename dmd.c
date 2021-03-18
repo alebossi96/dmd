@@ -446,6 +446,18 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 		}
 	}
 	
+	int nSetPerSet = size/SIZE_PATTERN;
+	if(nSetPerSet<((float)size)/SIZE_PATTERN)
+		nSetPerSet++;
+	printf("nSetPerSet = %d, size/SIZE_PATTERN = %f\n",nSetPerSet, ((float)size)/SIZE_PATTERN);
+	//getchar();
+	pattern->nSetPerSet=nSetPerSet;
+	configureLut(pattern,size,repetition);//vale per tutto il set di 48 pattern
+	pattern->setBmp =(int (*)[6])malloc(nSetPerSet*sizeof(int [6]));
+	pattern->bmpLoad =(int ***)malloc(nSetPerSet*sizeof(int **));
+	pattern->bitsPackNum =(int **)malloc(nSetPerSet*sizeof(int * ));
+	pattern->packNum =(int *)malloc(nSetPerSet*sizeof(int));
+	pattern->exposure=(int*)malloc(size*sizeof(int));
 	while(i<size || i%SIZE_PATTERN!=0){
 
 		if(i%SIZE_PATTERN==0){
@@ -511,19 +523,21 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 				pattern->exposure[j]=exposure[j];
 				definePatterns( pattern, j, exposure[j],1,c111,trigger_in[j],dark_time,trigger_out[j],(i-1)/SIZE_PATTERN,j-(i/SIZE_PATTERN-1)*SIZE_PATTERN);	
 			}
+
+
+
+			
+			setBmp(pattern, (i-1)/SIZE_PATTERN,szEncoded);	
+			bmpLoad(pattern,(i-1)/SIZE_PATTERN,encoded,szEncoded);
+			free(encoded);
 			
 		}
-	}
-	
-	configureLut(pattern,size,repetition);
-	setBmp(pattern, (i-1)/SIZE_PATTERN,szEncoded);	
-	bmpLoad(pattern,encoded,szEncoded);
-	free(encoded);
 
-	
-	for(int i = 0; i<SIZE_PATTERN;i++){
-		for(int j = 0; j<HEIGHT; j++) free(imageData[i][j]);
 	}
+
+	for(int i = 0; i<SIZE_PATTERN;i++){
+			for(int j = 0; j<HEIGHT; j++) free(imageData[i][j]);
+		}
 
 	for(int i = 0; i<SIZE_PATTERN;i++){
 		free(imageData[i]);
@@ -532,13 +546,18 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 	
 	for(int i = 0; i<HEIGHT; i++){
 		for(int j = 0; j<WIDTH; j++) free(mergedImagesint[i][j]);
-	}
-
+		}
 	for(int i = 0; i<HEIGHT; i++){
 		free(mergedImagesint[i]);
 	}
 	free(mergedImagesint);
+
 	
+	
+
+
+	
+
 			
 }
 
@@ -589,7 +608,7 @@ void setBmp(struct Patterns * pattern,const int  index,const int size){
 	free(tmp);
 	for(int i = 0; i<4; i++) payload[i+2]= total[i];
 	free(total);
-	for(int i = 0; i<6; i++) pattern->setBmp[i]=payload[i];
+	for(int i = 0; i<6; i++) pattern->setBmp[index][i]=payload[i];
 	//command(handle, 'w',0x00,0x1a,0x2a,payload,6);
 }
 
@@ -598,12 +617,12 @@ void setBmp(struct Patterns * pattern,const int  index,const int size){
 	load (or load to Patterns) the encoded image to the dmd
 
 */
-void bmpLoad(struct Patterns * pattern,const int *image, const int size){
+void bmpLoad(struct Patterns * pattern,const int index, const int *image, const int size){
 
 	int packNum= size/504 +1;
-	pattern->bmpLoad=(int **)malloc(packNum*sizeof(int*));
-	pattern->packNum=packNum;
-	pattern->bitsPackNum =(int *)malloc(packNum*sizeof(int));
+	pattern->bmpLoad[index]=(int **)malloc(packNum*sizeof(int*));
+	pattern->packNum[index]=packNum;
+	pattern->bitsPackNum[index] =(int *)malloc(packNum*sizeof(int));
 	for(int i = 0; i<packNum; i++){
 		if(i%100 == 0) printf("%d di %d\n", i, packNum);
 		int *payload;
@@ -617,7 +636,7 @@ void bmpLoad(struct Patterns * pattern,const int *image, const int size){
 			bits = size%504;
 		}
 		
-		pattern->bitsPackNum[i] = bits+2;
+		pattern->bitsPackNum[index][i] = bits+2;
 		
 		int *tmp;
 		tmp = bitsToBytes_char(leng,16);
@@ -628,8 +647,8 @@ void bmpLoad(struct Patterns * pattern,const int *image, const int size){
 		free(tmp);
 		
 		for(int j = 0; j<bits; j++) payload[j+2] = image[504*i+j];
-		pattern->bmpLoad[i]=(int *)malloc((bits+2)*sizeof(int));
-		for(int j = 0;j<bits+2;j++) pattern->bmpLoad[i][j]=payload[j];
+		pattern->bmpLoad[index][i]=(int *)malloc((bits+2)*sizeof(int));
+		for(int j = 0;j<bits+2;j++) pattern->bmpLoad[index][i][j]=payload[j];
 	
 		//command(handle, 'w',0x11,0x1a,0x2b, payload, bits+2);
 		free(payload);

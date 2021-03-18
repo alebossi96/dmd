@@ -1,6 +1,6 @@
 #ifndef MEASURE_H
 #define MEASURE_H
-#define SIZE_PATTERN 24
+#define SIZE_SET_PATTERN 48//TODO: CAMBIARE QUI QUANDO NON SO
 #define SIZE 65
 #include<hidapi.h>
 #include"dmd.h"
