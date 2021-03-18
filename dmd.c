@@ -518,7 +518,7 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 
 			free(tmp);
 			char c111[3]={'1','1','1'};
-			pattern->exposure=(int*)malloc(size*sizeof(int));
+			
 			for(int j = (i/SIZE_PATTERN-1)*SIZE_PATTERN; j<i && j<size; j++){
 				pattern->exposure[j]=exposure[j];
 				definePatterns( pattern, j, exposure[j],1,c111,trigger_in[j],dark_time,trigger_out[j],(i-1)/SIZE_PATTERN,j-(i/SIZE_PATTERN-1)*SIZE_PATTERN);	
