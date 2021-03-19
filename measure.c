@@ -18,19 +18,23 @@ void initDMD(struct DMD *dmd){
 	}
 	fclose(fh);
 	*/
-	int nBasis =128;
-	int nMeas = 50;
+	int nBasis =256; //linewidth
+	int nMeas = 32; //numberOfMeasurements
 	int addBlank = 0;
 	int numberOfRepetition = 24;
-	int RasterOrHadamard = 1;
+	int RasterOrHadamard = 1;//0 for raster 2 for only ones
 	if(!(!RasterOrHadamard || nBasis>=nMeas)) {
 		printf("nBasis must be larger tha n nMeas!\n");
 		return;
 		}
 
-	int exp = 1000000;   //1s 
-	int expBlank = 100000;
-	int dark_time = 0; // possibili alternativa a add blank 
+	int exp = 500000;    //1e6 is 1s 
+	int dark_time = 0; // time off after a base
+
+
+
+	int expBlank = 1000000;
+	
 	int sizePattern;
 	if(addBlank)
 		sizePattern = SIZE_PATTERN/2;
@@ -137,6 +141,7 @@ void moveDMD(const struct DMD dmd){
 		startSequence(dmd.handle);
 		int tDead = 0.5; //0.5 s of dead time
 		int tSleep = totExposure/1e6-tDead;
+		printf("totExposure= %d\n",totExposure);
 		if(totExposure/1e6-tDead<0)
 			tSleep = 0;
 		sleep(tSleep);//need to wait for the pattern to finish
