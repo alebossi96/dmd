@@ -18,11 +18,11 @@ void initDMD(struct DMD *dmd){
 	}
 	fclose(fh);
 	*/
-	int nBasis =256; //linewidth
-	int nMeas = 32; //numberOfMeasurements
+	int nBasis =30; //linewidth
+	int nMeas = 320; //numberOfMeasurements
 	int addBlank = 0;
 	int numberOfRepetition = 24;
-	int RasterOrHadamard = 1;//0 for raster 2 for only ones
+	int RasterOrHadamard = 0;//0 for raster 2 for only ones
 	if(!(!RasterOrHadamard || nBasis>=nMeas)) {
 		printf("nBasis must be larger tha n nMeas!\n");
 		return;
@@ -123,7 +123,7 @@ void moveDMD(const struct DMD dmd){
 	//I only need to pass the data that we got from defSequence
 	//all the rest must be processed during initialization or garbage collection
 	for(int i = 0; i<dmd.szPattern; i++){
-		//stopSequence(handle); 
+		stopSequence(dmd.handle); 
 		int totExposure = 0;
 		for(int j = 0; j<dmd.pattern[i].nEl; j++){//prima era nB
 			totExposure +=dmd.pattern[i].exposure[j];
@@ -137,17 +137,18 @@ void moveDMD(const struct DMD dmd){
 		for(int j = 0; j<dmd.pattern[i].packNum; j++){
 			talkDMD_int(dmd.handle,'w',0x11,0x1a,0x2b,dmd.pattern[i].bmpLoad[j],dmd.pattern[i].bitsPackNum[j]);
 		}
-		stopSequence(dmd.handle);//
+		
 		startSequence(dmd.handle);
-		int tDead = 0.5; //0.5 s of dead time
-		int tSleep = totExposure/1e6-tDead;
+		int tDead = 0; //0.5 s of dead time
+		int tSleep = totExposure/1e6-tDead +1;
 		printf("totExposure= %d\n",totExposure);
 		if(totExposure/1e6-tDead<0)
 			tSleep = 0;
 		sleep(tSleep);//need to wait for the pattern to finish
 					//sleep must be in input a number >0.001
 		//TODO:nel TRS quando ho finito di ricevere tutti i trigger
-	}
+		
+	}	
 
 
 }
