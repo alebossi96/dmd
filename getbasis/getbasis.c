@@ -87,8 +87,8 @@ void getBasisHadamard(const int nBasis, const int *idx, const int szIdx, const i
 
 	//int mult = 32/nBasis;//devo cercare la più vicina potenza del 2
 	int ** H;
-	H =  ordering(nBasis,idx,szIdx); // genera automaticamente
-	//H =  getBasisHadamardFromTxt(nBasis,idx,szIdx);//legge dal file
+	//H =  ordering(nBasis,idx,szIdx); // genera automaticamente
+	H =  getBasisHadamardFromTxt(nBasis,idx,szIdx);//legge dal file
 	for(int i = 0; i<szIdx; i++ ){
 		for(int j = 0; j<nBasis; j++) printf("%d ", H[i][j]);
 		printf("\n");

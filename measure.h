@@ -15,6 +15,11 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 int talkDMD_int(hid_device *handle, const char mode, const char sequencebyte, const char com1, const char com2, const int *data, const int sizeData);
 void closeDMD(struct DMD *dmd);
 
+void reset(hid_device *handle);
+void changeMode(hid_device *handle, int mode);
+void stopSequence(hid_device *handle);
+void startSequence(hid_device *handle);
 
+void writeOnFIle(char *fileName, unsigned char *data, int size);
 #endif
 

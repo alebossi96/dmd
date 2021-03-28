@@ -1,6 +1,24 @@
 #include"measure.h"
 
+void writeOnFile(char *fileName, unsigned char *data, int size){
+	FILE * pData = fopen(fileName, "a");	
+	for(int k = 0; k<size;k++){ 
+		
+		fprintf(pData, "%d\n", data[k]);
+	}
+	fprintf(pData, "\n\n");
+	fclose(pData);
+}
 
+void writeOnFile_int(char *fileName, int *data, int size){
+
+	FILE * pData = fopen(fileName, "a");	
+	for(int k = 0; k<size;k++){ 
+		fprintf(pData, "%d\n", data[k]);
+	}
+	fprintf(pData, "\n\n");
+	fclose(pData);
+}
 
 void initDMD(struct DMD *dmd){
 	/*
@@ -18,17 +36,17 @@ void initDMD(struct DMD *dmd){
 	}
 	fclose(fh);
 	*/
-	int nBasis =30; //linewidth
-	int nMeas = 320; //numberOfMeasurements
+	int nBasis =512; //linewidth
+	int nMeas = 24; //numberOfMeasurements
 	int addBlank = 0;
 	int numberOfRepetition = 24;
-	int RasterOrHadamard = 0;//0 for raster 2 for only ones
+	int RasterOrHadamard = 1;//0 for raster 2 for only ones
 	if(!(!RasterOrHadamard || nBasis>=nMeas)) {
 		printf("nBasis must be larger tha n nMeas!\n");
 		return;
 		}
 
-	int exp = 500000;    //1e6 is 1s 
+	int exp = 1000000;    //1e6 is 1s 
 	int dark_time = 0; // time off after a base
 
 
@@ -51,8 +69,9 @@ void initDMD(struct DMD *dmd){
 		dmd->handle = NULL;
 		if(!DEBUG) return;// 1;
 	}
-	stopSequence(dmd->handle);
+	//TODO:stopSequence(dmd->handle);
 	changeMode(dmd->handle, 3);
+	
 	int *exposure;
 	
 	int *trigger_in; // 0 per non dovere mettere il trigger 1 per doverlo avere
@@ -110,7 +129,8 @@ void initDMD(struct DMD *dmd){
 			for(int j = 0; j<HEIGHT; j++)free(basis[i][j]);
 			free(basis[i]);
 		}
-
+		for(int j = 0; j<6; j++) printf("dmd.pattern[%d].configureLut[%d]= %d\n",q, j,dmd->pattern[q].configureLut[j]);
+		//getchar();
 		free(basis);
 		free(exposure); 
 		free(trigger_out);
@@ -125,16 +145,27 @@ void moveDMD(const struct DMD dmd){
 	for(int i = 0; i<dmd.szPattern; i++){
 		stopSequence(dmd.handle); 
 		int totExposure = 0;
-		for(int j = 0; j<dmd.pattern[i].nEl; j++){//prima era nB
-			totExposure +=dmd.pattern[i].exposure[j];
-			talkDMD_char(dmd.handle,'w',0x00,0x1a,0x34,dmd.pattern[i].defPatterns[j],12);
-			}
 		//configureLut
+		
+		writeOnFile("cConfigureLUT.txt",dmd.pattern[i].configureLut,6);
 		talkDMD_int(dmd.handle,'w',0x00,0x1a,0x31,dmd.pattern[i].configureLut,6);
+
+		for(int j = 0; j<dmd.pattern[i].nEl; j++){
+			totExposure +=dmd.pattern[i].exposure[j];
+			//define the pattern
+			talkDMD_char(dmd.handle,'w',0x00,0x1a,0x34,dmd.pattern[i].defPatterns[j],12);
+			writeOnFile("cPattern.txt",dmd.pattern[i].defPatterns[j],12);
+			}
+		
 		//setBmp
+		writeOnFile_int("csetBmp.txt",dmd.pattern[i].setBmp,6);
+		for(int j = 0; j<6; j++)
+			printf(" %d \n",dmd.pattern[i].setBmp[j]);
+		
 		talkDMD_int(dmd.handle,'w',0x00,0x1a,0x2a,dmd.pattern[i].setBmp,6);
 		//bmpLoad
 		for(int j = 0; j<dmd.pattern[i].packNum; j++){
+			writeOnFile_int("cBmpLoad.txt",dmd.pattern[i].bmpLoad[j],dmd.pattern[i].bitsPackNum[j]);
 			talkDMD_int(dmd.handle,'w',0x11,0x1a,0x2b,dmd.pattern[i].bmpLoad[j],dmd.pattern[i].bitsPackNum[j]);
 		}
 		
@@ -159,7 +190,9 @@ int talkDMD_int(hid_device *handle, const char mode, const char sequencebyte, co
 		tmp[i] = (char)data[i];
 
 	int res = talkDMD_char(handle, mode, sequencebyte, com1,com2,tmp,sizeData);
-
+	for(int i = 0; i<sizeData; i++)
+		printf("data = %d\n", data[i]);
+	//getchar();
 	free(tmp);
 	return res;
 }
@@ -169,6 +202,7 @@ int talkDMD_int(hid_device *handle, const char mode, const char sequencebyte, co
 
 int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, const char com1, const char com2, const char *data, const int sizeData){
 	//if(DEBUG) FILE * pFile = fopen("cCommand.txt", "a");
+	char *fileName = "cCommand.txt";
 	unsigned char buffer[SIZE];
 	char flagstring[8];	
 	if(mode == 'r')
@@ -205,8 +239,10 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 		}else{
 			for(int k = 0; k<SIZE;k++){ 
 				printf("%d, ", buffer[k]);
+				
 				//fprintf(pFile, "%d\n", buffer[k]);
 			}
+			writeOnFile(fileName, buffer,SIZE);
 			//fprintf(pFile, "\n\n");
 			printf("\n\n");
 		}
@@ -224,6 +260,7 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 				printf("%d, ", buffer[k]);
 				//fprintf(pFile, "%d\n", buffer[k]);
 			}
+			writeOnFile(fileName, buffer,SIZE);
 			//fprintf(pFile, "\n\n");
 			printf("\n\n");
 		}
@@ -249,6 +286,7 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 						printf("%d, ", buffer[k]);
 						//fprintf(pFile, "%d\n", buffer[k]);
 					}
+					writeOnFile(fileName, buffer,SIZE);
 					//fprintf(pFile, "\n\n");
 					printf("\n\n");
 				}
@@ -274,6 +312,7 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 					printf("%d, ", buffer[k]);
 					//fprintf(pFile, "%d\n", buffer[k]);
 				}
+				writeOnFile(fileName, buffer,SIZE);
 				//fprintf(pFile, "\n\n");
 				printf("\n\n");
 			}
@@ -302,11 +341,35 @@ void closeDMD(struct DMD* dmd){
 	free(dmd->pattern);
 	//reset(dmd->handle);//bho elimina porcate?
 	//if(!DEBUG) getchar();
-	hid_close(dmd->handle);
+	//TODO://hid_close(dmd->handle);
 	hid_exit();
 
 
 
+}
+
+
+void changeMode(hid_device *handle, int mode_){
+	char mode[1];
+	mode[0]=mode_;
+	talkDMD_char(handle, 'w', 0x00, 0x1a, 0x1b, mode,1);
+	
+}
+void stopSequence(hid_device *handle){
+	char mode[1]={0};
+	talkDMD_char(handle, 'w', 0x00, 0x1a, 0x24, mode,1);
+	
+}
+
+void startSequence(hid_device *handle){
+	char mode[1]={2};
+	talkDMD_char(handle,'w',0x00,0x1a,0x24,mode,1);
+        
+}
+void reset(hid_device *handle){
+	char mode[1]={2};
+	talkDMD_char(handle, 'w', 0x00, 0x02, 0x00, mode,1);
+	
 }
 
 
