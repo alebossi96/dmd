@@ -36,11 +36,11 @@ void initDMD(struct DMD *dmd){
 	}
 	fclose(fh);
 	*/
-	int nBasis =100; //linewidth
-	int nMeas = 24; //numberOfMeasurements
+	int nBasis =512; //linewidth
+	int nMeas = 48; //numberOfMeasurements
 	int addBlank = 0;
 	int numberOfRepetition = 24;
-	int RasterOrHadamard = 2;//0 for raster 2 for only ones
+	int RasterOrHadamard = 0;//0 for raster 2 for only ones
 	if(!(!RasterOrHadamard || nBasis>=nMeas)) {
 		printf("nBasis must be larger tha n nMeas!\n");
 		return;
@@ -156,7 +156,7 @@ void moveDMD(const struct DMD dmd){
 			talkDMD_char(dmd.handle,'w',0x00,0x1a,0x34,dmd.pattern[i].defPatterns[j],12);
 			writeOnFile("cPattern.txt",dmd.pattern[i].defPatterns[j],12);
 			checkForErrors(dmd.handle);
-			getchar();
+			
 			}
 		
 		//setBmp

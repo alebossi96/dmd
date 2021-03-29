@@ -323,8 +323,7 @@ void configureLut(struct Patterns * pattern,int size, int rep){
 	free(r);
 	int *tmp =  bitsToBytes_char(string,48);
 	for(int i = 0; i<6; i++) pattern->configureLut[i]= tmp[i];
-	for(int i = 0; i<6; i++) printf("tmp[%d]= %d\n", i,tmp[i]);
-	getchar();
+	
 	//command(handle, 'w',0x00,0x1a,0x31,tmp,6);
 	
 	free(tmp);
