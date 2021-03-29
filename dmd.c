@@ -1,7 +1,33 @@
 #define SIZE 65
 
 #include"dmd.h"
+void checkForErrors(hid_device *handle){
+	/* it does not work. Probably not implemented correctly*/
+	if( hid_error(handle)==NULL)
+		printf("errori");
+	unsigned char message[1] = {1};
+	int res = hid_read(handle, message,1);
+	char * flag = convlen(res, 8);
+	
+	for(int i = 0; i<8; i++)
+	printf("%c", flag[i]);
+	printf("\n");
+	free(flag);
+	/*
+	//if(flag[2]== '1'){
+		//printf("errori");
+		char *a= NULL;
+		command(handle, 'r',0x22,0x01,0x00, a, 0);
+		int error = hid_read(handle, message,1);
+		printf("error = %d \n", error);
+		command(handle, 'r',0x22,0x01,0x01,a, 0);
+		message[0] = 128;
+		int response = hid_read(handle, message,1);
+		printf("response = %d \n", response);
 
+	//}
+	*/
+}
 
 /*
 command is the function that does the comunication with the dmd, every other function that wants to comunicate with the dmd need to use this function

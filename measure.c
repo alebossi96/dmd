@@ -36,11 +36,11 @@ void initDMD(struct DMD *dmd){
 	}
 	fclose(fh);
 	*/
-	int nBasis =512; //linewidth
+	int nBasis =100; //linewidth
 	int nMeas = 24; //numberOfMeasurements
 	int addBlank = 0;
 	int numberOfRepetition = 24;
-	int RasterOrHadamard = 1;//0 for raster 2 for only ones
+	int RasterOrHadamard = 2;//0 for raster 2 for only ones
 	if(!(!RasterOrHadamard || nBasis>=nMeas)) {
 		printf("nBasis must be larger tha n nMeas!\n");
 		return;
@@ -149,26 +149,27 @@ void moveDMD(const struct DMD dmd){
 		
 		writeOnFile("cConfigureLUT.txt",dmd.pattern[i].configureLut,6);
 		talkDMD_int(dmd.handle,'w',0x00,0x1a,0x31,dmd.pattern[i].configureLut,6);
-
+		checkForErrors(dmd.handle);
 		for(int j = 0; j<dmd.pattern[i].nEl; j++){
 			totExposure +=dmd.pattern[i].exposure[j];
 			//define the pattern
 			talkDMD_char(dmd.handle,'w',0x00,0x1a,0x34,dmd.pattern[i].defPatterns[j],12);
 			writeOnFile("cPattern.txt",dmd.pattern[i].defPatterns[j],12);
+			checkForErrors(dmd.handle);
+			getchar();
 			}
 		
 		//setBmp
 		writeOnFile_int("csetBmp.txt",dmd.pattern[i].setBmp,6);
-		for(int j = 0; j<6; j++)
-			printf(" %d \n",dmd.pattern[i].setBmp[j]);
-		
 		talkDMD_int(dmd.handle,'w',0x00,0x1a,0x2a,dmd.pattern[i].setBmp,6);
+		checkForErrors(dmd.handle);
 		//bmpLoad
 		for(int j = 0; j<dmd.pattern[i].packNum; j++){
 			writeOnFile_int("cBmpLoad.txt",dmd.pattern[i].bmpLoad[j],dmd.pattern[i].bitsPackNum[j]);
 			talkDMD_int(dmd.handle,'w',0x11,0x1a,0x2b,dmd.pattern[i].bmpLoad[j],dmd.pattern[i].bitsPackNum[j]);
 		}
-		
+		checkForErrors(dmd.handle);
+		getchar();
 		startSequence(dmd.handle);
 		int tDead = 0; //0.5 s of dead time
 		int tSleep = totExposure/1e6-tDead +1;
@@ -339,9 +340,10 @@ void closeDMD(struct DMD* dmd){
 	}
 
 	free(dmd->pattern);
-	//reset(dmd->handle);//bho elimina porcate?
 	//if(!DEBUG) getchar();
-	//TODO://hid_close(dmd->handle);
+	//reset(dmd->handle);//bho elimina porcate?
+	//
+	hid_close(dmd->handle);
 	hid_exit();
 
 
