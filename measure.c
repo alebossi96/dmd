@@ -36,9 +36,11 @@ void initDMD(struct DMD *dmd){
 	}
 	fclose(fh);
 	*/
-	int nBasis =512; //linewidth
-	int nMeas = 48; //numberOfMeasurements
+	int nBasis =10; //linewidth
+	int nMeas = 300; //numberOfMeasurements
 	int addBlank = 0;
+	float startPositionPercentage= 0;
+	
 	int numberOfRepetition = 24;
 	int RasterOrHadamard = 0;//0 for raster 2 for only ones
 	if(!(!RasterOrHadamard || nBasis>=nMeas)) {
@@ -58,6 +60,7 @@ void initDMD(struct DMD *dmd){
 		sizePattern = SIZE_PATTERN/2;
 	else
 		sizePattern = SIZE_PATTERN;
+	int offset = startPositionPercentage*(WIDTH+HEIGHT)/nBasis;
 	int nSet = celing(nMeas,sizePattern);
 	printf("nSet = %d \n", nSet);
 	dmd->szPattern=nSet;
@@ -112,7 +115,7 @@ void initDMD(struct DMD *dmd){
 		int *idx;
 		idx =(int* )malloc((nB)*sizeof(int));
 		for(int i = 0; i<nB; i++)
-			idx[i]=q*sizePattern+i;
+			idx[i]=q*sizePattern+i+offset;
 		printf("nB = %d  nEl = %d \n", nB, nEl);
 		getBasis(RasterOrHadamard,nBasis,idx,nB,addBlank, basis);
 		free(idx);
@@ -129,8 +132,7 @@ void initDMD(struct DMD *dmd){
 			for(int j = 0; j<HEIGHT; j++)free(basis[i][j]);
 			free(basis[i]);
 		}
-		for(int j = 0; j<6; j++) printf("dmd.pattern[%d].configureLut[%d]= %d\n",q, j,dmd->pattern[q].configureLut[j]);
-		//getchar();
+		
 		free(basis);
 		free(exposure); 
 		free(trigger_out);
@@ -145,11 +147,7 @@ void moveDMD(const struct DMD dmd){
 	for(int i = 0; i<dmd.szPattern; i++){
 		stopSequence(dmd.handle); 
 		int totExposure = 0;
-		//configureLut
 		
-		writeOnFile("cConfigureLUT.txt",dmd.pattern[i].configureLut,6);
-		talkDMD_int(dmd.handle,'w',0x00,0x1a,0x31,dmd.pattern[i].configureLut,6);
-		checkForErrors(dmd.handle);
 		for(int j = 0; j<dmd.pattern[i].nEl; j++){
 			totExposure +=dmd.pattern[i].exposure[j];
 			//define the pattern
@@ -158,7 +156,8 @@ void moveDMD(const struct DMD dmd){
 			checkForErrors(dmd.handle);
 			
 			}
-		
+		talkDMD_int(dmd.handle,'w',0x00,0x1a,0x31,dmd.pattern[i].configureLut,6);
+		checkForErrors(dmd.handle);
 		//setBmp
 		writeOnFile_int("csetBmp.txt",dmd.pattern[i].setBmp,6);
 		talkDMD_int(dmd.handle,'w',0x00,0x1a,0x2a,dmd.pattern[i].setBmp,6);
@@ -169,14 +168,14 @@ void moveDMD(const struct DMD dmd){
 			talkDMD_int(dmd.handle,'w',0x11,0x1a,0x2b,dmd.pattern[i].bmpLoad[j],dmd.pattern[i].bitsPackNum[j]);
 		}
 		checkForErrors(dmd.handle);
-		getchar();
+		//getchar();
 		startSequence(dmd.handle);
 		int tDead = 0; //0.5 s of dead time
 		int tSleep = totExposure/1e6-tDead +1;
 		printf("totExposure= %d\n",totExposure);
 		if(totExposure/1e6-tDead<0)
 			tSleep = 0;
-		sleep(tSleep);//need to wait for the pattern to finish
+		sleep(tSleep+1);//need to wait for the pattern to finish
 					//sleep must be in input a number >0.001
 		//TODO:nel TRS quando ho finito di ricevere tutti i trigger
 		
@@ -341,7 +340,7 @@ void closeDMD(struct DMD* dmd){
 
 	free(dmd->pattern);
 	//if(!DEBUG) getchar();
-	//reset(dmd->handle);//bho elimina porcate?
+	reset(dmd->handle);//bho elimina porcate?
 	//
 	hid_close(dmd->handle);
 	hid_exit();
