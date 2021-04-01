@@ -91,6 +91,7 @@ void getBasisHadamard(const int nBasis, const int *idx, const int szIdx,int comp
 		for(int j = 0; j<nBasis; j++) printf("%d ", H[i][j]);
 		printf("\n");
 	}
+	int dimCompression = 200;
 	int logN = log(nBasis)/log(2);
 	int mult=(WIDTH+HEIGHT)/pow2_i(logN);
 	int idxZeros = (WIDTH+HEIGHT-mult*nBasis)/2; //trova dove partire ricordtati che le basi di Hadamard sono di dimensioni 2^n	
@@ -114,10 +115,14 @@ void getBasisHadamard(const int nBasis, const int *idx, const int szIdx,int comp
 			 }
 			if(j>(idxZeros-1) && j<(WIDTH+HEIGHT-idxZeros)){
 				int el =(H[cont][(j-idxZeros)/mult]+1)/2;
-				
-				 for(int k = 0; k<lim; k++){			
-					basis[i][i_x+k][i_y-k] = el;
-					
+				 for(int k = 0; k<lim; k++){
+					if(compressImage){
+						if(abs(k-j/2)<dimCompression/2)
+							basis[i][i_x+k][i_y-k] = el;
+						else basis[i][i_x+k][i_y-k] = 0;
+					}
+					else
+						basis[i][i_x+k][i_y-k] = el;
 					}
 				}
 			else for(int k = 0; k<lim; k++) basis[i][i_x+k][i_y-k] = 0;	  // k,j se sono in obliquo deve cambiare !
@@ -134,7 +139,7 @@ void getBasisHadamard(const int nBasis, const int *idx, const int szIdx,int comp
 void getBasisRaster(const int dim, const int *idx, const int szIdx,int compressImage, int ***basis){
 	//possibile farlo a scatti o continuo
 	int idxZeros = 0; //(WIDTH+HEIGHT)/2; 
-
+	int dimCompression = 200;
 	for(int cont= 0; cont<szIdx; cont++){
 		int i = cont;
 		int indexRaster = idx[i];
@@ -160,7 +165,14 @@ void getBasisRaster(const int dim, const int *idx, const int szIdx,int compressI
 				else el = 0;
 				 for(int k = 0; k<lim; k++){ // k,j se sono in obliquo deve cambiare !
 									
-					basis[i][i_x+k][i_y-k] = el;
+					if(compressImage){
+						if(abs(k-j/2)<dimCompression/2)
+							basis[i][i_x+k][i_y-k] = el;
+						else basis[i][i_x+k][i_y-k] = 0;
+					}
+					else
+						basis[i][i_x+k][i_y-k] = el;
+					
 					
 					}
 				}

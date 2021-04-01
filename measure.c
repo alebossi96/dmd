@@ -42,9 +42,9 @@ void initDMD(struct DMD *dmd){
 /*	START setup data needed*/
 
 
-	int RasterOrHadamard = 1;//0 for raster 2 for only ones
+	int RasterOrHadamard = 0;//0 for raster 1 for Hadamard 2 for only ones
 
-	int nBasis =512; //linewidth or number Of Basis
+	int nBasis =51; //linewidth or number Of Basis
 	int nMeas = 48; //number Of Measurements
 
 
@@ -55,7 +55,7 @@ void initDMD(struct DMD *dmd){
 	int dark_time = 0; // time off after a base
 
 	int repeat = 0;
-	int compress = 0;
+	int compress = 1; // 0 for no compression 1 for compression
 
 
 
