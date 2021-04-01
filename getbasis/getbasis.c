@@ -2,11 +2,11 @@
 #include "ordering.h"
 #define SIZE_BUFFER 2049
 
-void getBasis(const int hadamard_raster, const int dim, const int *idx, const int szIdx, const int addBlank, int ***output){
+void getBasis(const int hadamard_raster, const int dim, const int *idx, const int szIdx,int compressImage, int ***output){
 	if(hadamard_raster == 1)
-		getBasisHadamard(dim, idx, szIdx, addBlank, output);//output non so se magari devo passare in maniera diversa
+		getBasisHadamard(dim, idx, szIdx,compressImage, output);//output non so se magari devo passare in maniera diversa
 	else if(hadamard_raster == 0)
-		getBasisRaster(dim, idx, szIdx, addBlank, output);//output non so se magari devo passare in maniera diversa
+		getBasisRaster(dim, idx, szIdx,compressImage, output);//output non so se magari devo passare in maniera diversa
 	
 	else if(hadamard_raster == 2)
 		getBasisOnes(szIdx, output);
@@ -82,10 +82,8 @@ int min(const int a, const int b){
 	if(a>b) return b;
 	return a;
 }
-void getBasisHadamard(const int nBasis, const int *idx, const int szIdx, const int addBlank, int ***basis){
+void getBasisHadamard(const int nBasis, const int *idx, const int szIdx,int compressImage, int ***basis){
 	//come inserire? nel senso binning? padding?/ transformazione?
-
-	//int mult = 32/nBasis;//devo cercare la più vicina potenza del 2
 	int ** H;
 	//H =  ordering(nBasis,idx,szIdx); // genera automaticamente
 	H =  getBasisHadamardFromTxt(nBasis,idx,szIdx);//legge dal file
@@ -95,11 +93,9 @@ void getBasisHadamard(const int nBasis, const int *idx, const int szIdx, const i
 	}
 	int logN = log(nBasis)/log(2);
 	int mult=(WIDTH+HEIGHT)/pow2_i(logN);
-	int idxZeros = (WIDTH+HEIGHT-mult*nBasis)/2; //trova dove partire
+	int idxZeros = (WIDTH+HEIGHT-mult*nBasis)/2; //trova dove partire ricordtati che le basi di Hadamard sono di dimensioni 2^n	
 	for(int cont = 0; cont <szIdx; cont++){ //count on the basis
-		int i;
-		if(addBlank) i=cont*2;
-		else i = cont;
+		int i = cont;
 		
 		for(int j = 0; j<WIDTH+HEIGHT;j++){
 			int i_y;
@@ -107,7 +103,7 @@ void getBasisHadamard(const int nBasis, const int *idx, const int szIdx, const i
 			int lim = HEIGHT;
 			
 			if(j<HEIGHT || j >= WIDTH)
-				lim = min(j+1/*io sicuro*/, HEIGHT + WIDTH - j );
+				lim = min(j+1, HEIGHT + WIDTH - j );
 			if(j<WIDTH){
 				i_y = j; 
 				i_x = 0;
@@ -117,18 +113,14 @@ void getBasisHadamard(const int nBasis, const int *idx, const int szIdx, const i
 				i_x = j-WIDTH;
 			 }
 			if(j>(idxZeros-1) && j<(WIDTH+HEIGHT-idxZeros)){
-				//printf("(j-idxZeros)/mult]+1 = %d",(j-idxZeros)/mult+1);
 				int el =(H[cont][(j-idxZeros)/mult]+1)/2;
 				
-				 for(int k = 0; k<lim; k++){ // k,j se sono in obliquo deve cambiare !
-					/*if(i_x+k>=1080 || i_y-k>= 1920 )
-					printf("i_y-k = %d ----- i_x+k = %d \n", i_y-k, i_x+k);	*/				
+				 for(int k = 0; k<lim; k++){			
 					basis[i][i_x+k][i_y-k] = el;
 					
 					}
 				}
 			else for(int k = 0; k<lim; k++) basis[i][i_x+k][i_y-k] = 0;	  // k,j se sono in obliquo deve cambiare !
-			if(addBlank)	for(int k = 0; k<lim; k++) basis[i+1][i_x+k][i_y-k] = 0;
 		}	
 	}
 	for(int i = 0; i<szIdx; i++)
@@ -139,14 +131,12 @@ void getBasisHadamard(const int nBasis, const int *idx, const int szIdx, const i
 }
 
 
-void getBasisRaster(const int dim, const int *idx, const int szIdx, const int addBlank, int ***basis){
+void getBasisRaster(const int dim, const int *idx, const int szIdx,int compressImage, int ***basis){
 	//possibile farlo a scatti o continuo
 	int idxZeros = 0; //(WIDTH+HEIGHT)/2; 
 
 	for(int cont= 0; cont<szIdx; cont++){
-		int i;
-		if(addBlank) i = cont*2;
-		else i = cont;
+		int i = cont;
 		int indexRaster = idx[i];
 		for(int j = 0; j<WIDTH+HEIGHT;j++){
 			int i_y;
@@ -175,7 +165,6 @@ void getBasisRaster(const int dim, const int *idx, const int szIdx, const int ad
 					}
 				}
 			else for(int k = 0; k<lim; k++) basis[i][i_x+k][i_y-k] = 0;	  // k,j se sono in obliquo deve cambiare !
-			if(addBlank)	for(int k = 0; k<lim; k++) basis[i+1][i_x+k][i_y-k] = 0;
 		}	
 	}
 }

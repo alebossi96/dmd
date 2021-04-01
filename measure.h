@@ -8,6 +8,7 @@ struct DMD{
 	hid_device *handle;
 	struct Patterns * pattern;
 	int szPattern;
+	int repeat;
 };
 void initDMD(struct DMD *dmd);
 void moveDMD(const struct DMD dmd);
