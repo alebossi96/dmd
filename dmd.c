@@ -457,7 +457,17 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 			mergedImagesint[i][j] = (int*)malloc(3* sizeof(int));
 		}
 	}
-	
+	int numberOfBatch;
+	if(size % SIZE_PATTERN == 0)
+		numberOfBatch = size/SIZE_PATTERN;
+	else numberOfBatch = size/SIZE_PATTERN + 1;
+	pattern->numOfBatches = numberOfBatch;
+	pattern->bmpLoad = (int ***)malloc(numberOfBatch * sizeof(int **));
+	pattern->setBmp = ((int *)[6])malloc(numberOfBatch *sizeof(int[6]));
+	pattern->packNum = (int *)malloc(numberOfBatch * sizeof(int *));
+	pattern->bitsPackNum =(int **)malloc(numberOfBatch*sizeof(int*));
+
+
 	while(i<size || i%SIZE_PATTERN!=0){
 
 		if(i%SIZE_PATTERN==0){
@@ -530,7 +540,7 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 	
 	configureLut(pattern,size,repetition);
 	setBmp(pattern, (i-1)/SIZE_PATTERN,szEncoded);	
-	bmpLoad(pattern,encoded,szEncoded);
+	bmpLoad(pattern,(i-1)/SIZE_PATTERN,encoded,szEncoded);
 	free(encoded);
 
 	
@@ -598,8 +608,8 @@ void setBmp(struct Patterns * pattern,const int  index,const int size){
 	free(tmp);
 	for(int i = 0; i<4; i++) payload[i+2]= total[i];
 	free(total);
-	for(int i = 0; i<6; i++) pattern->setBmp[i]=payload[i];
-	//command(handle, 'w',0x00,0x1a,0x2a,payload,6);
+	for(int i = 0; i<6; i++) pattern->setBmp[index][i]=payload[i];
+
 }
 
 
@@ -607,12 +617,12 @@ void setBmp(struct Patterns * pattern,const int  index,const int size){
 	load (or load to Patterns) the encoded image to the dmd
 
 */
-void bmpLoad(struct Patterns * pattern,const int *image, const int size){
+void bmpLoad(struct Patterns * pattern,const int index, const int *image, const int size){
 
 	int packNum= size/504 +1;
-	pattern->bmpLoad=(int **)malloc(packNum*sizeof(int*));
-	pattern->packNum=packNum;
-	pattern->bitsPackNum =(int *)malloc(packNum*sizeof(int));
+	pattern->bmpLoad[index]=(int **)malloc(packNum*sizeof(int*));
+	pattern->packNum[index]=packNum;
+	pattern->bitsPackNum[index] =(int *)malloc(packNum*sizeof(int));
 	for(int i = 0; i<packNum; i++){
 		if(i%100 == 0) printf("%d di %d\n", i, packNum);
 		int *payload;
@@ -626,7 +636,7 @@ void bmpLoad(struct Patterns * pattern,const int *image, const int size){
 			bits = size%504;
 		}
 		
-		pattern->bitsPackNum[i] = bits+2;
+		pattern->bitsPackNum[index][i] = bits+2;
 		
 		int *tmp;
 		tmp = bitsToBytes_char(leng,16);
@@ -637,8 +647,8 @@ void bmpLoad(struct Patterns * pattern,const int *image, const int size){
 		free(tmp);
 		
 		for(int j = 0; j<bits; j++) payload[j+2] = image[504*i+j];
-		pattern->bmpLoad[i]=(int *)malloc((bits+2)*sizeof(int));
-		for(int j = 0;j<bits+2;j++) pattern->bmpLoad[i][j]=payload[j];
+		pattern->bmpLoad[index][i]=(int *)malloc((bits+2)*sizeof(int));
+		for(int j = 0;j<bits+2;j++) pattern->bmpLoad[index][i][j]=payload[j];
 	
 		//command(handle, 'w',0x11,0x1a,0x2b, payload, bits+2);
 		free(payload);

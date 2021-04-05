@@ -29,13 +29,14 @@ struct Patterns{
 	//need an array not matrix because Patterns will be array
 	char **defPatterns;
 	int configureLut[6];
-	int setBmp[6];
-	int **bmpLoad;
+	int (*setBmp)[6];
+	int ***bmpLoad;
 	int nB;
-	int packNum;
+	int *packNum;
 	int nEl;
-	int *bitsPackNum;
+	int **bitsPackNum;
 	int *exposure;
+	int numOfBatches;
 
 };
 
@@ -69,7 +70,7 @@ int newEncode2(int ***image, struct Node **n);
 int newEncodeDMDScopeFoundary(int ***image, struct Node **bitString);
 void definePatterns(struct Patterns * pattern,const int index,const int exposure,const int bitdepth, const char *color,const int triggerIn,const int darkTime,const int triggerout,const int patInd,const int bitpos);
 void setBmp(struct Patterns * pattern,const int  index,const int size);
-void bmpLoad(struct Patterns * pattern, const int *image, const int size);
+void bmpLoad(struct Patterns * pattern, const int index, const int *image, const int size);
 
 
 void readBMP(char* filename, int *** image);

@@ -56,6 +56,7 @@ void initDMD(struct DMD *dmd){
 
 	int repeat = 0;
 	int compress = 0; // 0 for no compression 1 for compression
+	int sizeBatch = 24;
 
 
 
@@ -66,9 +67,9 @@ void initDMD(struct DMD *dmd){
 		printf("nBasis must be larger tha n nMeas!\n");
 		return;
 	}
-	int sizePattern = SIZE_PATTERN;
+
 	int offset = startPositionPercentage*(WIDTH+HEIGHT)/nBasis;
-	int nSet = celing(nMeas,sizePattern);
+	int nSet = celing(nMeas,sizeBatch);
 	printf("nSet = %d \n", nSet);
 	dmd->szPattern=nSet;
 	dmd->repeat = repeat;
@@ -90,7 +91,7 @@ void initDMD(struct DMD *dmd){
 	int ***basis;
 	dmd->pattern = (struct Patterns *)malloc(nSet*sizeof(struct Patterns));
 	for (int q = 0; q < nSet; q++){
-		int nEl = min(sizePattern, nMeas-q*sizePattern); //contiene# di immagini caricate
+		int nEl = min(sizeBatch, nMeas-q*sizeBatch); //contiene# di immagini caricate
 		allocatePattern(&(dmd->pattern[q]),nEl);
 		//allocate memory
 		exposure = (int *) malloc(nEl * sizeof(int));
@@ -109,15 +110,15 @@ void initDMD(struct DMD *dmd){
 			}
 			
 		int nB;//nB contiene le info su quante info vere ci sono, # di basi caricate
-		if(nMeas>(q+1)*sizePattern)
-			nB = sizePattern;
+		if(nMeas>(q+1)*sizeBatch)
+			nB = sizeBatch;
 		else
-			nB = nMeas-q*sizePattern;
+			nB = nMeas-q*sizeBatch;
 		int *idx;
 		idx =(int* )malloc((nB)*sizeof(int));
 		for(int i = 0; i<nB; i++)
-			idx[i]=q*sizePattern+i+offset;
-		printf("nB = %d  nEl = %d \n", nB, nEl);
+			idx[i]=q*sizeBatch+i+offset;
+
 		getBasis(RasterOrHadamard,nBasis,idx,nB, compress,basis);
 		free(idx);
 		for (int k = 0; k<nEl ; k++){
@@ -126,6 +127,7 @@ void initDMD(struct DMD *dmd){
 						
 			printf("\n");
 		}
+
 		
 		dmd->pattern[q].nB =nB;
 		int numberOfRepetition;
@@ -166,15 +168,16 @@ void moveDMD(const struct DMD dmd){
 		talkDMD_int(dmd.handle,'w',0x00,0x1a,0x31,dmd.pattern[i].configureLut,6);
 		checkForErrors(dmd.handle);
 		//setBmp
+		for(int k = 0; k<dmd.pattern[i].numOfBatches; k++){
+			talkDMD_int(dmd.handle,'w',0x00,0x1a,0x2a,dmd.pattern[i].setBmp[k],6);
+			checkForErrors(dmd.handle);
+			//bmpLoad
+			for(int j = 0; j<dmd.pattern[i].packNum[k]; j++){
 
-		talkDMD_int(dmd.handle,'w',0x00,0x1a,0x2a,dmd.pattern[i].setBmp,6);
-		checkForErrors(dmd.handle);
-		//bmpLoad
-		for(int j = 0; j<dmd.pattern[i].packNum; j++){
-
-			talkDMD_int(dmd.handle,'w',0x11,0x1a,0x2b,dmd.pattern[i].bmpLoad[j],dmd.pattern[i].bitsPackNum[j]);
+				talkDMD_int(dmd.handle,'w',0x11,0x1a,0x2b,dmd.pattern[i].bmpLoad[j][k],dmd.pattern[i].bitsPackNum[j][k]);
+			}
+			checkForErrors(dmd.handle);
 		}
-		checkForErrors(dmd.handle);
 		//getchar();
 		startSequence(dmd.handle);
 		int tDead = 0; //0.5 s of dead time
