@@ -421,8 +421,7 @@ void definePatterns(struct Patterns * pattern, const int index,const int exposur
 	payload[10]= tmp[0];
 	payload[11]=tmp[1];
 	for(int i = 0; i<12; i++)
-		pattern->defPatterns[bitPos][i] = payload[i];
-	
+		pattern->defPatterns[bitPos + SIZE_PATTERN*patInd][i] = payload[i];
 	//command(handle, 'w',0x00,0x1a,0x34,payload,12);
 	free(tmp);
 	free(bitPos_);
@@ -463,12 +462,12 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 	else numberOfBatch = size/SIZE_PATTERN + 1;
 	pattern->numOfBatches = numberOfBatch;
 	pattern->bmpLoad = (int ***)malloc(numberOfBatch * sizeof(int **));
-	pattern->setBmp = ((int *)[6])malloc(numberOfBatch *sizeof(int[6]));
+	pattern->setBmp = (int (*)[6])malloc(numberOfBatch *sizeof(int[6]));
 	pattern->packNum = (int *)malloc(numberOfBatch * sizeof(int *));
 	pattern->bitsPackNum =(int **)malloc(numberOfBatch*sizeof(int*));
+	pattern->exposure=(int*)malloc(size*sizeof(int));
 
-
-	while(i<size || i%SIZE_PATTERN!=0){
+	while(i<size){
 
 		if(i%SIZE_PATTERN==0){
 			for(int j=0; j<HEIGHT; j++){
@@ -529,21 +528,25 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 
 			free(tmp);
 			char c111[3]={'1','1','1'};
-			pattern->exposure=(int*)malloc(size*sizeof(int));
 			for(int j = (i/SIZE_PATTERN-1)*SIZE_PATTERN; j<i && j<size; j++){
 				pattern->exposure[j]=exposure[j];
+				//define pattern deve essere diviso perchè si indica di quale batch fa parte quello specifico pattern
 				definePatterns( pattern, j, exposure[j],1,c111,trigger_in[j],dark_time,trigger_out[j],(i-1)/SIZE_PATTERN,j-(i/SIZE_PATTERN-1)*SIZE_PATTERN);	
 			}
+
+
+			setBmp(pattern, (i-1)/SIZE_PATTERN,szEncoded);	
+			bmpLoad(pattern,(i-1)/SIZE_PATTERN,encoded,szEncoded);
+			free(encoded);
 			
 		}
 	}
 	
-	configureLut(pattern,size,repetition);
-	setBmp(pattern, (i-1)/SIZE_PATTERN,szEncoded);	
-	bmpLoad(pattern,(i-1)/SIZE_PATTERN,encoded,szEncoded);
-	free(encoded);
-
 	
+	
+	
+
+	configureLut(pattern,size,repetition);
 	for(int i = 0; i<SIZE_PATTERN;i++){
 		for(int j = 0; j<HEIGHT; j++) free(imageData[i][j]);
 	}
@@ -578,9 +581,8 @@ void push(struct Node **head, int data){
 
 void allocatePattern(struct Patterns *p, int nEl){
 	p->nEl = nEl;
-	p->defPatterns=(char **)malloc(nEl*sizeof(char *));
-	for(int i = 0; i<nEl; i++)
-		p->defPatterns[i]=(char *)malloc(12*sizeof(char ));
+	p->defPatterns=(char (*)[12])malloc(nEl*sizeof(char [12]));
+	
 }
 int isRowEqual(const int *a, const int *b){
 	for(int i=0; i<3;i++)

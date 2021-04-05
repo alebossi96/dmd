@@ -1,6 +1,6 @@
 #ifndef DMD_H
 #define DMD_H
-#define DEBUG false
+#define DEBUG true
 #define SIZE_PATTERN 24
 #include<stdlib.h>
 #include<stdio.h>
@@ -27,7 +27,7 @@ struct List{
 };
 struct Patterns{
 	//need an array not matrix because Patterns will be array
-	char **defPatterns;
+	char (*defPatterns)[12];
 	int configureLut[6];
 	int (*setBmp)[6];
 	int ***bmpLoad;

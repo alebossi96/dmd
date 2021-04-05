@@ -45,7 +45,7 @@ void initDMD(struct DMD *dmd){
 	int RasterOrHadamard = 0;//0 for raster 1 for Hadamard 2 for only ones
 
 	int nBasis =51; //linewidth or number Of Basis
-	int nMeas = 48; //number Of Measurements
+	int nMeas = 96; //number Of Measurements
 
 
 	float startPositionPercentage= 0;	
@@ -56,7 +56,7 @@ void initDMD(struct DMD *dmd){
 
 	int repeat = 0;
 	int compress = 0; // 0 for no compression 1 for compression
-	int sizeBatch = 24;
+	int sizeBatch = 48;
 
 
 
@@ -161,21 +161,24 @@ void moveDMD(const struct DMD dmd){
 			totExposure +=dmd.pattern[i].exposure[j];
 			//define the pattern
 			talkDMD_char(dmd.handle,'w',0x00,0x1a,0x34,dmd.pattern[i].defPatterns[j],12);
-
+			if(!DEBUG)
 			checkForErrors(dmd.handle);
 			
 			}
 		talkDMD_int(dmd.handle,'w',0x00,0x1a,0x31,dmd.pattern[i].configureLut,6);
+		if(!DEBUG)
 		checkForErrors(dmd.handle);
 		//setBmp
 		for(int k = 0; k<dmd.pattern[i].numOfBatches; k++){
 			talkDMD_int(dmd.handle,'w',0x00,0x1a,0x2a,dmd.pattern[i].setBmp[k],6);
+			if(!DEBUG)
 			checkForErrors(dmd.handle);
 			//bmpLoad
 			for(int j = 0; j<dmd.pattern[i].packNum[k]; j++){
 
-				talkDMD_int(dmd.handle,'w',0x11,0x1a,0x2b,dmd.pattern[i].bmpLoad[j][k],dmd.pattern[i].bitsPackNum[j][k]);
+				talkDMD_int(dmd.handle,'w',0x11,0x1a,0x2b,dmd.pattern[i].bmpLoad[k][j],dmd.pattern[i].bitsPackNum[k][j]);
 			}
+			if(!DEBUG)
 			checkForErrors(dmd.handle);
 		}
 		//getchar();
@@ -330,15 +333,20 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 }
 void closeDMD(struct DMD* dmd){
 	for (int q = 0; q < dmd->szPattern; q++){
-		for(int i = 0; i<dmd->pattern[q].nEl; i++)
-			free(dmd->pattern[q].defPatterns[i]);
 		free(dmd->pattern[q].defPatterns);
-		for(int i = 0; i<dmd->pattern[q].packNum; i++)
-			free(dmd->pattern[q].bmpLoad[i]);
-	
+		for(int k = 0; k<dmd->pattern[q].numOfBatches; k++){
+			for(int i = 0; i<dmd->pattern[q].packNum[k]; i++)
+				free(dmd->pattern[q].bmpLoad[k][i]);
+			free(dmd->pattern[q].bmpLoad[k]);
+			free(dmd->pattern[q].bitsPackNum[k]);
+			
+		}
 		free(dmd->pattern[q].bmpLoad);
-		free(dmd->pattern[q].exposure);
 		free(dmd->pattern[q].bitsPackNum);
+		free(dmd->pattern[q].setBmp);
+		free(dmd->pattern[q].packNum);
+		free(dmd->pattern[q].exposure);
+		
 		
 	}
 
