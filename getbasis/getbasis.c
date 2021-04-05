@@ -139,7 +139,7 @@ void getBasisHadamard(const int nBasis, const int *idx, const int szIdx,int comp
 void getBasisRaster(const int dim, const int *idx, const int szIdx,int compressImage, int ***basis){
 	//possibile farlo a scatti o continuo
 	int idxZeros = 0; //(WIDTH+HEIGHT)/2; 
-	int dimCompression = 200;
+	int dimCompression = 400;
 	for(int cont= 0; cont<szIdx; cont++){
 		int i = cont;
 		int indexRaster = idx[i];

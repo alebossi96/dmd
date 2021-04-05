@@ -55,7 +55,7 @@ void initDMD(struct DMD *dmd){
 	int dark_time = 0; // time off after a base
 
 	int repeat = 0;
-	int compress = 1; // 0 for no compression 1 for compression
+	int compress = 0; // 0 for no compression 1 for compression
 
 
 
@@ -151,7 +151,8 @@ void moveDMD(const struct DMD dmd){
 	//I only need to pass the data that we got from defSequence
 	//all the rest must be processed during initialization or garbage collection
 	for(int i = 0; i<dmd.szPattern; i++){
-		stopSequence(dmd.handle); 
+		stopSequence(dmd.handle);
+		getchar(); 
 		int totExposure = 0;
 		
 		for(int j = 0; j<dmd.pattern[i].nEl; j++){
