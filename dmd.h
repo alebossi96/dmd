@@ -1,6 +1,6 @@
 #ifndef DMD_H
 #define DMD_H
-#define DEBUG true
+#define DEBUG false
 #define SIZE_PATTERN 24
 #include<stdlib.h>
 #include<stdio.h>
@@ -42,7 +42,7 @@ struct Patterns{
 
 
 
-
+void writeOnFile(char *fileName, unsigned char *data, int size);
 //int command(hid_device *handle, const char mode, const char sequencebyte, const char com2, const char com1, const char *data, const int sizeData);
 //int command(hid_device *handle, const char mode, const char sequencebyte, const char com2, const char com1, const int *data, const int sizeData);
 void commandPattern(hid_device *handle,struct Patterns * pattern, const int szPattern);

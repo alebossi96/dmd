@@ -1,24 +1,5 @@
 #include"measure.h"
 
-void writeOnFile(char *fileName, unsigned char *data, int size){
-	FILE * pData = fopen(fileName, "a");	
-	for(int k = 0; k<size;k++){ 
-		
-		fprintf(pData, "%d\n", data[k]);
-	}
-	fprintf(pData, "\n\n");
-	fclose(pData);
-}
-
-void writeOnFile_int(char *fileName, int *data, int size){
-
-	FILE * pData = fopen(fileName, "a");	
-	for(int k = 0; k<size;k++){ 
-		fprintf(pData, "%d\n", data[k]);
-	}
-	fprintf(pData, "\n\n");
-	fclose(pData);
-}
 
 void initDMD(struct DMD *dmd){
 	/*
@@ -44,8 +25,8 @@ void initDMD(struct DMD *dmd){
 
 	int RasterOrHadamard = 0;//0 for raster 1 for Hadamard 2 for only ones
 
-	int nBasis =51; //linewidth or number Of Basis
-	int nMeas = 96; //number Of Measurements
+	int nBasis =50; //linewidth or number Of Basis
+	int nMeas = 48; //number Of Measurements
 
 
 	float startPositionPercentage= 0;	
@@ -169,7 +150,7 @@ void moveDMD(const struct DMD dmd){
 		if(!DEBUG)
 		checkForErrors(dmd.handle);
 		//setBmp
-		for(int k = 0; k<dmd.pattern[i].numOfBatches; k++){
+		for(int k = dmd.pattern[i].numOfBatches-1; k>=0; k--){
 			talkDMD_int(dmd.handle,'w',0x00,0x1a,0x2a,dmd.pattern[i].setBmp[k],6);
 			if(!DEBUG)
 			checkForErrors(dmd.handle);
@@ -244,11 +225,13 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 	buffer[6]=com1;
 	long int tot = 7;
 	int j = 0;
+	
 	if((tot+sizeData)<SIZE){
 		for(int i = 0;i<sizeData;i++ ) buffer[tot+i] =data[i];
 		for(int i = tot+sizeData; i<SIZE; i++) buffer[i] = 0x00;
 		if(!DEBUG){
 			int res = hid_write(handle, buffer,SIZE);
+			
 			printf("written bytes = %d \n", res);
 			
 			
@@ -257,7 +240,7 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 				printf("%d, ", buffer[k]);
 				
 			}
-
+			writeOnFile("cCommand.txt",buffer, SIZE);
 			printf("\n\n");
 		}
 
@@ -272,8 +255,9 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 		}else{
 			for(int k = 0; k<SIZE;k++){ 
 				printf("%d, ", buffer[k]);
+				
 			}
-
+			writeOnFile("cCommand.txt",buffer, SIZE);
 			printf("\n\n");
 		}
 		buffer[0] = 0x00;
@@ -296,7 +280,9 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 				}else{
 					for(int k = 0; k<SIZE;k++){ 
 						printf("%d, ", buffer[k]);
+						
 					}
+					writeOnFile("cCommand.txt",buffer, SIZE);
 					printf("\n\n");
 				}
 			
@@ -319,12 +305,14 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 			}else{
 				for(int k = 0; k<SIZE;k++){ 
 					printf("%d, ", buffer[k]);
+					
 				}
-
+				writeOnFile("cCommand.txt",buffer, SIZE);
 				printf("\n\n");
 			}
 		}
 	}
+	
 	/*if(!DEBUG)
 		checkForErrors(handle);*/
 	

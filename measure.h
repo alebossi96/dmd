@@ -20,6 +20,6 @@ void changeMode(hid_device *handle, int mode);
 void stopSequence(hid_device *handle);
 void startSequence(hid_device *handle);
 
-void writeOnFIle(char *fileName, unsigned char *data, int size);
+
 #endif
 

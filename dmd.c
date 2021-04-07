@@ -1,6 +1,28 @@
 #define SIZE 65
 
 #include"dmd.h"
+
+void writeOnFile(char *fileName, unsigned char *data, int size){
+	FILE * pData = fopen(fileName, "a");	
+	for(int k = 0; k<size;k++){ 
+		
+		fprintf(pData, "%d\n", data[k]);
+	}
+	fprintf(pData, "\n\n");
+	fclose(pData);
+}
+
+void writeOnFile_int(char *fileName, int data [], int size){
+
+	FILE * pData = fopen(fileName, "a");	
+	for(int k = 0; k<size;k++){ 
+		fprintf(pData, "%d\n", data[k]);
+	}
+	fprintf(pData, "\n\n");
+	fclose(pData);
+}
+
+
 void checkForErrors(hid_device *handle){
 	/* it does not work. Probably not implemented correctly*/
 	if( hid_error(handle)==NULL)
@@ -323,7 +345,7 @@ void configureLut(struct Patterns * pattern,int size, int rep){
 	free(r);
 	int *tmp =  bitsToBytes_char(string,48);
 	for(int i = 0; i<6; i++) pattern->configureLut[i]= tmp[i];
-	
+	writeOnFile_int("cLut", tmp, 6);
 	//command(handle, 'w',0x00,0x1a,0x31,tmp,6);
 	
 	free(tmp);
@@ -364,7 +386,9 @@ It defines the characteristic of a single pattern. most importantly its duration
 */
 
 void definePatterns(struct Patterns * pattern, const int index,const int exposure,const int bitdepth, const char *color,const int triggerIn,const int darkTime,const int triggerOut,const int patInd,const int bitPos){
-	char payload[12];
+	//char payload[12];
+	unsigned char * payload;
+	payload = (unsigned char *)malloc(12 *sizeof(unsigned char));
 	char * tmpChar= NULL;
 	tmpChar = convlen(index,16);
 	
@@ -422,7 +446,9 @@ void definePatterns(struct Patterns * pattern, const int index,const int exposur
 	payload[11]=tmp[1];
 	for(int i = 0; i<12; i++)
 		pattern->defPatterns[bitPos + SIZE_PATTERN*patInd][i] = payload[i];
+	writeOnFile("cPattern.txt", payload, 12);
 	//command(handle, 'w',0x00,0x1a,0x34,payload,12);
+	free(payload);
 	free(tmp);
 	free(bitPos_);
 	free(patInd_);
@@ -525,7 +551,7 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 				
 				encoded[bytecount-j-1]=tmp[j];
 			}
-
+			writeOnFile_int("cEncoded.txt", encoded, bytecount);
 			free(tmp);
 			char c111[3]={'1','1','1'};
 			for(int j = (i/SIZE_PATTERN-1)*SIZE_PATTERN; j<i && j<size; j++){
@@ -534,9 +560,9 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 				definePatterns( pattern, j, exposure[j],1,c111,trigger_in[j],dark_time,trigger_out[j],(i-1)/SIZE_PATTERN,j-(i/SIZE_PATTERN-1)*SIZE_PATTERN);	
 			}
 
-
-			setBmp(pattern, (i-1)/SIZE_PATTERN,szEncoded);	
-			bmpLoad(pattern,(i-1)/SIZE_PATTERN,encoded,szEncoded);
+			int idx = (i-1)/SIZE_PATTERN;
+			setBmp(pattern, idx,szEncoded);	
+			bmpLoad(pattern,idx,encoded,szEncoded);
 			free(encoded);
 			
 		}
@@ -611,6 +637,7 @@ void setBmp(struct Patterns * pattern,const int  index,const int size){
 	for(int i = 0; i<4; i++) payload[i+2]= total[i];
 	free(total);
 	for(int i = 0; i<6; i++) pattern->setBmp[index][i]=payload[i];
+	writeOnFile_int("cSetBmp.txt", payload, 6);
 
 }
 
@@ -651,7 +678,7 @@ void bmpLoad(struct Patterns * pattern,const int index, const int *image, const 
 		for(int j = 0; j<bits; j++) payload[j+2] = image[504*i+j];
 		pattern->bmpLoad[index][i]=(int *)malloc((bits+2)*sizeof(int));
 		for(int j = 0;j<bits+2;j++) pattern->bmpLoad[index][i][j]=payload[j];
-	
+		writeOnFile_int("cBmpLoad.txt", payload, bits+2);
 		//command(handle, 'w',0x11,0x1a,0x2b, payload, bits+2);
 		free(payload);
 			
