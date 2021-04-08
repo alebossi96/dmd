@@ -1,6 +1,5 @@
 #ifndef MEASURE_H
 #define MEASURE_H
-#define SIZE 65
 #include<hidapi.h>
 #include"dmd.h"
 struct DMD{

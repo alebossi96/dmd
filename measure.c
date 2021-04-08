@@ -1,23 +1,7 @@
 #include"measure.h"
-
+#define SIZE_SEND 65
 
 void initDMD(struct DMD *dmd){
-	/*
-	char key[10];
-	int value;
-		
-	FILE *fh;
-
-	fh = fopen("getVariables.txt", "r");
-	int i = 0;
-	while (i<1) {
-		i++;
-		fscanf(fh, "%s %d", key, &value);
-		printf("var = %s val = %d ", key, value)
-	}
-	fclose(fh);
-	*/
-
 
 
 /*	START setup data needed*/
@@ -200,7 +184,7 @@ int talkDMD_int(hid_device *handle, const char mode, const char sequencebyte, co
 
 int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, const char com1, const char com2, const char *data, const int sizeData){
 	
-	unsigned char buffer[SIZE];
+	unsigned char buffer[SIZE_SEND];
 	char flagstring[8];	
 	if(mode == 'r')
 		flagstring[0]='1';
@@ -226,63 +210,63 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 	long int tot = 7;
 	int j = 0;
 	
-	if((tot+sizeData)<SIZE){
+	if((tot+sizeData)<SIZE_SEND){
 		for(int i = 0;i<sizeData;i++ ) buffer[tot+i] =data[i];
-		for(int i = tot+sizeData; i<SIZE; i++) buffer[i] = 0x00;
+		for(int i = tot+sizeData; i<SIZE_SEND; i++) buffer[i] = 0x00;
 		if(!DEBUG){
-			int res = hid_write(handle, buffer,SIZE);
+			int res = hid_write(handle, buffer,SIZE_SEND);
 			
 			printf("written bytes = %d \n", res);
 			
 			
 		}else{
-			for(int k = 0; k<SIZE;k++){ 
+			for(int k = 0; k<SIZE_SEND;k++){ 
 				printf("%d, ", buffer[k]);
 				
 			}
-			writeOnFile("cCommand.txt",buffer, SIZE);
+			writeOnFile("cCommand.txt",buffer, SIZE_SEND);
 			printf("\n\n");
 		}
 
 	}else{
-		for(int i = 0; i<SIZE-tot; i++) buffer[i+tot]= data[i];
+		for(int i = 0; i<SIZE_SEND-tot; i++) buffer[i+tot]= data[i];
 		
 		if(!DEBUG){
-			int res = hid_write(handle, buffer,SIZE);
+			int res = hid_write(handle, buffer,SIZE_SEND);
 			printf("written bytes = %d \n", res);
 			
 			
 		}else{
-			for(int k = 0; k<SIZE;k++){ 
+			for(int k = 0; k<SIZE_SEND;k++){ 
 				printf("%d, ", buffer[k]);
 				
 			}
-			writeOnFile("cCommand.txt",buffer, SIZE);
+			writeOnFile("cCommand.txt",buffer, SIZE_SEND);
 			printf("\n\n");
 		}
 		buffer[0] = 0x00;
-		for(int i = 0; i<SIZE; i++) buffer[i]= 0;
+		for(int i = 0; i<SIZE_SEND; i++) buffer[i]= 0;
 		int i = 1;
-		j = SIZE-tot;
+		j = SIZE_SEND-tot;
 		while(j<sizeData){
 			buffer[i] = data[j];
 			
 
 			j++;
 			i++;
-			if(i%SIZE==0){
+			if(i%SIZE_SEND==0){
 
 				if(!DEBUG){
-				int res = hid_write(handle, buffer,SIZE);
+				int res = hid_write(handle, buffer,SIZE_SEND);
 				
 				printf("written bytes = %d \n", res);
 				
 				}else{
-					for(int k = 0; k<SIZE;k++){ 
+					for(int k = 0; k<SIZE_SEND;k++){ 
 						printf("%d, ", buffer[k]);
 						
 					}
-					writeOnFile("cCommand.txt",buffer, SIZE);
+					writeOnFile("cCommand.txt",buffer, SIZE_SEND);
 					printf("\n\n");
 				}
 			
@@ -290,24 +274,24 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 				
 			}
 		}
-		if(i%SIZE !=0 && i != 1){
-			while(i%SIZE!=0){
+		if(i%SIZE_SEND !=0 && i != 1){
+			while(i%SIZE_SEND!=0){
 				
 				buffer[i] =0x00;
 				j++;
 				i++;
 				}			
 			if(!DEBUG){
-				int res = hid_write(handle, buffer,SIZE);
+				int res = hid_write(handle, buffer,SIZE_SEND);
 				
 				printf("written bytes = %d \n", res);
 				
 			}else{
-				for(int k = 0; k<SIZE;k++){ 
+				for(int k = 0; k<SIZE_SEND;k++){ 
 					printf("%d, ", buffer[k]);
 					
 				}
-				writeOnFile("cCommand.txt",buffer, SIZE);
+				writeOnFile("cCommand.txt",buffer, SIZE_SEND);
 				printf("\n\n");
 			}
 		}
