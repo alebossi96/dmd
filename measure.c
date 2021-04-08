@@ -23,10 +23,10 @@ void initDMD(struct DMD *dmd){
 /*	START setup data needed*/
 
 
-	int RasterOrHadamard = 0;//0 for raster 1 for Hadamard 2 for only ones
+	int RasterOrHadamard = 2;//0 for raster 1 for Hadamard 2 for only ones
 
-	int nBasis =50; //linewidth or number Of Basis
-	int nMeas = 48; //number Of Measurements
+	int nBasis =24; //linewidth or number Of Basis
+	int nMeas = 24; //number Of Measurements
 
 
 	float startPositionPercentage= 0;	
@@ -35,16 +35,16 @@ void initDMD(struct DMD *dmd){
 	int exp = 500000;    //1e6 is 1s 
 	int dark_time = 0; // time off after a base
 
-	int repeat = 0;
+	int repeat = 1;
 	int compress = 0; // 0 for no compression 1 for compression
-	int sizeBatch = 48;
+	int sizeBatch = 24;
 
 
 
 /*	END of setup data needed*/
 
 
-	if(!(!RasterOrHadamard || nBasis>=nMeas)) {
+	if(!(RasterOrHadamard == 1 || nBasis>=nMeas)) {
 		printf("nBasis must be larger tha n nMeas!\n");
 		return;
 	}
