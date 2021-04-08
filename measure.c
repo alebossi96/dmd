@@ -5,30 +5,78 @@ void initDMD(struct DMD *dmd){
 
 
 /*	START setup data needed*/
+	int RasterOrHadamard, nBasis, nMeas, startPositionPercentage, exp,dark_time, repeat,compress,sizeBatch;
+	printf("if Raster scan press 0, if Hadamard pattern press 1, if all mirrors press 2\n");
+	scanf("%d", &RasterOrHadamard);
+	do{
+		if(RasterOrHadamard == 1 || RasterOrHadamard== 0){
+			if(RasterOrHadamard == 0){
+				printf("\n\n RASTER \n\n");
+				printf("select dimension of lines: ");
+				scanf("%d",&nBasis);
+				printf("select starting position from 0 to 100: ");
+				scanf("%d",&startPositionPercentage);
+			}
+			else{
+				printf("\n\n HADAMARD \n\n");
+				printf("select number of bases 	MUST BE POWER OF 2: ");
+				scanf("%d",&nBasis);
+				startPositionPercentage = 0;
+				//TODO mettere check su nBasis
+			}
+			printf("select number of measurement: ");
+			scanf("%d",&nMeas);
+			printf("what should the size batch be? : " );
+			scanf("%d",&sizeBatch);
+			
+			
+			printf("select exposure time in us: ");
+			scanf("%d", &exp);
+			printf("do you want to be repeated? if so press 1: ");
+			scanf("%d", &repeat);
+			if(repeat !=1) repeat = 0;
+			printf("do you want to be compressed? if so press 1: ");
+			scanf("%d", &compress);
+			if(compress !=1) compress = 0;		
+		}
+		else if(RasterOrHadamard == 2 ){
+			printf("ALL ONES\n");
+			nBasis =24; 
+			nMeas = 24; 
 
 
-	int RasterOrHadamard = 2;//0 for raster 1 for Hadamard 2 for only ones
+			startPositionPercentage= 0;	
+			
+			
+			exp = 500000;    
+			dark_time = 0; 
 
-	int nBasis =24; //linewidth or number Of Basis
-	int nMeas = 24; //number Of Measurements
+			repeat = 1;
+			compress = 0;
+
+		}
+		else{
+
+			nBasis =24; 
+			nMeas = 24; 
 
 
-	float startPositionPercentage= 0;	
+			startPositionPercentage= 0;	
+			
+			
+			exp = 500000;    
+			dark_time = 0; 
+
+			repeat = 1;
+			compress = 0;
+
+
+		}
+	}while(!(RasterOrHadamard == 0 || RasterOrHadamard == 1  || RasterOrHadamard == 2) );
 	
-	
-	int exp = 500000;    //1e6 is 1s 
-	int dark_time = 0; // time off after a base
-
-	int repeat = 1;
-	int compress = 0; // 0 for no compression 1 for compression
-	int sizeBatch = 24;
 
 
-
-/*	END of setup data needed*/
-
-
-	if(!(RasterOrHadamard == 1 || nBasis>=nMeas)) {
+	if((RasterOrHadamard == 1 && nBasis<nMeas)) {
 		printf("nBasis must be larger tha n nMeas!\n");
 		return;
 	}
@@ -323,9 +371,6 @@ void closeDMD(struct DMD* dmd){
 	}
 
 	free(dmd->pattern);
-	//if(!DEBUG) getchar();
-	reset(dmd->handle);//bho elimina porcate?
-	//
 	hid_close(dmd->handle);
 	hid_exit();
 
