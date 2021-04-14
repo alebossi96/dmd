@@ -345,7 +345,6 @@ void configureLut(struct Patterns * pattern,int size, int rep){
 	free(r);
 	int *tmp =  bitsToBytes_char(string,48);
 	for(int i = 0; i<6; i++) pattern->configureLut[i]= tmp[i];
-	writeOnFile_int("cLut", tmp, 6);
 	//command(handle, 'w',0x00,0x1a,0x31,tmp,6);
 	
 	free(tmp);
@@ -446,7 +445,7 @@ void definePatterns(struct Patterns * pattern, const int index,const int exposur
 	payload[11]=tmp[1];
 	for(int i = 0; i<12; i++)
 		pattern->defPatterns[bitPos + SIZE_PATTERN*patInd][i] = payload[i];
-	writeOnFile("cPattern.txt", payload, 12);
+
 	//command(handle, 'w',0x00,0x1a,0x34,payload,12);
 	free(payload);
 	free(tmp);
@@ -551,7 +550,7 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 				
 				encoded[bytecount-j-1]=tmp[j];
 			}
-			writeOnFile_int("cEncoded.txt", encoded, bytecount);
+
 			free(tmp);
 			char c111[3]={'1','1','1'};
 			for(int j = (i/SIZE_PATTERN-1)*SIZE_PATTERN; j<i && j<size; j++){
@@ -637,7 +636,7 @@ void setBmp(struct Patterns * pattern,const int  index,const int size){
 	for(int i = 0; i<4; i++) payload[i+2]= total[i];
 	free(total);
 	for(int i = 0; i<6; i++) pattern->setBmp[index][i]=payload[i];
-	writeOnFile_int("cSetBmp.txt", payload, 6);
+
 
 }
 
@@ -678,7 +677,7 @@ void bmpLoad(struct Patterns * pattern,const int index, const int *image, const 
 		for(int j = 0; j<bits; j++) payload[j+2] = image[504*i+j];
 		pattern->bmpLoad[index][i]=(int *)malloc((bits+2)*sizeof(int));
 		for(int j = 0;j<bits+2;j++) pattern->bmpLoad[index][i][j]=payload[j];
-		writeOnFile_int("cBmpLoad.txt", payload, bits+2);
+
 		//command(handle, 'w',0x11,0x1a,0x2b, payload, bits+2);
 		free(payload);
 			

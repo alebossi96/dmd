@@ -2,7 +2,8 @@
 #define SIZE_SEND 65
 
 void initDMD(struct DMD *dmd){
-
+	hid_init();
+	dmd->handle = hid_open(0x0451, 0xc900, NULL);
 
 /*	START setup data needed*/
 	int RasterOrHadamard, nBasis, nMeas, startPositionPercentage, exp,dark_time, repeat,compress,sizeBatch;
@@ -37,7 +38,8 @@ void initDMD(struct DMD *dmd){
 			if(repeat !=1) repeat = 0;
 			printf("do you want to be compressed? if so press 1: ");
 			scanf("%d", &compress);
-			if(compress !=1) compress = 0;		
+			if(compress !=1) compress = 0;
+					
 		}
 		else if(RasterOrHadamard == 2 ){
 			printf("ALL ONES\n");
@@ -49,7 +51,6 @@ void initDMD(struct DMD *dmd){
 			
 			
 			exp = 500000;    
-			dark_time = 0; 
 
 			repeat = 1;
 			compress = 0;
@@ -65,7 +66,7 @@ void initDMD(struct DMD *dmd){
 			
 			
 			exp = 500000;    
-			dark_time = 0; 
+			
 
 			repeat = 1;
 			compress = 0;
@@ -74,7 +75,7 @@ void initDMD(struct DMD *dmd){
 		}
 	}while(!(RasterOrHadamard == 0 || RasterOrHadamard == 1  || RasterOrHadamard == 2) );
 	
-
+		dark_time = 0; 
 
 	if((RasterOrHadamard == 1 && nBasis<nMeas)) {
 		printf("nBasis must be larger tha n nMeas!\n");
@@ -86,8 +87,7 @@ void initDMD(struct DMD *dmd){
 	printf("nSet = %d \n", nSet);
 	dmd->szPattern=nSet;
 	dmd->repeat = repeat;
-	hid_init();
-	dmd->handle = hid_open(0x0451, 0xc900, NULL);
+	
 	sleep(2);
 	if (!dmd->handle) {
 		printf("unable to open device\n");
@@ -272,7 +272,7 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 				printf("%d, ", buffer[k]);
 				
 			}
-			writeOnFile("cCommand.txt",buffer, SIZE_SEND);
+			//writeOnFile("cCommand.txt",buffer, SIZE_SEND);
 			printf("\n\n");
 		}
 
@@ -289,7 +289,7 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 				printf("%d, ", buffer[k]);
 				
 			}
-			writeOnFile("cCommand.txt",buffer, SIZE_SEND);
+			//writeOnFile("cCommand.txt",buffer, SIZE_SEND);
 			printf("\n\n");
 		}
 		buffer[0] = 0x00;
@@ -314,7 +314,7 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 						printf("%d, ", buffer[k]);
 						
 					}
-					writeOnFile("cCommand.txt",buffer, SIZE_SEND);
+					//writeOnFile("cCommand.txt",buffer, SIZE_SEND);
 					printf("\n\n");
 				}
 			
@@ -339,7 +339,7 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 					printf("%d, ", buffer[k]);
 					
 				}
-				writeOnFile("cCommand.txt",buffer, SIZE_SEND);
+				//writeOnFile("cCommand.txt",buffer, SIZE_SEND);
 				printf("\n\n");
 			}
 		}
