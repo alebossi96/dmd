@@ -27,7 +27,7 @@ void initDMD(struct DMD *dmd){
 			}
 			printf("select number of measurement: ");
 			scanf("%d",&nMeas);
-			printf("what should the size batch be? : " );
+			printf("what should the size batch be? -must be multiple of 24. probably: " );
 			scanf("%d",&sizeBatch);
 			
 			
