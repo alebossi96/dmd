@@ -492,15 +492,15 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 	pattern->bitsPackNum =(int **)malloc(numberOfBatch*sizeof(int*));
 	pattern->exposure=(int*)malloc(size*sizeof(int));
 
-	while(i<size){
+	while(i<size || i%SIZE_PATTERN!=0){
 
-		if(i%SIZE_PATTERN==0){
+		/*if(i%SIZE_PATTERN==0){
 			for(int j=0; j<HEIGHT; j++){
 				for(int k=0; k<WIDTH; k++){
 					imageData[i%SIZE_PATTERN][j][k]=0;
 					}		
 				}
-			}
+			}*/
 		if(i<size){
 			for(int j=0; j<HEIGHT; j++){
 				for(int k=0; k<WIDTH; k++){
@@ -555,6 +555,8 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 			char c111[3]={'1','1','1'};
 			for(int j = (i/SIZE_PATTERN-1)*SIZE_PATTERN; j<i && j<size; j++){
 				pattern->exposure[j]=exposure[j];
+				printf("j = %d \n", j);
+			
 				//define pattern deve essere diviso perchè si indica di quale batch fa parte quello specifico pattern
 				definePatterns( pattern, j, exposure[j],1,c111,trigger_in[j],dark_time,trigger_out[j],(i-1)/SIZE_PATTERN,j-(i/SIZE_PATTERN-1)*SIZE_PATTERN);	
 			}
