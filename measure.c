@@ -167,7 +167,9 @@ void moveDMD(const struct DMD dmd){
 	//all the rest must be processed during initialization or garbage collection
 	for(int i = 0; i<dmd.szPattern; i++){
 		stopSequence(dmd.handle);
-		getchar(); 
+		printf("press ENTER to start pattern");
+		getchar();
+		getchar();
 		int totExposure = 0;
 		
 		for(int j = 0; j<dmd.pattern[i].nEl; j++){
@@ -369,7 +371,7 @@ void closeDMD(struct DMD* dmd){
 		
 		
 	}
-
+	reset(dmd->handle);
 	free(dmd->pattern);
 	hid_close(dmd->handle);
 	hid_exit();
