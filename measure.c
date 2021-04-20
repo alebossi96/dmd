@@ -20,7 +20,7 @@ void initDMD(struct Info info, struct DMD *dmd){
 	sizeBatch = info.sizeBatch;
 	previousPos = info.previousPos;
 
-	int offset_ = offset(startPosition,nBasis, previousPos); 
+	int offset_ = offset(startPosition,nBasis, previousPos)/nBasis; 
 	int nSet = celing(nMeas,sizeBatch);
 	printf("nSet = %d \n", nSet);
 	dmd->szPattern=nSet;
@@ -69,7 +69,6 @@ void initDMD(struct Info info, struct DMD *dmd){
 		idx =(int* )malloc((nB)*sizeof(int));
 		for(int i = 0; i<nB; i++)
 			idx[i]=q*sizeBatch+i+offset_;
-
 		getBasis(RasterOrHadamard,nBasis,idx,nB, compress,basis);
 		free(idx);
 		for (int k = 0; k<nEl ; k++){
