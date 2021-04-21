@@ -250,43 +250,7 @@ int pow2_i(const int exp){
 		res*=2;
 	return res;
 }
-char * convlenExp(int a, int* sz){//a<2^l
-	/*
-    This function converts a number "a" into a bit string of
-    length "l".
-	*/
-	int l2= (int)(log(a)/log(2));
-	if(a%pow2_i(l2)== 0) *sz = l2;
-	else *sz = l2+1;
-	char * res;
-	res = (char*)malloc((*sz) * sizeof(char));
-	int l = *sz;
-	if(a== 0){
-		for(; l>0; l--)
-			res[l-1]='0';
-	}
-	else{
-		l--;//mi muovo all'ultima posizione
 
-		while(a!=1 && l>-1){
-			if(a%2==0)
-				res[l]='0';
-			else
-				res[l]='1';
-			a/=2;
-
-			l--;
-		}
-		res[l]='1';
-		while(l>0){
-			l--;
-			res[l]='0';
-
-			}
-
-	}
-	return res;
-}
 
 char * convlen(int a, int l){//a<2^l
 	/*
@@ -434,20 +398,13 @@ void definePatterns(struct Patterns * pattern, const int index,const int exposur
 	payload[1]=index_[1];
 	free(index_);
 	free(tmpChar);
-	int szExp;
-	tmpChar = convlenExp(exposure,&szExp);
-	printf("szExp= %d\n",szExp);
-	printf("\n");
-	for(int i = 0;i <24; i++){
-		printf("%c", tmpChar[i]);
-		}
-	printf("\n");
+	tmpChar = convlen(exposure,24);
 	int *exposure_ = bitsToBytes_char(tmpChar,24);
-	for(int i=0;i<3; i++){	payload[2+i] = exposure_[i];
-	printf("%d ",  exposure_[i]);
-	}
 	printf("\n");
+	for(int i = 23; i<=0;i--)
+	printf("%ci", tmpChar[i]);
 	getchar();
+	for(int i=0;i<3; i++)	payload[2+i] = exposure_[i];
 	free(tmpChar);
 	free(exposure_);
 	char optionsByte[8];

@@ -49,7 +49,6 @@ void commandPattern(hid_device *handle,struct Patterns * pattern, const int szPa
 void checkForErrors(hid_device *handle);
 int pow2_i(const int exp);
 char * convlen(int a, int l);
-char * convlenExp(int a, int* sz);
 int * bitsToBytes_char(const char *a, const int size);
 int * bitsToBytes_int(const int *a, const int size);
 
