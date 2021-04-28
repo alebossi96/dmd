@@ -27,12 +27,12 @@ void checkForErrors(hid_device *handle){
 	/* it does not work. Probably not implemented correctly*/
 	if( hid_error(handle)==NULL)
 		printf("errori");
-	unsigned char message[1] = {1};
+	unsigned char message[1] = {0x0100};
 	int res = hid_read(handle, message,1);
 	char * flag = convlen(res, 8);
 	
-	for(int i = 0; i<8; i++)
-	printf("%c", flag[i]);
+	//for(int i = 0; i<8; i++)
+	printf("%d", res);
 	printf("\n");
 	free(flag);
 	/*
@@ -258,34 +258,8 @@ char * convlenExp(int a, int* sz){//a<2^l
 	int l2= (int)(log(a)/log(2));
 	if(a%pow2_i(l2)== 0) *sz = l2;
 	else *sz = l2+1;
-	char * res;
-	res = (char*)malloc((*sz) * sizeof(char));
-	int l = *sz;
-	if(a== 0){
-		for(; l>0; l--)
-			res[l-1]='0';
-	}
-	else{
-		l--;//mi muovo all'ultima posizione
+	return convlen(a, *sz);
 
-		while(a!=1 && l>-1){
-			if(a%2==0)
-				res[l]='0';
-			else
-				res[l]='1';
-			a/=2;
-
-			l--;
-		}
-		res[l]='1';
-		while(l>0){
-			l--;
-			res[l]='0';
-
-			}
-
-	}
-	return res;
 }
 
 char * convlen(int a, int l){//a<2^l
@@ -434,20 +408,9 @@ void definePatterns(struct Patterns * pattern, const int index,const int exposur
 	payload[1]=index_[1];
 	free(index_);
 	free(tmpChar);
-	int szExp;
-	tmpChar = convlenExp(exposure,&szExp);
-	printf("szExp= %d\n",szExp);
-	printf("\n");
-	for(int i = 0;i <24; i++){
-		printf("%c", tmpChar[i]);
-		}
-	printf("\n");
+	tmpChar = convlen(exposure,24);
 	int *exposure_ = bitsToBytes_char(tmpChar,24);
-	for(int i=0;i<3; i++){	payload[2+i] = exposure_[i];
-	printf("%d ",  exposure_[i]);
-	}
-	printf("\n");
-	getchar();
+	for(int i=0;i<3; i++)	payload[2+i] = exposure_[i];
 	free(tmpChar);
 	free(exposure_);
 	char optionsByte[8];
@@ -572,9 +535,9 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 			struct Node *bitString=NULL;
 			int bytecount=0;
 			mergeImages(imageData,mergedImagesint);
-			bytecount = newEncode2(mergedImagesint, &bitString);
+			//bytecount = newEncode2(mergedImagesint, &bitString);
 			//bytecount = newEncodeDMDScopeFoundary(mergedImagesint, &bitString);
-			
+			bytecount = takeFromTxt(&bitString);
 
 			int *tmp;
 			printf("bytecount = %d \n",bytecount);
@@ -598,7 +561,9 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 				
 				encoded[bytecount-j-1]=tmp[j];
 			}
-
+			printf("szEncoded = %d \n", szEncoded);
+			getchar();
+			writeOnFile_int("cNewEncode.txt", encoded, szEncoded);
 			free(tmp);
 			char c111[3]={'1','1','1'};
 			for(int j = (i/SIZE_PATTERN-1)*SIZE_PATTERN; j<i && j<size; j++){
@@ -914,6 +879,22 @@ int newEncode2(int ***image, struct Node **bitString){
 
 
 
+
+
+int takeFromTxt(struct Node **bitString){
+	FILE* file = fopen ("pyNewEncode.txt", "r");
+ 	int i = 0;
+	int byteCount = 0;
+  	fscanf (file, "%d", &i);    
+  	while (!feof (file))
+	{  byteCount++;
+	      push(bitString, i);
+	      fscanf (file, "%d", &i);
+		printf("%d\n",i);      
+	    }
+	  fclose (file);
+	return byteCount;     
+}
 int newEncodeDMDScopeFoundary(int ***image, struct Node **bitString){
 	int byteCount;
 	printf("image[0][0][0]=%d\n", image[0][0][0]);
@@ -953,6 +934,8 @@ int newEncodeDMDScopeFoundary(int ***image, struct Node **bitString){
 	for(int i = 0; i<1080; i++){
 		for(int j = 0; j<1920; j++){
 			if(i>0){
+				printf("\n byteCount  = %d \n",byteCount);
+					
 				if(isRowEqual(image[i][j],image[i-1][j])){
 					while(j<1920 &&isRowEqual(image[i][j],image[i-1][j])){
 						n++;
@@ -991,7 +974,7 @@ int newEncodeDMDScopeFoundary(int ***image, struct Node **bitString){
 							push(bitString, image[i][j][1]);
 							push(bitString, image[i][j][2]);
 							byteCount+=3;
-							//j++;<-----------------------
+							j++;//TODO<-----------------------
 							n=0;
 						}else if(j>1917 || isRowEqual(image[i][j+1],image[i][j+2]) || isRowEqual(image[i][j+1],image[i-1][j+1])){
 							push(bitString, 0x01);
@@ -1000,7 +983,7 @@ int newEncodeDMDScopeFoundary(int ***image, struct Node **bitString){
 							push(bitString, image[i][j][1]);
 							push(bitString, image[i][j][2]);
 							byteCount+=3;
-							//j++;<----------------
+							j++;//TODO<----------------
 							n=0;					
 						}else{//se j<1919e le condizioni isRowEqual non si verificano
 							push(bitString, 0x00);
@@ -1041,7 +1024,7 @@ int newEncodeDMDScopeFoundary(int ***image, struct Node **bitString){
 							n=0;
 						}
 					
-					}else{ //if(j==1919)
+					}else if(j==1919){ //if(j<1919)
 						push(bitString, 0x01);
 						byteCount++;
 						push(bitString, image[i][j][0]);
@@ -1054,7 +1037,7 @@ int newEncodeDMDScopeFoundary(int ***image, struct Node **bitString){
 				}//else di if(isRowEqual(image[i][j],image[i-1][j]))
 			}else{//if(i>0) quindi i == 0
 				if(j<1919){
-					printf("\n initial  j= %d \n",j);
+					
 					if(isRowEqual(image[i][j],image[i][j+1])){
 						
 						n++;
@@ -1078,15 +1061,17 @@ int newEncodeDMDScopeFoundary(int ***image, struct Node **bitString){
 						push(bitString, image[i][j][1]);
 						push(bitString, image[i][j][2]);
 						byteCount+=3;
-						//j++;<--------------------
+						j++;//TODO<--------------------
 						n=0;
-					}else if(j>1917 || isRowEqual(image[i][j+1],image[i][j+2]) /*|| isRowEqual(image[i][j+1],image[i-1][j+1])*/){						push(bitString, 0x01);
+					}else if(j>1917 || isRowEqual(image[i][j+1],image[i][j+2]) ||
+						(i >0 && isRowEqual(image[i][j+1],image[i-1][j+1])) ||
+						(i == 0 && isRowEqual(image[i][j+1],image[HEIGHT-1][j+1]))){						push(bitString, 0x01);
 						byteCount++;
 						push(bitString, image[i][j][0]);
 						push(bitString, image[i][j][1]);
 						push(bitString, image[i][j][2]);
 						byteCount+=3;
-						//j++;<------------------
+						j++;//TODO;<------------------
 						n=0;					
 					}else{//se j<1919e le condizioni isRowEqual non si verificano
 						push(bitString, 0x00);
@@ -1126,14 +1111,14 @@ int newEncodeDMDScopeFoundary(int ***image, struct Node **bitString){
 						n=0;
 					}
 					
-				}else{ //if(j==1919)
+				}else if(j == 1919){ //if(j==1919)
 					push(bitString, 0x01);
 					byteCount++;
 					push(bitString, image[i][j][0]);
 					push(bitString, image[i][j][1]);
 					push(bitString, image[i][j][2]);
 					byteCount+=3;
-					//j++;<---------------
+					j++;//TODO<---------------
 					n=0;
 				}
 

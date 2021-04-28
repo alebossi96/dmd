@@ -9,7 +9,7 @@ int main(){
 	while(true){
 	
 	if(WIZARD_OR_COMMAND){
-		printf("if Raster scan press 0, if Hadamard pattern press 1, if all mirrors press 2\n");
+		printf("if Raster scan press 0\n, if Hadamard pattern press 1\n, if all mirrors press 2\n if all closed press 3 \n\n");
 		scanf("%d", &(info.RasterOrHadamard));
 		info.startPosition = 0;
 		do{
@@ -58,6 +58,21 @@ int main(){
 				info.compress = 0;
 
 			}
+			else if(info.RasterOrHadamard == 3 ){
+				printf("ALL ZEROS\n");
+				info.nBasis =24; 
+				info.nMeas = 24; 
+
+
+				info.startPosition= 0;	
+				
+				
+				info.exp = 500000;    
+
+				info.repeat = 1;
+				info.compress = 0;
+
+			}
 			else{
 
 				info.nBasis =24; 
@@ -78,9 +93,9 @@ int main(){
 		}while(!(info.RasterOrHadamard == 0 || info.RasterOrHadamard == 1  || info.RasterOrHadamard == 2) 
 		|| (info.RasterOrHadamard == 1 && info.nBasis<info.nMeas));
 	}
-	else{
-		info.nBasis =24; 
-		info.nMeas = 24; 
+	else{	info.RasterOrHadamard = 0;
+		info.nBasis =300; 
+		info.nMeas = 3; 
 		info.startPosition= 0;	
 		info.exp = 500000;    
 		info.repeat = 1;
@@ -97,9 +112,10 @@ int main(){
 	info.previousPos = offset(info.startPosition,info.nBasis, info.previousPos);//TODO deve essere aggiornato con nBasis precedente!
 	printf("offset = %d\n", info.previousPos);
 	printf("press any key to continue. Press q to quit\n");
-	char a = getchar();
+	//char a = getchar();
 
-	if(a == 'q' || a == 'Q') return 0;
+	//if(a == 'q' || a == 'Q') 
+	return 0;
 	
 	}
 	return 0;

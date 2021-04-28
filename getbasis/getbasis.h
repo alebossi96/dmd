@@ -19,6 +19,7 @@ int **ordering(const int nBasis, const int *idx, const int szIdx);
 void getBasisHadamard(const int nBasis, const int *idx, const int szIdx,int compressImage, int ***basis);
 void getBasisRaster(const int dim, const int *idx, const int szIdx,int compressImage, int ***basis);
 void getBasisOnes(const int sz, int ***basis);
+void getBasisZeros(const int sz, int ***basis);
 int ** getBasisHadamardFromTxt(int nBasis, const int *idx, const int szIdx);
 int nDigit(int n);
 int min(const int a, const int b);
