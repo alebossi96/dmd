@@ -535,9 +535,9 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 			struct Node *bitString=NULL;
 			int bytecount=0;
 			mergeImages(imageData,mergedImagesint);
-			//bytecount = newEncode2(mergedImagesint, &bitString);
+			bytecount = newEncode2(mergedImagesint, &bitString);
 			//bytecount = newEncodeDMDScopeFoundary(mergedImagesint, &bitString);
-			bytecount = takeFromTxt(&bitString);
+			//bytecount = takeFromTxt(&bitString);
 
 			int *tmp;
 			printf("bytecount = %d \n",bytecount);
