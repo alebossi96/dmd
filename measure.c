@@ -308,7 +308,7 @@ void closeDMD(struct DMD* dmd){
 		
 		
 	}
-	reset(dmd->handle);
+	//reset(dmd->handle);
 	free(dmd->pattern);
 	hid_close(dmd->handle);
 	hid_exit();

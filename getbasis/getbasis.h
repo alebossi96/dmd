@@ -17,9 +17,14 @@ void getBasis(const int hadamard_raster, //1 to get hadamard basis 0 for raster 
 		int ***output);
 int **ordering(const int nBasis, const int *idx, const int szIdx);
 void getBasisHadamard(const int nBasis, const int *idx, const int szIdx,int compressImage, int ***basis);
+void getBasisHadamardHorizontal(const int nBasis, const int *idx, const int szIdx,int compressImage, int ***basis);
+void getBasisRasterHorizontal(const int dim, const int *idx, const int szIdx,int compressImage, int ***basis);
+void getBasisAddOneLineHorizontal(const int dim, const int *idx, const int szIdx,int compressImage, int ***basis);
 void getBasisRaster(const int dim, const int *idx, const int szIdx,int compressImage, int ***basis);
 void getBasisOnes(const int sz, int ***basis);
 void getBasisZeros(const int sz, int ***basis);
+void getBasisNotchFilter(const int *idx,const int dim, int ***basis);
+void getBasisBandPass(const int *idx,const int dim, int ***basis);
 int ** getBasisHadamardFromTxt(int nBasis, const int *idx, const int szIdx);
 int nDigit(int n);
 int min(const int a, const int b);

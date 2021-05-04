@@ -12,7 +12,17 @@ void getBasis(const int hadamard_raster, const int dim, const int *idx, const in
 		getBasisOnes(szIdx, output);
 	else if(hadamard_raster == 3)
 		getBasisZeros(szIdx, output);
-
+	else if(hadamard_raster == 4)
+		getBasisNotchFilter(idx,dim,output);
+	else if(hadamard_raster == 5)
+		getBasisHadamardHorizontal(dim, idx, szIdx,compressImage, output);
+	else if(hadamard_raster == 6)
+		getBasisRasterHorizontal(dim, idx, szIdx,compressImage, output);
+	else if(hadamard_raster == 7)
+		getBasisAddOneLineHorizontal(dim, idx, szIdx,compressImage, output);
+	else if(hadamard_raster == 8)
+		getBasisBandPass(idx,dim,output);		
+	//TODO aumentare le basi se meno di un tot
 	//to get band pass spatial filter use raster with only 1 base! and select dimension
 }
 
@@ -289,3 +299,135 @@ int ** getBasisHadamardFromTxt(int nBasis, const int *idx, const int szIdx){
 	return H;
 }
 
+void getBasisNotchFilter(const int *idx,const int dim, int ***basis){
+		//possibile farlo a scatti o continuo
+	int idxZeros = 0; //(WIDTH+HEIGHT)/2; 
+	for(int cont= 0; cont<24; cont++){//deve essere sempre 24!
+		int i = cont;
+		int indexRaster = idx[0];
+		for(int j = 0; j<WIDTH+HEIGHT;j++){
+			int i_y;
+			int i_x;
+			int lim = HEIGHT;
+			
+			if(j<HEIGHT || j >= WIDTH)
+				lim = min(j+1/*io sicuro*/, HEIGHT + WIDTH - j );
+			if(j<WIDTH){
+				i_y = j; 
+				i_x = 0;
+			 }
+			if(j>=WIDTH){
+				i_y = WIDTH-1; 
+				i_x = j-WIDTH;
+			 }
+			if(j>(idxZeros-1) && j<(WIDTH+HEIGHT-idxZeros)){
+				int el;
+				if(j>=dim*indexRaster && j<dim*(indexRaster + 1))
+					el = 0; //inverso di raster
+				else el = 1;
+				 for(int k = 0; k<lim; k++){ // k,j se sono in obliquo deve cambiare !
+									
+					basis[i][i_x+k][i_y-k] = el;
+					
+					
+					}
+				}
+			else for(int k = 0; k<lim; k++) basis[i][i_x+k][i_y-k] = 1;	  // k,j se sono in obliquo deve cambiare !
+		}	
+	}
+
+}
+void getBasisHadamardHorizontal(const int nBasis, const int *idx, const int szIdx,int compressImage, int ***basis){
+	//come inserire? nel senso binning? padding?/ transformazione?
+	int ** H;
+	//H =  ordering(nBasis,idx,szIdx); // genera automaticamente
+	H =(int **)malloc(nBasis*sizeof(int*));
+	for(int i = 0; i<nBasis; i++)
+		H [i] = (int *)malloc(nBasis*sizeof(int));
+
+	hadamard(H, nBasis);
+	//H =  getBasisHadamardFromTxt(nBasis,idx,szIdx);//legge dal file
+	for(int i = 0; i<szIdx; i++ ){
+		for(int j = 0; j<nBasis; j++) printf("%d ", H[i][j]);
+		printf("\n");
+	}
+
+	int logN = log(nBasis)/log(2);
+	int mult=(WIDTH)/pow2_i(logN);
+	int idxZeros = (WIDTH-mult*nBasis)/2; //trova dove partire ricordtati che le basi di Hadamard sono di dimensioni 2^n	
+	for(int cont = 0; cont <szIdx; cont++){ //count on the basis
+		int i = cont;
+		for(int j = 0; j<WIDTH;j++){
+			int el =(H[cont][(j-idxZeros)/mult]+1)/2;
+			 for(int k = 0; k<HEIGHT; k++){
+				basis[i][k][j] = el;
+				}
+		}	
+	}
+	for(int i = 0; i<szIdx; i++)
+		free(H[i]);
+	free(H);
+}
+
+
+void getBasisRasterHorizontal(const int dim, const int *idx, const int szIdx,int compressImage, int ***basis){
+	//possibile farlo a scatti o continuo
+	int idxZeros = 0; //(WIDTH+HEIGHT)/2; 
+	for(int cont= 0; cont<szIdx; cont++){
+		int i = cont;
+		int indexRaster = idx[i];
+		for(int j = 0; j<WIDTH;j++){
+			if(j>(idxZeros-1) && j<(WIDTH+HEIGHT-idxZeros)){
+				int el;
+				if(j>=dim*indexRaster && j<dim*(indexRaster + 1)) el = 1;
+				else el = 0;
+				 for(int k = 0; k<HEIGHT; k++) // k,j se sono in obliquo deve cambiare !
+					basis[i][k][j] = el;	
+					
+			}
+		}	
+	}
+
+
+
+}
+void getBasisAddOneLineHorizontal(const int dim, const int *idx, const int szIdx,int compressImage, int ***basis){
+
+	//possibile farlo a scatti o continuo
+	int idxZeros = 0; //(WIDTH+HEIGHT)/2; 
+	for(int cont= 0; cont<szIdx; cont++){
+		int i = cont;
+		int indexRaster = idx[i];
+		for(int j = 0; j<WIDTH;j++){
+			if(j>(idxZeros-1) && j<(WIDTH+HEIGHT-idxZeros)){
+				int el;
+				if(j<dim*(indexRaster + 1)) el = 1;
+				else el = 0;
+				 for(int k = 0; k<HEIGHT; k++) // k,j se sono in obliquo deve cambiare !
+					basis[i][k][j] = el;	
+					
+			}
+		}	
+	}
+
+
+
+}
+void getBasisBandPass(const int *idx,const int dim, int ***basis){
+	int idxZeros = 0; //(WIDTH+HEIGHT)/2; 
+	for(int cont= 0; cont<24; cont++){
+		int i = cont;
+		int indexRaster = idx[0];
+		for(int j = 0; j<WIDTH;j++){
+			if(j>(idxZeros-1) && j<(WIDTH+HEIGHT-idxZeros)){
+				int el;
+				if(j<dim*(indexRaster + 1)) el = 1;
+				else el = 0;
+				 for(int k = 0; k<HEIGHT; k++) // k,j se sono in obliquo deve cambiare !
+					basis[i][k][j] = el;	
+					
+			}
+		}	
+	}
+
+}
