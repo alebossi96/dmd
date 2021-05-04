@@ -27,12 +27,12 @@ void checkForErrors(hid_device *handle){
 	/* it does not work. Probably not implemented correctly*/
 	if( hid_error(handle)==NULL)
 		printf("errori");
-	unsigned char message[1] = {1};
+	unsigned char message[1] = {0x0100};
 	int res = hid_read(handle, message,1);
 	char * flag = convlen(res, 8);
 	
-	for(int i = 0; i<8; i++)
-	printf("%c", flag[i]);
+	//for(int i = 0; i<8; i++)
+	printf("%d", res);
 	printf("\n");
 	free(flag);
 	/*
@@ -251,7 +251,6 @@ int pow2_i(const int exp){
 	return res;
 }
 
-
 char * convlen(int a, int l){//a<2^l
 	/*
     This function converts a number "a" into a bit string of
@@ -400,10 +399,7 @@ void definePatterns(struct Patterns * pattern, const int index,const int exposur
 	free(tmpChar);
 	tmpChar = convlen(exposure,24);
 	int *exposure_ = bitsToBytes_char(tmpChar,24);
-	printf("\n");
-	for(int i = 23; i<=0;i--)
-	printf("%ci", tmpChar[i]);
-	getchar();
+
 	for(int i=0;i<3; i++)	payload[2+i] = exposure_[i];
 	free(tmpChar);
 	free(exposure_);
@@ -450,7 +446,7 @@ void definePatterns(struct Patterns * pattern, const int index,const int exposur
 	payload[11]=tmp[1];
 	for(int i = 0; i<12; i++)
 		pattern->defPatterns[bitPos + SIZE_PATTERN*patInd][i] = payload[i];
-
+	//writeOnFile("cPattern.txt",payload, 12);
 	//command(handle, 'w',0x00,0x1a,0x34,payload,12);
 	free(payload);
 	free(tmp);
@@ -531,7 +527,7 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 			mergeImages(imageData,mergedImagesint);
 			bytecount = newEncode2(mergedImagesint, &bitString);
 			//bytecount = newEncodeDMDScopeFoundary(mergedImagesint, &bitString);
-			
+			//bytecount = takeFromTxt(&bitString);
 
 			int *tmp;
 			printf("bytecount = %d \n",bytecount);
@@ -555,7 +551,9 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 				
 				encoded[bytecount-j-1]=tmp[j];
 			}
-
+			printf("szEncoded = %d \n", szEncoded);
+			getchar();
+			//writeOnFile_int("cNewEncode.txt", encoded, szEncoded);
 			free(tmp);
 			char c111[3]={'1','1','1'};
 			for(int j = (i/SIZE_PATTERN-1)*SIZE_PATTERN; j<i && j<size; j++){
@@ -643,7 +641,7 @@ void setBmp(struct Patterns * pattern,const int  index,const int size){
 	for(int i = 0; i<4; i++) payload[i+2]= total[i];
 	free(total);
 	for(int i = 0; i<6; i++) pattern->setBmp[index][i]=payload[i];
-
+	//writeOnFile_int("cSetBmp.txt",payload, 6);
 
 }
 
@@ -871,6 +869,22 @@ int newEncode2(int ***image, struct Node **bitString){
 
 
 
+
+
+int takeFromTxt(struct Node **bitString){
+	FILE* file = fopen ("pyNewEncode.txt", "r");
+ 	int i = 0;
+	int byteCount = 0;
+  	fscanf (file, "%d", &i);    
+  	while (!feof (file))
+	{  byteCount++;
+	      push(bitString, i);
+	      fscanf (file, "%d", &i);
+		printf("%d\n",i);      
+	    }
+	  fclose (file);
+	return byteCount;     
+}
 int newEncodeDMDScopeFoundary(int ***image, struct Node **bitString){
 	int byteCount;
 	printf("image[0][0][0]=%d\n", image[0][0][0]);
@@ -910,6 +924,8 @@ int newEncodeDMDScopeFoundary(int ***image, struct Node **bitString){
 	for(int i = 0; i<1080; i++){
 		for(int j = 0; j<1920; j++){
 			if(i>0){
+				printf("\n byteCount  = %d \n",byteCount);
+					
 				if(isRowEqual(image[i][j],image[i-1][j])){
 					while(j<1920 &&isRowEqual(image[i][j],image[i-1][j])){
 						n++;
@@ -948,7 +964,7 @@ int newEncodeDMDScopeFoundary(int ***image, struct Node **bitString){
 							push(bitString, image[i][j][1]);
 							push(bitString, image[i][j][2]);
 							byteCount+=3;
-							//j++;<-----------------------
+							j++;//TODO<-----------------------
 							n=0;
 						}else if(j>1917 || isRowEqual(image[i][j+1],image[i][j+2]) || isRowEqual(image[i][j+1],image[i-1][j+1])){
 							push(bitString, 0x01);
@@ -957,7 +973,7 @@ int newEncodeDMDScopeFoundary(int ***image, struct Node **bitString){
 							push(bitString, image[i][j][1]);
 							push(bitString, image[i][j][2]);
 							byteCount+=3;
-							//j++;<----------------
+							j++;//TODO<----------------
 							n=0;					
 						}else{//se j<1919e le condizioni isRowEqual non si verificano
 							push(bitString, 0x00);
@@ -998,7 +1014,7 @@ int newEncodeDMDScopeFoundary(int ***image, struct Node **bitString){
 							n=0;
 						}
 					
-					}else{ //if(j==1919)
+					}else if(j==1919){ //if(j<1919)
 						push(bitString, 0x01);
 						byteCount++;
 						push(bitString, image[i][j][0]);
@@ -1011,7 +1027,7 @@ int newEncodeDMDScopeFoundary(int ***image, struct Node **bitString){
 				}//else di if(isRowEqual(image[i][j],image[i-1][j]))
 			}else{//if(i>0) quindi i == 0
 				if(j<1919){
-					printf("\n initial  j= %d \n",j);
+					
 					if(isRowEqual(image[i][j],image[i][j+1])){
 						
 						n++;
@@ -1035,15 +1051,17 @@ int newEncodeDMDScopeFoundary(int ***image, struct Node **bitString){
 						push(bitString, image[i][j][1]);
 						push(bitString, image[i][j][2]);
 						byteCount+=3;
-						//j++;<--------------------
+						j++;//TODO<--------------------
 						n=0;
-					}else if(j>1917 || isRowEqual(image[i][j+1],image[i][j+2]) /*|| isRowEqual(image[i][j+1],image[i-1][j+1])*/){						push(bitString, 0x01);
+					}else if(j>1917 || isRowEqual(image[i][j+1],image[i][j+2]) ||
+						(i >0 && isRowEqual(image[i][j+1],image[i-1][j+1])) ||
+						(i == 0 && isRowEqual(image[i][j+1],image[HEIGHT-1][j+1]))){						push(bitString, 0x01);
 						byteCount++;
 						push(bitString, image[i][j][0]);
 						push(bitString, image[i][j][1]);
 						push(bitString, image[i][j][2]);
 						byteCount+=3;
-						//j++;<------------------
+						j++;//TODO;<------------------
 						n=0;					
 					}else{//se j<1919e le condizioni isRowEqual non si verificano
 						push(bitString, 0x00);
@@ -1083,14 +1101,14 @@ int newEncodeDMDScopeFoundary(int ***image, struct Node **bitString){
 						n=0;
 					}
 					
-				}else{ //if(j==1919)
+				}else if(j == 1919){ //if(j==1919)
 					push(bitString, 0x01);
 					byteCount++;
 					push(bitString, image[i][j][0]);
 					push(bitString, image[i][j][1]);
 					push(bitString, image[i][j][2]);
 					byteCount+=3;
-					//j++;<---------------
+					j++;//TODO<---------------
 					n=0;
 				}
 

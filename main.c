@@ -9,12 +9,12 @@ int main(){
 	while(true){
 	
 	if(WIZARD_OR_COMMAND){
-		printf("if Raster scan press 0, if Hadamard pattern press 1, if all mirrors press 2\n");
+		printf("if Raster scan press 0\n   Hadamard pattern press 1\n   all mirrors press 2\n   all closed press 3 \n   notch filter press 4\n  Hadamard Horiontal 5\n  Raster Horiontal 6 \n  Add One Line 7 \n  Band Pass 8 \n\n");
 		scanf("%d", &(info.RasterOrHadamard));
 		info.startPosition = 0;
 		do{
-			if(info.RasterOrHadamard == 1 || info.RasterOrHadamard== 0){
-				if(info.RasterOrHadamard == 0){
+			if(info.RasterOrHadamard == 1 || info.RasterOrHadamard== 0 || info.RasterOrHadamard== 5 || info.RasterOrHadamard== 6 || info.RasterOrHadamard== 7 ){
+				if(info.RasterOrHadamard == 0 || info.RasterOrHadamard== 6 || info.RasterOrHadamard== 7 ){
 					printf("\n\n RASTER \n\n");
 					printf("select dimension of lines: ");
 					scanf("%d",&(info.nBasis));
@@ -58,6 +58,33 @@ int main(){
 				info.compress = 0;
 
 			}
+			else if(info.RasterOrHadamard == 3 ){
+				printf("ALL ZEROS\n");
+				info.nBasis =24; 
+				info.nMeas = 24; 
+
+
+				info.startPosition= 0;	
+				
+				
+				info.exp = 500000;    
+
+				info.repeat = 1;
+				info.compress = 0;
+
+			}
+			else if(info.RasterOrHadamard == 4 || info.RasterOrHadamard == 8){
+				printf("NOTCH FILTER");
+				printf("select dimension of lines: ");
+				scanf("%d",&(info.nBasis));
+				printf("select start of rejection band:");
+				scanf("%d",&(info.previousPos));
+				info.nMeas = 24; 
+				info.exp = 500000;
+				info.repeat = 1;
+				info.compress = 0;  
+
+			}
 			else{
 
 				info.nBasis =24; 
@@ -75,31 +102,34 @@ int main(){
 
 
 			}
-		}while(!(info.RasterOrHadamard == 0 || info.RasterOrHadamard == 1  || info.RasterOrHadamard == 2) 
+		}while(!(info.RasterOrHadamard > -1 && info.RasterOrHadamard<9) 
 		|| (info.RasterOrHadamard == 1 && info.nBasis<info.nMeas));
 	}
-	else{
-		info.nBasis =24; 
-		info.nMeas = 24; 
+	else{	info.RasterOrHadamard = 0;
+		info.nBasis =300; 
+		info.nMeas = 3; 
 		info.startPosition= 0;	
 		info.exp = 500000;    
 		info.repeat = 1;
 		info.compress = 0;
 	}
-	info.dark_time = 0; 
+	info.dark_time = 10000; 
 
 
 	initDMD(info, &dmd);
 	moveDMD(dmd);
 	closeDMD(&dmd);
-	printf("select new starting position from 0 to 32: ");
-					scanf("%d",&(info.startPosition));
-	info.previousPos = offset(info.startPosition,info.nBasis, info.previousPos);//TODO deve essere aggiornato con nBasis precedente!
-	printf("offset = %d\n", info.previousPos);
+	if(info.RasterOrHadamard == 0 || info.RasterOrHadamard == 4){
+		printf("select new starting position from 0 to 32: ");
+		scanf("%d",&(info.startPosition));
+		info.previousPos = offset(info.startPosition,info.nBasis, info.previousPos);//TODO deve essere aggiornato con nBasis precedente!
+		printf("offset = %d\n", info.previousPos);
+	}
 	printf("press any key to continue. Press q to quit\n");
-	char a = getchar();
+	//char a = getchar();
 
-	if(a == 'q' || a == 'Q') return 0;
+	//if(a == 'q' || a == 'Q') 
+	return 0;
 	
 	}
 	return 0;
