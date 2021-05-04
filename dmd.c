@@ -51,6 +51,7 @@ void checkForErrors(hid_device *handle){
 	*/
 }
 
+
 /*
 command is the function that does the comunication with the dmd, every other function that wants to comunicate with the dmd need to use this function
 There are two command function implemented because one could want to pass a vector of int and char
