@@ -21,7 +21,9 @@ void getBasis(const int hadamard_raster, const int dim, const int *idx, const in
 	else if(hadamard_raster == 7)
 		getBasisAddOneLineHorizontal(dim, idx, szIdx,compressImage, output);
 	else if(hadamard_raster == 8)
-		getBasisBandPass(idx,dim,output);		
+		getBasisBandPass(idx,dim,output);
+	else if(hadamard_raster == 9)
+		getBasisAddOneLineObli(dim, idx, szIdx,compressImage, output);		
 	//TODO aumentare le basi se meno di un tot
 	//to get band pass spatial filter use raster with only 1 base! and select dimension
 }
@@ -409,6 +411,57 @@ void getBasisAddOneLineHorizontal(const int dim, const int *idx, const int szIdx
 			}
 		}	
 	}
+
+
+
+}
+void getBasisAddOneLineObli(const int dim, const int *idx, const int szIdx,int compressImage, int ***basis){
+
+
+	//possibile farlo a scatti o continuo
+	int idxZeros = 0; //(WIDTH+HEIGHT)/2; 
+	int dimCompression = 400;
+	for(int cont= 0; cont<szIdx; cont++){
+		int i = cont;
+		int indexRaster = idx[i];
+		for(int j = 0; j<WIDTH+HEIGHT;j++){
+			int i_y;
+			int i_x;
+			int lim = HEIGHT;
+			
+			if(j<HEIGHT || j >= WIDTH)
+				lim = min(j+1/*io sicuro*/, HEIGHT + WIDTH - j );
+			if(j<WIDTH){
+				i_y = j; 
+				i_x = 0;
+			 }
+			if(j>=WIDTH){
+				i_y = WIDTH-1; 
+				i_x = j-WIDTH;
+			 }
+			if(j>(idxZeros-1) && j<(WIDTH+HEIGHT-idxZeros)){
+				int el;
+				if(j<dim*(indexRaster + 1))
+					el = 1;
+				else el = 0;
+				 for(int k = 0; k<lim; k++){ // k,j se sono in obliquo deve cambiare !
+									
+					if(compressImage){
+						if(abs(k-j/2)<dimCompression/2)
+							basis[i][i_x+k][i_y-k] = el;
+						else basis[i][i_x+k][i_y-k] = 0;
+					}
+					else
+						basis[i][i_x+k][i_y-k] = el;
+					
+					
+					}
+				}
+			else for(int k = 0; k<lim; k++) basis[i][i_x+k][i_y-k] = 0;	  // k,j se sono in obliquo deve cambiare !
+		}	
+	}
+
+
 
 
 

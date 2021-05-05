@@ -27,14 +27,18 @@ void checkForErrors(hid_device *handle){
 	/* it does not work. Probably not implemented correctly*/
 	if( hid_error(handle)==NULL)
 		printf("errori");
-	unsigned char message[1] = {0x0100};
-	int res = hid_read(handle, message,1);
-	char * flag = convlen(res, 8);
+	//unsigned char message[1] = {0x0100};
+	//int res = hid_read(handle, message,1);
+	command(handle,'r',0x22,0x01,0x00,NULL,0);
+	unsigned char message[1] = {0x81};
+	int res =hid_read(handle, message,1);
+	//char * flag = convlen(res, 8);
 	
 	//for(int i = 0; i<8; i++)
 	printf("%d", res);
-	printf("\n");
-	free(flag);
+	//getchar();
+	//printf("\n");
+	//free(flag);
 	/*
 	//if(flag[2]== '1'){
 		//printf("errori");

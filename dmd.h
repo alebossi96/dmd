@@ -72,7 +72,7 @@ void definePatterns(struct Patterns * pattern,const int index,const int exposure
 void setBmp(struct Patterns * pattern,const int  index,const int size);
 void bmpLoad(struct Patterns * pattern, const int index, const int *image, const int size);
 
-
+int command(hid_device *handle, const char mode, const char sequencebyte, const char com1, const char com2, const char *data, const int sizeData);
 void readBMP(char* filename, int *** image);
 #endif
 

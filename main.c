@@ -9,12 +9,12 @@ int main(){
 	while(true){
 	
 	if(WIZARD_OR_COMMAND){
-		printf("if Raster scan press 0\n   Hadamard pattern press 1\n   all mirrors press 2\n   all closed press 3 \n   notch filter press 4\n  Hadamard Horiontal 5\n  Raster Horiontal 6 \n  Add One Line 7 \n  Band Pass 8 \n\n");
+		printf("if Raster scan press 0\n   Hadamard pattern press 1\n   all mirrors press 2\n   all closed press 3 \n   notch filter press 4\n  Hadamard Horiontal 5\n  Raster Horiontal 6 \n  Add One Line 7 Horizontal \n  Band Pass 8\n  Add One Line 9 Obliquo \n\n");
 		scanf("%d", &(info.RasterOrHadamard));
 		info.startPosition = 0;
 		do{
-			if(info.RasterOrHadamard == 1 || info.RasterOrHadamard== 0 || info.RasterOrHadamard== 5 || info.RasterOrHadamard== 6 || info.RasterOrHadamard== 7 ){
-				if(info.RasterOrHadamard == 0 || info.RasterOrHadamard== 6 || info.RasterOrHadamard== 7 ){
+			if(info.RasterOrHadamard == 1 || info.RasterOrHadamard== 0 || info.RasterOrHadamard== 5 || info.RasterOrHadamard== 6 || info.RasterOrHadamard== 7 || info.RasterOrHadamard== 9){
+				if(info.RasterOrHadamard == 0 || info.RasterOrHadamard== 6 || info.RasterOrHadamard== 7|| info.RasterOrHadamard== 9 ){
 					printf("\n\n RASTER \n\n");
 					printf("select dimension of lines: ");
 					scanf("%d",&(info.nBasis));
@@ -102,7 +102,7 @@ int main(){
 
 
 			}
-		}while(!(info.RasterOrHadamard > -1 && info.RasterOrHadamard<9) 
+		}while(!(info.RasterOrHadamard > -1 && info.RasterOrHadamard<10) 
 		|| (info.RasterOrHadamard == 1 && info.nBasis<info.nMeas));
 	}
 	else{	info.RasterOrHadamard = 0;
