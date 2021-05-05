@@ -211,7 +211,7 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 				printf("%d, ", buffer[k]);
 				
 			}
-			//writeOnFile("cCommand.txt",buffer, SIZE_SEND);
+			writeOnFile("cCommand.txt",buffer, SIZE_SEND);
 			printf("\n\n");
 		}
 
@@ -228,7 +228,7 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 				printf("%d, ", buffer[k]);
 				
 			}
-			//writeOnFile("cCommand.txt",buffer, SIZE_SEND);
+			writeOnFile("cCommand.txt",buffer, SIZE_SEND);
 			printf("\n\n");
 		}
 		buffer[0] = 0x00;
@@ -253,7 +253,7 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 						printf("%d, ", buffer[k]);
 						
 					}
-					//writeOnFile("cCommand.txt",buffer, SIZE_SEND);
+					writeOnFile("cCommand.txt",buffer, SIZE_SEND);
 					printf("\n\n");
 				}
 			
@@ -278,7 +278,7 @@ int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, c
 					printf("%d, ", buffer[k]);
 					
 				}
-				//writeOnFile("cCommand.txt",buffer, SIZE_SEND);
+				writeOnFile("cCommand.txt",buffer, SIZE_SEND);
 				printf("\n\n");
 			}
 		}
