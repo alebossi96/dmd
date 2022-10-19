@@ -450,7 +450,7 @@ void definePatterns(struct Patterns * pattern, const int index,const int exposur
 	payload[11]=tmp[1];
 	for(int i = 0; i<12; i++)
 		pattern->defPatterns[bitPos + SIZE_PATTERN*patInd][i] = payload[i];
-	writeOnFile("cPattern.txt",payload, 12);
+	//writeOnFile("cPattern.txt",payload, 12);
 	//command(handle, 'w',0x00,0x1a,0x34,payload,12);
 	free(payload);
 	free(tmp);
@@ -556,8 +556,8 @@ void defSequence(struct Patterns * pattern,int ***matrixes,int *exposure,int *tr
 				encoded[bytecount-j-1]=tmp[j];
 			}
 			printf("szEncoded = %d \n", szEncoded);
-			getchar();
-			writeOnFile_int("cNewEncode.txt", encoded, szEncoded);
+			//getchar();
+			////writeOnFile_int("cNewEncode.txt", encoded, szEncoded);
 			free(tmp);
 			char c111[3]={'1','1','1'};
 			for(int j = (i/SIZE_PATTERN-1)*SIZE_PATTERN; j<i && j<size; j++){
@@ -645,7 +645,7 @@ void setBmp(struct Patterns * pattern,const int  index,const int size){
 	for(int i = 0; i<4; i++) payload[i+2]= total[i];
 	free(total);
 	for(int i = 0; i<6; i++) pattern->setBmp[index][i]=payload[i];
-	writeOnFile_int("cSetBmp.txt",payload, 6);
+	//writeOnFile_int("cSetBmp.txt",payload, 6);
 
 }
 

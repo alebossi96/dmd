@@ -104,9 +104,8 @@ void moveDMD(const struct DMD dmd){
 	//all the rest must be processed during initialization or garbage collection
 	for(int i = 0; i<dmd.szPattern; i++){
 		stopSequence(dmd.handle);
-		printf("press ENTER to start pattern");
-		getchar();
-		getchar();
+		//getchar();
+		//getchar();
 		int totExposure = 0;
 		
 		for(int j = 0; j<dmd.pattern[i].nEl; j++){
@@ -133,11 +132,14 @@ void moveDMD(const struct DMD dmd){
 			if(!DEBUG)
 			checkForErrors(dmd.handle);
 		}
-		//getchar();
-		startSequence(dmd.handle);
+		printf("press ENTER to start pattern");
+		getchar();
+		getchar();
 		int tDead = 0; //0.5 s of dead time
 		int tSleep = totExposure/1e6-tDead +1;
 		printf("totExposure= %d\n",totExposure);
+		startSequence(dmd.handle);
+		
 		if(totExposure/1e6-tDead<0)
 			tSleep = 0;
 		

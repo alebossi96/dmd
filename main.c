@@ -106,11 +106,12 @@ int main(){
 		|| (info.RasterOrHadamard == 1 && info.nBasis<info.nMeas));
 	}
 	else{	info.RasterOrHadamard = 0;
-		info.nBasis =300; 
-		info.nMeas = 3; 
+		info.nBasis =47; 
+		info.nMeas = 64; 
+		info.sizeBatch = info.nMeas;
 		info.startPosition= 0;	
-		info.exp = 500000;    
-		info.repeat = 1;
+		info.exp = 100000;    
+		info.repeat = 0;
 		info.compress = 0;
 	}
 	info.dark_time = 10000; 
@@ -126,9 +127,9 @@ int main(){
 		printf("offset = %d\n", info.previousPos);
 	}
 	printf("press any key to continue. Press q to quit\n");
-	//char a = getchar();
+	char a = getchar();
 
-	//if(a == 'q' || a == 'Q') 
+	if(a == 'q' || a == 'Q') 
 	return 0;
 	
 	}
