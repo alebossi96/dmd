@@ -1,0 +1,166 @@
+# depslib dependency file v1.0
+1666089194 source:c:\users\valerio\desktop\c\main\getbasis\getbasis.c
+	"getbasis.h"
+	"ordering.h"
+
+1666089212 c:\users\valerio\desktop\c\main\getbasis\getbasis.h
+	<stdlib.h>
+	<stdio.h>
+	<unistd.h>
+	<math.h>
+	<stdbool.h>
+	<string.h>
+
+1665764125 c:\users\valerio\desktop\c\main\getbasis\ordering.h
+	<stdlib.h>
+	<stdio.h>
+	<unistd.h>
+	<math.h>
+	<stdbool.h>
+	<string.h>
+
+1666037434 source:c:\users\valerio\desktop\c\main\getbasis\ordering.c
+	"ordering.h"
+
+1666087123 source:c:\users\valerio\desktop\c\main\dmd.c
+	"dmd.h"
+
+1666170417 c:\users\valerio\desktop\c\main\dmd.h
+	<stdlib.h>
+	<stdio.h>
+	<unistd.h>
+	<math.h>
+	<stdbool.h>
+	<string.h>
+	"hidapi/hidapi.h"
+	"getbasis/getbasis.h"
+
+1665759060 c:\users\valerio\desktop\c\main\hidapi\hidapi.h
+	<wchar.h>
+
+1666171309 source:c:\users\valerio\desktop\c\main\main.c
+	"measure.h"
+
+1666037434 c:\users\valerio\desktop\c\main\measure.h
+	"hidapi/hidapi.h"
+	"dmd.h"
+
+1666170823 source:c:\users\valerio\desktop\c\main\measure.c
+	"measure.h"
+
+1665759061 source:c:\users\valerio\desktop\c\main\hidapi\hidapi.c
+	"hidapi.h"
+	<windows.h>
+	<ntdef.h>
+	<winbase.h>
+	<ntdef.h>
+	<wctype.h>
+	<devpropdef.h>
+	"hidapi_cfgmgr32.h"
+	"hidapi_hidclass.h"
+	"hidapi_hidsdi.h"
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1665759061 c:\users\valerio\desktop\c\main\hidapi\hidapi_cfgmgr32.h
+	<cfgmgr32.h>
+	<initguid.h>
+	<devpkey.h>
+	<propkey.h>
+
+1665759061 c:\users\valerio\desktop\c\main\hidapi\hidapi_hidclass.h
+	<hidclass.h>
+
+1665759061 c:\users\valerio\desktop\c\main\hidapi\hidapi_hidsdi.h
+	<hidsdi.h>
+	"hidapi_hidpi.h"
+
+1665759061 c:\users\valerio\desktop\c\main\hidapi\hidapi_hidpi.h
+	<hidpi.h>
+
+1668455242 source:c:\users\valerio\documents\github\dmd_mia\getbasis\getbasis.c
+	"getbasis.h"
+
+1668455242 c:\users\valerio\documents\github\dmd_mia\getbasis\getbasis.h
+	<stdlib.h>
+	<stdio.h>
+	<unistd.h>
+	<math.h>
+	<stdbool.h>
+	<string.h>
+	"ordering.h"
+
+1668450100 c:\users\valerio\documents\github\dmd_mia\getbasis\ordering.h
+	<stdlib.h>
+	<stdio.h>
+	<unistd.h>
+	<math.h>
+	<stdbool.h>
+	<string.h>
+
+1668449339 source:c:\users\valerio\documents\github\dmd_mia\getbasis\ordering.c
+	"ordering.h"
+
+1665755461 source:c:\users\valerio\documents\github\dmd_mia\hidapi\hidapi.c
+	"hidapi.h"
+	<windows.h>
+	<ntdef.h>
+	<winbase.h>
+	<ntdef.h>
+	<wctype.h>
+	<devpropdef.h>
+	"hidapi_cfgmgr32.h"
+	"hidapi_hidclass.h"
+	"hidapi_hidsdi.h"
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1665755460 c:\users\valerio\documents\github\dmd_mia\hidapi\hidapi.h
+	<wchar.h>
+
+1665755461 c:\users\valerio\documents\github\dmd_mia\hidapi\hidapi_cfgmgr32.h
+	<cfgmgr32.h>
+	<initguid.h>
+	<devpkey.h>
+	<propkey.h>
+
+1665755461 c:\users\valerio\documents\github\dmd_mia\hidapi\hidapi_hidclass.h
+	<hidclass.h>
+
+1665755461 c:\users\valerio\documents\github\dmd_mia\hidapi\hidapi_hidsdi.h
+	<hidsdi.h>
+	"hidapi_hidpi.h"
+
+1665755461 c:\users\valerio\documents\github\dmd_mia\hidapi\hidapi_hidpi.h
+	<hidpi.h>
+
+1668455353 source:c:\users\valerio\documents\github\dmd_mia\dmd.c
+	"dmd.h"
+
+1668455353 c:\users\valerio\documents\github\dmd_mia\dmd.h
+	"main.h"
+	"getbasis/getbasis.h"
+	"hidapi/hidapi.h"
+
+1668455242 source:c:\users\valerio\documents\github\dmd_mia\measure.c
+	"measure.h"
+
+1668450486 c:\users\valerio\documents\github\dmd_mia\measure.h
+	"main.h"
+	"hidapi/hidapi.h"
+	"dmd.h"
+
+1667511753 source:c:\users\valerio\documents\github\dmd_mia\main.c
+	"main.h"
+	"measure.h"
+
+1668507871 c:\users\valerio\documents\github\dmd_mia\main.h
+	<stdlib.h>
+	<stdio.h>
+	<unistd.h>
+	<math.h>
+	<stdbool.h>
+	<string.h>
+
