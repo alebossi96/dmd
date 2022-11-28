@@ -23,6 +23,8 @@ void getBasis(const int hadamard_raster, const int dim, const int *idx, const in
 		getBasisBandPass(idx, dim, output);
 	else if(hadamard_raster == 9)
 		getBasisAddOneLineObli(dim, idx, szIdx, compressImage, output);
+    else if(hadamard_raster == 10)
+		getBasisHadamard2D(dim, idx, szIdx, output);
 	//TODO aumentare le basi se meno di un tot (CIOE'?)
 	//to get band pass spatial filter use raster with only 1 base! and select dimension
 }
@@ -333,7 +335,7 @@ void getBasisHadamardHorizontal(const int nBasis, const int *idx, const int szId
 	int idxZeros = (WIDTH-mult*nBasis)/2; //trova dove partire ricordtati che le basi di Hadamard sono di dimensioni 2^n
 	for(int cont = 0; cont <szIdx; cont++){ //count on the basis
 		int i = cont;
-		for(int j = 0; j<WIDTH;j++){
+		for(int j = 0; j<WIDTH; j++){
 			int el =(H[cont][(j-idxZeros)/mult]+1)/2;
 			 for(int k = 0; k<HEIGHT; k++){
 				basis[i][k][j] = el;
@@ -447,6 +449,68 @@ void getBasisAddOneLineObli(const int dim, const int *idx, const int szIdx, int 
 			else for(int k = 0; k<lim; k++) basis[i][i_x+k][i_y-k] = 0;	  // k,j se sono in obliquo deve cambiare !
 		}
 	}
+}
+
+void getBasisHadamard2D(const int nBasis, const int *idx, const int szIdx, unsigned char ***basis ){
+
+    short int ** H;
+	int mode = 0;   // 0 = Hadamard matrix ordering,        TODO (per CS): inserire la scelta dell'uso di CC nel wizard e a quale base fermarsi
+                    // 1 = cake-cutting ordering,
+                    // 2 = read bases from txt file
+
+    // generation of the Hadamard matrix (and ordering)
+	H =(short int **)malloc(nBasis*sizeof(short int*));
+    for(int i=0; i<nBasis; i++)
+        H[i] = (short int *)malloc(nBasis*sizeof(short int));
+    if(mode == 2)
+        getBasisHadamardFromTxt(H, nBasis, idx, szIdx); // read from .txt file
+    else{
+        hadamard(H, nBasis);
+        if (mode == 1)
+            ordering(H, nBasis, idx, szIdx); // cake-cutting
+    }
+
+    // print Hadamard matrix
+	for(int i = 0; i<szIdx; i++ ){
+		for(int j = 0; j<nBasis; j++) printf("%d ", H[i][j]);
+		printf("\n");
+	}
+
+	int sq = sqrt(nBasis);
+    int multW = (WIDTH)/sq;
+    int multH = (HEIGHT)/sq;
+    printf("multW %d, multH %d\n", multW, multH);
+    int idxZerosW = (WIDTH-multW*nBasis)/2;      // pixel saltati
+    int idxZerosH = (HEIGHT-multH*nBasis)/2;
+    int cont = 0;
+    int pos = 0;
+    int row = 0;
+    int col = 0;
+    for(cont=0; cont<szIdx; cont++){
+        // select the basis
+        for(pos=0; pos<szIdx; ){
+            // select basis element
+            //printf("pos %d\n", pos);
+            for(col=0; col<sq; col++){
+                for(row=0; row<sq; row++){
+                    //printf("j limits %d : %d\n", multH*row, multH*(row+1));
+                    //printf("k limits %d : %d\n", multW*col, multW*(col+1));
+                    for(int j=multH*row; j<multH*(row+1); j++){
+                        for(int k=multW*col; k<multW*(col+1); k++){
+                            // fill the image (rows and then cols)
+                            //printf("cont %d, pos %d, j %d, k %d\n", cont, pos, j ,k);
+                            basis[cont][j][k] = (H[cont][pos]+1)/2;
+                        }
+                    }
+                    pos++;
+                }
+            }
+		}
+	}
+	for(int i = 0; i<szIdx; i++)
+		free(H[i]);
+	free(H);
+
 }
 
 int nDigit(int n){

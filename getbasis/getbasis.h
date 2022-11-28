@@ -59,6 +59,9 @@ void getBasisBandPass(const int *idx, const int dim, unsigned char ***basis);
 /* generates a pattern adding a line of n="dim" pixels at each measurement */
 void getBasisAddOneLineObli(const int dim, const int *idx, const int szIdx,int compressImage, unsigned char ***basis);
 
+/* generates 2D pattern with Hadamard basis for image reconstruction */
+void getBasisHadamard2D(const int nBasis, const int *idx, const int szIdx, unsigned char ***basis);
+
 /* some support functions */
 int nDigit(int n); // returns how many digits the number n has
 char *intToString(int n); // converts the number n into a string

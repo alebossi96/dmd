@@ -17,11 +17,11 @@ int main(){
     /* WIZARD procedure (the program asks every setting) */
 	if(WIZARD_OR_COMMAND){
 		do{
-            printf("Choose mode:\n (0) Raster scan\n (1) Hadamard pattern\n (2) All mirrors\n (3) All closed\n (4) Notch filter\n (5) Hadamard Horizontal\n (6) Raster Horizontal\n (7) Add One Line (Horizontal)\n (8) Band Pass\n (9) Add One Line (Oblique)\n (-1) Exit\n\n >>");
+            printf("Choose mode:\n (0) Raster scan\n (1) Hadamard pattern\n (2) All mirrors\n (3) All closed\n (4) Notch filter\n (5) Hadamard Horizontal\n (6) Raster Horizontal\n (7) Add One Line (Horizontal)\n (8) Band Pass\n (9) Add One Line (Oblique)\n (10) Hadamard 2D\n (-1) Exit\n\n >>");
             scanf("%d", &(info.RasterOrHadamard));
             getchar();
             info.startPosition = 0;
-			if(info.RasterOrHadamard==1 || info.RasterOrHadamard==0 || info.RasterOrHadamard==5 || info.RasterOrHadamard==6 || info.RasterOrHadamard==7 || info.RasterOrHadamard==9){
+			if(info.RasterOrHadamard==1 || info.RasterOrHadamard==0 || info.RasterOrHadamard==5 || info.RasterOrHadamard==6 || info.RasterOrHadamard==7 || info.RasterOrHadamard==9 || info.RasterOrHadamard==10){
 				if(info.RasterOrHadamard==0 || info.RasterOrHadamard==6 || info.RasterOrHadamard==7 || info.RasterOrHadamard==9 ){
 					printf("\n\n*** RASTER ***\n");
 					printf("Select dimension of lines: ");
@@ -101,7 +101,7 @@ int main(){
 			else{
                 printf("\n*** NOT VALID COMMAND \n\n");
 			}
-		} while(!(info.RasterOrHadamard > -2 && info.RasterOrHadamard < 10));
+		} while(!(info.RasterOrHadamard > -2 && info.RasterOrHadamard < 11));
 	}
 
 	/* COMMAND procedure (the measure runs with the settings here below) */
