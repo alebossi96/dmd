@@ -1,0 +1,101 @@
+\hypertarget{measure_8h}{}\doxysection{measure.\+h File Reference}
+\label{measure_8h}\index{measure.h@{measure.h}}
+{\ttfamily \#include $<$hidapi.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}dmd.\+h\char`\"{}}\newline
+Include dependency graph for measure.\+h\+:
+% FIG 0
+This graph shows which files directly or indirectly include this file\+:
+% FIG 1
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_d_m_d}{D\+MD}}
+\item 
+struct \mbox{\hyperlink{struct_info}{Info}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{measure_8h_a3b276c8549023ba54bc4d076ed22191a}{init\+D\+MD}} (struct \mbox{\hyperlink{struct_info}{Info}} info, struct \mbox{\hyperlink{struct_d_m_d}{D\+MD}} $\ast$dmd)
+\item 
+void \mbox{\hyperlink{measure_8h_af73633d3944035ced72266a21f8b6e01}{move\+D\+MD}} (const struct \mbox{\hyperlink{struct_d_m_d}{D\+MD}} dmd)
+\item 
+int \mbox{\hyperlink{measure_8h_a0e2743f830abe7f5682b65dd97e0f86e}{talk\+D\+M\+D\+\_\+char}} (hid\+\_\+device $\ast$handle, const char mode, const char sequencebyte, const char com1, const char com2, const char $\ast$data, const int size\+Data)
+\item 
+int \mbox{\hyperlink{measure_8h_aa930c1cb9fdc15ed29e43fce3c3baede}{talk\+D\+M\+D\+\_\+int}} (hid\+\_\+device $\ast$handle, const char mode, const char sequencebyte, const char com1, const char com2, const int $\ast$data, const int size\+Data)
+\item 
+void \mbox{\hyperlink{measure_8h_a1b0aacc1a146417b874ba989852c077c}{close\+D\+MD}} (struct \mbox{\hyperlink{struct_d_m_d}{D\+MD}} $\ast$dmd)
+\item 
+void \mbox{\hyperlink{measure_8h_a691489ff7c8067d997b518fea956911c}{reset}} (hid\+\_\+device $\ast$handle)
+\item 
+void \mbox{\hyperlink{measure_8h_ae42454abc3ee6ac93439af3a2a7b6cb8}{change\+Mode}} (hid\+\_\+device $\ast$handle, int mode)
+\item 
+void \mbox{\hyperlink{measure_8h_aab708eaa4dac0cacfb998ef8dfce959a}{stop\+Sequence}} (hid\+\_\+device $\ast$handle)
+\item 
+void \mbox{\hyperlink{measure_8h_a5762104e539ed347119df6ee437e00db}{start\+Sequence}} (hid\+\_\+device $\ast$handle)
+\item 
+int \mbox{\hyperlink{measure_8h_af89e6123dc76b4f2d5f34dc67a61a0ce}{offset}} (const int start\+Position, const int line\+Width, const int previous\+Pos)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{measure_8h_ae42454abc3ee6ac93439af3a2a7b6cb8}\label{measure_8h_ae42454abc3ee6ac93439af3a2a7b6cb8}} 
+\index{measure.h@{measure.h}!changeMode@{changeMode}}
+\index{changeMode@{changeMode}!measure.h@{measure.h}}
+\doxysubsubsection{\texorpdfstring{changeMode()}{changeMode()}}
+{\footnotesize\ttfamily void change\+Mode (\begin{DoxyParamCaption}\item[{hid\+\_\+device $\ast$}]{handle,  }\item[{int}]{mode }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{measure_8h_a1b0aacc1a146417b874ba989852c077c}\label{measure_8h_a1b0aacc1a146417b874ba989852c077c}} 
+\index{measure.h@{measure.h}!closeDMD@{closeDMD}}
+\index{closeDMD@{closeDMD}!measure.h@{measure.h}}
+\doxysubsubsection{\texorpdfstring{closeDMD()}{closeDMD()}}
+{\footnotesize\ttfamily void close\+D\+MD (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{struct_d_m_d}{D\+MD}} $\ast$}]{dmd }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{measure_8h_a3b276c8549023ba54bc4d076ed22191a}\label{measure_8h_a3b276c8549023ba54bc4d076ed22191a}} 
+\index{measure.h@{measure.h}!initDMD@{initDMD}}
+\index{initDMD@{initDMD}!measure.h@{measure.h}}
+\doxysubsubsection{\texorpdfstring{initDMD()}{initDMD()}}
+{\footnotesize\ttfamily void init\+D\+MD (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{struct_info}{Info}}}]{info,  }\item[{struct \mbox{\hyperlink{struct_d_m_d}{D\+MD}} $\ast$}]{dmd }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{measure_8h_af73633d3944035ced72266a21f8b6e01}\label{measure_8h_af73633d3944035ced72266a21f8b6e01}} 
+\index{measure.h@{measure.h}!moveDMD@{moveDMD}}
+\index{moveDMD@{moveDMD}!measure.h@{measure.h}}
+\doxysubsubsection{\texorpdfstring{moveDMD()}{moveDMD()}}
+{\footnotesize\ttfamily void move\+D\+MD (\begin{DoxyParamCaption}\item[{const struct \mbox{\hyperlink{struct_d_m_d}{D\+MD}}}]{dmd }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{measure_8h_af89e6123dc76b4f2d5f34dc67a61a0ce}\label{measure_8h_af89e6123dc76b4f2d5f34dc67a61a0ce}} 
+\index{measure.h@{measure.h}!offset@{offset}}
+\index{offset@{offset}!measure.h@{measure.h}}
+\doxysubsubsection{\texorpdfstring{offset()}{offset()}}
+{\footnotesize\ttfamily int offset (\begin{DoxyParamCaption}\item[{const int}]{start\+Position,  }\item[{const int}]{line\+Width,  }\item[{const int}]{previous\+Pos }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{measure_8h_a691489ff7c8067d997b518fea956911c}\label{measure_8h_a691489ff7c8067d997b518fea956911c}} 
+\index{measure.h@{measure.h}!reset@{reset}}
+\index{reset@{reset}!measure.h@{measure.h}}
+\doxysubsubsection{\texorpdfstring{reset()}{reset()}}
+{\footnotesize\ttfamily void reset (\begin{DoxyParamCaption}\item[{hid\+\_\+device $\ast$}]{handle }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{measure_8h_a5762104e539ed347119df6ee437e00db}\label{measure_8h_a5762104e539ed347119df6ee437e00db}} 
+\index{measure.h@{measure.h}!startSequence@{startSequence}}
+\index{startSequence@{startSequence}!measure.h@{measure.h}}
+\doxysubsubsection{\texorpdfstring{startSequence()}{startSequence()}}
+{\footnotesize\ttfamily void start\+Sequence (\begin{DoxyParamCaption}\item[{hid\+\_\+device $\ast$}]{handle }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{measure_8h_aab708eaa4dac0cacfb998ef8dfce959a}\label{measure_8h_aab708eaa4dac0cacfb998ef8dfce959a}} 
+\index{measure.h@{measure.h}!stopSequence@{stopSequence}}
+\index{stopSequence@{stopSequence}!measure.h@{measure.h}}
+\doxysubsubsection{\texorpdfstring{stopSequence()}{stopSequence()}}
+{\footnotesize\ttfamily void stop\+Sequence (\begin{DoxyParamCaption}\item[{hid\+\_\+device $\ast$}]{handle }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{measure_8h_a0e2743f830abe7f5682b65dd97e0f86e}\label{measure_8h_a0e2743f830abe7f5682b65dd97e0f86e}} 
+\index{measure.h@{measure.h}!talkDMD\_char@{talkDMD\_char}}
+\index{talkDMD\_char@{talkDMD\_char}!measure.h@{measure.h}}
+\doxysubsubsection{\texorpdfstring{talkDMD\_char()}{talkDMD\_char()}}
+{\footnotesize\ttfamily int talk\+D\+M\+D\+\_\+char (\begin{DoxyParamCaption}\item[{hid\+\_\+device $\ast$}]{handle,  }\item[{const char}]{mode,  }\item[{const char}]{sequencebyte,  }\item[{const char}]{com1,  }\item[{const char}]{com2,  }\item[{const char $\ast$}]{data,  }\item[{const int}]{size\+Data }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{measure_8h_aa930c1cb9fdc15ed29e43fce3c3baede}\label{measure_8h_aa930c1cb9fdc15ed29e43fce3c3baede}} 
+\index{measure.h@{measure.h}!talkDMD\_int@{talkDMD\_int}}
+\index{talkDMD\_int@{talkDMD\_int}!measure.h@{measure.h}}
+\doxysubsubsection{\texorpdfstring{talkDMD\_int()}{talkDMD\_int()}}
+{\footnotesize\ttfamily int talk\+D\+M\+D\+\_\+int (\begin{DoxyParamCaption}\item[{hid\+\_\+device $\ast$}]{handle,  }\item[{const char}]{mode,  }\item[{const char}]{sequencebyte,  }\item[{const char}]{com1,  }\item[{const char}]{com2,  }\item[{const int $\ast$}]{data,  }\item[{const int}]{size\+Data }\end{DoxyParamCaption})}
+

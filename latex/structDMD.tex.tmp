@@ -1,0 +1,26 @@
+\hypertarget{structDMD}{}\doxysection{D\+MD Struct Reference}
+\label{structDMD}\index{DMD@{DMD}}
+
+
+Collaboration diagram for D\+MD\+:
+% FIG 0
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structDMD_a90e331af91a4584bf63686e2a4fedffa}\label{structDMD_a90e331af91a4584bf63686e2a4fedffa}} 
+hid\+\_\+device $\ast$ {\bfseries handle}
+\item 
+\mbox{\Hypertarget{structDMD_a8e225dfdb85aac21f044327912dcc4d1}\label{structDMD_a8e225dfdb85aac21f044327912dcc4d1}} 
+struct \mbox{\hyperlink{structPatterns}{Patterns}} $\ast$ {\bfseries pattern}
+\item 
+\mbox{\Hypertarget{structDMD_a1707aaf69b49c3708c92f3dacce4069d}\label{structDMD_a1707aaf69b49c3708c92f3dacce4069d}} 
+int {\bfseries sz\+Pattern}
+\item 
+\mbox{\Hypertarget{structDMD_ad4056930ec02d6067716858adabb33bc}\label{structDMD_ad4056930ec02d6067716858adabb33bc}} 
+int {\bfseries repeat}
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+measure.\+h\end{DoxyCompactItemize}

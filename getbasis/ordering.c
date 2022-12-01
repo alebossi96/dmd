@@ -1,5 +1,76 @@
 //fonte:https://www.geeksforgeeks.org/find-number-of-islands/
 #include "ordering.h"
+
+void cake_cutting(int **H, const int nBasis){
+	/*
+	int **H;
+
+	H =(int **)malloc(nBasis*sizeof(int*));
+	for(int i = 0; i<nBasis; i++)
+		H [i] = (int *)malloc(nBasis*sizeof(int));
+
+	printf("nBasis = %d\n",nBasis);
+	hadamard(H, nBasis);
+	*/
+	int cols = 8;
+	int rows = nBasis/cols;
+
+	//matrix serve per riarrangiare H
+	int **matrix;
+	matrix =(int**)malloc(rows*sizeof(int*));
+	for(int i = 0; i<rows; i++)
+		matrix[i]=(int*)malloc(cols*sizeof(int));
+	int *pieciesOfCake;
+	pieciesOfCake=(int*)malloc(nBasis*sizeof(int));
+	
+	for(int i = 0; i<nBasis; i++){
+		//Conta numero di pezzi di torta
+		for(int j = 0;j<nBasis; j++){
+			matrix[j/cols][j%cols] = (H[i][j]+1)/2;
+		}
+		//Conta numero di pezzi di torta
+		pieciesOfCake[i] = countIslands(matrix,rows,cols);
+	}
+	for(int i = 0; i<rows; i++)
+		free(matrix[i]);
+	free(matrix);
+	for(int i = 0; i<nBasis; i++){
+		for(int j = i +1; j<nBasis; j++){
+			if(pieciesOfCake[i]>pieciesOfCake[j]){
+				int tmp = pieciesOfCake[i];
+				pieciesOfCake[i] = pieciesOfCake[j];
+				pieciesOfCake[j] = tmp;
+				for(int k = 0; k<nBasis; k++){
+					tmp = H[i][k];
+					H[i][k] =  H[j][k];
+					H[j][k] =tmp;
+				}
+			}
+		}
+	}
+
+	free(pieciesOfCake);
+	/*
+	int **output;
+	output=(int **)malloc(szIdx*sizeof(int*));
+	
+	for(int i = 0; i <szIdx; i++){
+		output[i]=(int*)malloc(nBasis*sizeof(int));
+		int indexBasis = idx[i];
+		printf("indexBasis = %d \n", indexBasis);
+		for(int j = 0; j<nBasis; j++) output[i][j] = H[indexBasis][j];	
+	}
+
+
+
+	for(int i = 0; i<nBasis; i++)
+		free(H[i]);
+	free(H);
+	return output;
+    */
+}
+
+
 int pow2_i(const int exp){
 	int res=1;
 	for(int i =0; i<exp; i++)

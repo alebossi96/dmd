@@ -8,8 +8,8 @@ Controlla!
 Fare 2D
 */
 
-
-void genImgHorFixed(const int **mat, int nBasis, int nMeas, int dim, int ***basis)//riscala img
+#include"genimg.h"
+void genImgHorLineFixed(const int **mat, int nBasis, int nMeas, int dim, int ***basis)//riscala img
 {
 	for(int i= 0; i<nMeas; i++)
     {
@@ -25,15 +25,14 @@ void genImgHorFixed(const int **mat, int nBasis, int nMeas, int dim, int ***basi
         }
     }	
 }
-void genImgHorAdapt(const int **mat, int nBasis, int nMeas, int ***basis)//adapt img
+void genImgHorLineAdapt(const int **mat, int nBasis, int nMeas, int ***basis)//adapt img
 {
     int dim = HEIGHT/nBasis;
-    int offset = (HEIGHT-dim*nBasis)/2
+    int offset = (HEIGHT-dim*nBasis)/2;
 	for(int i= 0; i<nMeas; i++)
     {
 		for(int j = 0; j<WIDTH;j++)
         {
-		    int h = 0;
 		    for(int h = 0; h<HEIGHT; h++)
 		    {
 		        if(h< offset || h> HEIGHT-offset)
@@ -47,9 +46,9 @@ void genImgHorAdapt(const int **mat, int nBasis, int nMeas, int ***basis)//adapt
 
 
 
-void genImgOblFixed(const int **mat, int nBasis, int nMeas, int dim, int ***basis){//riscala img
+void genImgOblLineFixed(const int **mat, int nBasis, int nMeas, int dim, int ***basis){//riscala img
 	//possibile farlo a scatti o continuo
-	for(int i= 0; i<nMeas; cont++){
+	for(int i= 0; i<nMeas; i++){
 
 		for(int j = 0; j<WIDTH+HEIGHT;j++){
 			int i_y;
@@ -66,7 +65,7 @@ void genImgOblFixed(const int **mat, int nBasis, int nMeas, int dim, int ***basi
 				i_y = WIDTH-1; 
 				i_x = j-WIDTH;
 			 }
-			if(j<(WIDTH+HEIGHT){
+			if(j<(WIDTH+HEIGHT)){
 				int el = mat[i][j/dim];
 				 for(int k = 0; k<lim; k++){ // k,j se sono in obliquo deve cambiare !
 					basis[i][i_x+k][i_y-k] = el;
@@ -76,11 +75,11 @@ void genImgOblFixed(const int **mat, int nBasis, int nMeas, int dim, int ***basi
 		}	
 	}
 }
-void genImgOblAdapt(const int **mat, int nBasis, int nMeas, int ***basis){//riscala img
+void genImgOblLineAdapt(const int **mat, int nBasis, int nMeas, int ***basis){//riscala img
 	//possibile farlo a scatti o continuo
 	int dim = (WIDTH+HEIGHT)/nBasis;
-	int offset = (WIDTH+HEIGHT-dim*nBasis)/2
-	for(int i= 0; i<nMeas; cont++){
+	int offset = (WIDTH+HEIGHT-dim*nBasis)/2;
+	for(int i= 0; i<nMeas; i++){
 
 		for(int j = 0; j<WIDTH+HEIGHT;j++){
 			int i_y;
@@ -97,9 +96,12 @@ void genImgOblAdapt(const int **mat, int nBasis, int nMeas, int ***basis){//risc
 				i_y = WIDTH-1; 
 				i_x = j-WIDTH;
 			}
-			if(j<(WIDTH+HEIGHT){
-                if(j< offset || j > WIDTH+HEIGHT -offset)  int el = 0;
-                else    int el = mat[i][j/dim];
+			if(j<(WIDTH+HEIGHT)){
+			    int el;
+                if(j< offset || j > WIDTH+HEIGHT -offset)
+                    el = 0;
+                else    
+                    el = mat[i][j/dim];
 		        for(int k = 0; k<lim; k++){ // k,j se sono in obliquo deve cambiare !
                     basis[i][i_x+k][i_y-k] = el;
                 }
@@ -107,5 +109,53 @@ void genImgOblAdapt(const int **mat, int nBasis, int nMeas, int ***basis){//risc
 			else for(int k = 0; k<lim; k++) basis[i][i_x+k][i_y-k] = 0;	  // k,j se sono in obliquo deve cambiare !
 		}	
 	}
+}
+void genImgHor2D(const int **mat, int nBasis, int nMeas, int xStart, int yStart, int dimX, int dimY, int xStop, int yStop, int ***basis){
+    for(int idx = 0; idx<nMeas; idx ++){
+        int i_b = 0;
+        int j_b = 0;
+        for(int i = 0; i<WIDTH; i++){
+            for(int j = 0; j<HEIGHT; j++){
+                if(i<xStart || j<yStart || i>xStop|| j> yStop){
+                    basis[idx][i][j] = 0;
+                    continue;
+                }
+                basis[idx][i][j] = mat[idx][i_b];
+                if(dimX*(i_b+1)>(j-xStart) )
+                    i_b++;
+                if(j== xStop-1 && j_b<dimY)
+                    i_b-= nWidth;
+                if(j_b == dimY)
+                    j_b = 0;
+            }
+        }
+    }
+}
+void genImgHor2DFixed(const int **mat, int nBasis, int nMeas, int xStart, int yStart, int dimX, int dimY, int ***basis){
+    int nHeight = (int) sqrt(nBasis);
+    int nWidth;
+    if(nBasis == nHeight*nHeight)
+        nWidth = nHeight; //quadrato
+    else
+        nWidth = 2*nHeight;//rettangolo
+    int xStop = nWidth*dimX + xStart;
+    int yStop = nHeight*dimY + yStart;
+    genImgHor2D(mat, nBasis, nMeas, xStart, yStart, dimX, dimY, xStop, yStop, basis)
+}
+void genImgHor2DAdapt(const int **mat, int nBasis, int nMeas, int xStart, int yStart, int xStop, int yStop, int ***basis){
+    //rStop in zona
+    int nHeight = (int) sqrt(nBasis);
+    int nWidth;
+    if(nBasis == nHeight*nHeight)
+        nWidth = nHeight; //quadrato
+    else
+        nWidth = 2*nHeight;//rettangolo
+    int dimX = round((xStop-xStart)/(1.*nWidth));
+    int dimY = round((yStop-yStart)/(1.*nHeight));
+    genImgHor2D(mat, nBasis, nMeas, xStart, yStart, dimX, dimY, xStop, yStop, basis)
+}
+int min(const int a, const int b){
+	if(a>b) return b;
+	return a;
 }
 

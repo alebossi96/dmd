@@ -1,7 +1,7 @@
 #include "getbasis.h"
 #include "ordering.h"
 #define SIZE_BUFFER 2049
-
+/*
 void getBasis(const int hadamard_raster, const int dim, const int *idx, const int szIdx,int compressImage, int ***output){
 	if(hadamard_raster == 1)
 		getBasisHadamard(dim, idx, szIdx,compressImage, output);//output non so se magari devo passare in maniera diversa
@@ -27,72 +27,29 @@ void getBasis(const int hadamard_raster, const int dim, const int *idx, const in
 	//TODO aumentare le basi se meno di un tot
 	//to get band pass spatial filter use raster with only 1 base! and select dimension
 }
-
-int **ordering(const int nBasis, const int *idx, const int szIdx){
-	int **H;
-
-	H =(int **)malloc(nBasis*sizeof(int*));
-	for(int i = 0; i<nBasis; i++)
-		H [i] = (int *)malloc(nBasis*sizeof(int));
-
-	printf("nBasis = %d\n",nBasis);
-	hadamard(H, nBasis);
-	int cols = 8;
-	int rows = nBasis/cols;
-
-	//matrix serve per riarrangiare H
-	int **matrix;
-	matrix =(int**)malloc(rows*sizeof(int*));
-	for(int i = 0; i<rows; i++)
-		matrix[i]=(int*)malloc(cols*sizeof(int));
-	int *pieciesOfCake;
-	pieciesOfCake=(int*)malloc(nBasis*sizeof(int));
-	
-	for(int i = 0; i<nBasis; i++){
-		//Conta numero di pezzi di torta
-		for(int j = 0;j<nBasis; j++){
-			matrix[j/cols][j%cols] = (H[i][j]+1)/2;
-		}
-		//Conta numero di pezzi di torta
-		pieciesOfCake[i] = countIslands(matrix,rows,cols);
-	}
-	for(int i = 0; i<rows; i++)
-		free(matrix[i]);
-	free(matrix);
-	for(int i = 0; i<nBasis; i++){
-		for(int j = i +1; j<nBasis; j++){
-			if(pieciesOfCake[i]>pieciesOfCake[j]){
-				int tmp = pieciesOfCake[i];
-				pieciesOfCake[i] = pieciesOfCake[j];
-				pieciesOfCake[j] = tmp;
-				for(int k = 0; k<nBasis; k++){
-					tmp = H[i][k];
-					H[i][k] =  H[j][k];
-					H[j][k] =tmp;
-				}
-			}
-		}
-	}
-
-	free(pieciesOfCake);
-	int **output;
-	output=(int **)malloc(szIdx*sizeof(int*));
-	
-	for(int i = 0; i <szIdx; i++){
-		output[i]=(int*)malloc(nBasis*sizeof(int));
-		int indexBasis = idx[i];
-		printf("indexBasis = %d \n", indexBasis);
-		for(int j = 0; j<nBasis; j++) output[i][j] = H[indexBasis][j];	
-	}
-
-
-
-	for(int i = 0; i<nBasis; i++)
-		free(H[i]);
-	free(H);
-	return output;
-
+*/
+void getBasis(const int type, const int orientation,  const int dim, const int nMeas, const int offset, const int order, int ***output){
+    int **mat;
+    mat =(int**)malloc(nMeas*sizeof(int*));
+    for (i = 0; i<nLine; i++){
+        mat[i] =(int*)malloc(dim*sizeof(int));
+    }
+    
+    if(type == 0)
+        genMatRast(mat, dim, nMeas, offset);
+    else if (type == 1)
+        getMatHad(mat, dim, nMeas, order);
+    else if(type == 2) 
+        genMatOne(mat, dim,nMeas);
+    else if(type == 3) 
+		genMatZero(mat, dim, nMeas);
+		
+    for (i = 0; i<nLine; i++){
+        free(mat[i]);
+    }
+    free(mat);
 }
+
 
 int min(const int a, const int b){
 	if(a>b) return b;

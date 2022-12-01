@@ -20,6 +20,7 @@ struct Info{
 	int compress;
 	int sizeBatch;
 };
+
 void initDMD(struct Info info,struct DMD *dmd);
 void moveDMD(const struct DMD dmd);
 int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, const char com1, const char com2, const char *data, const int sizeData);

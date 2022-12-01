@@ -8,9 +8,10 @@
 #include <string.h>
 //REMEMBER TO USE THE SAME ALGORITHM IN THE RECONSTRUCTION AS IN THE GETBASIS!
 //BETTER IF YOU USE SAME FUNCTION!
+void cake_cutting(int **H, const int nBasis);
 int pow2_i(const int exp);
 void hadamard(int **matrix, const int nBasis);
-void cake_cutting(const int nBasis, int **matrix);
+//void cake_cutting(const int nBasis, int **matrix);
 int numberOfCakes(int ** matrix,const int rows,const int cols);
 int isSafe(int **M, int row, int col, bool **visited, int ROW, int COL);
 void DFS(int **M, int row, int col, bool **visited, int ROW, int COL);

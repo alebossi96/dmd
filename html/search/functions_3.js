@@ -1,0 +1,5 @@
+var searchData=
+[
+  ['definepatterns_104',['definePatterns',['../dmd_8c.html#a5322ebaf981ea623bb0b08677603142b',1,'definePatterns(struct Patterns *pattern, const int index, const int exposure, const int bitdepth, const char *color, const int triggerIn, const int darkTime, const int triggerOut, const int patInd, const int bitPos):&#160;dmd.c'],['../dmd_8h.html#a7672ab1a1a3105a40a11784368b43a9b',1,'definePatterns(struct Patterns *pattern, const int index, const int exposure, const int bitdepth, const char *color, const int triggerIn, const int darkTime, const int triggerout, const int patInd, const int bitpos):&#160;dmd.c']]],
+  ['defsequence_105',['defSequence',['../dmd_8c.html#af00b50b6acc570c860450efae04b730d',1,'defSequence(struct Patterns *pattern, int ***matrixes, int *exposure, int *trigger_in, int dark_time, int *trigger_out, int repetition, const int size):&#160;dmd.c'],['../dmd_8h.html#af00b50b6acc570c860450efae04b730d',1,'defSequence(struct Patterns *pattern, int ***matrixes, int *exposure, int *trigger_in, int dark_time, int *trigger_out, int repetition, const int size):&#160;dmd.c']]]
+];

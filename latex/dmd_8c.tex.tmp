@@ -1,0 +1,217 @@
+\hypertarget{dmd_8c}{}\doxysection{dmd.\+c File Reference}
+\label{dmd_8c}\index{dmd.c@{dmd.c}}
+{\ttfamily \#include \char`\"{}dmd.\+h\char`\"{}}\newline
+Include dependency graph for dmd.\+c\+:
+% FIG 0
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{dmd_8c_a70ed59adcb4159ac551058053e649640}{S\+I\+ZE}}~65
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{dmd_8c_a0d832867e2eda85ad47c4d86457fd45d}{write\+On\+File}} (char $\ast$file\+Name, unsigned char $\ast$data, int size)
+\item 
+void \mbox{\hyperlink{dmd_8c_a2c99bc08702d31c66277e3ad6149cb28}{write\+On\+File\+\_\+int}} (char $\ast$file\+Name, int data\mbox{[}$\,$\mbox{]}, int size)
+\item 
+void \mbox{\hyperlink{dmd_8c_a2c4f35c46cfbd21af1b0cdd789fc0c9b}{check\+For\+Errors}} (hid\+\_\+device $\ast$handle)
+\item 
+int \mbox{\hyperlink{dmd_8c_a73130641109f77587d0cbe092e36f885}{command}} (hid\+\_\+device $\ast$handle, const char mode, const char sequencebyte, const char com1, const char com2, const char $\ast$data, const int size\+Data)
+\item 
+int \mbox{\hyperlink{dmd_8c_a4491002147d381bb30b9517449d1b254}{pow2\+\_\+i}} (const int exp)
+\item 
+char $\ast$ \mbox{\hyperlink{dmd_8c_a64db2ec0a3a0d6924bcb4b97246aec2d}{convlen}} (int a, int l)
+\item 
+int $\ast$ \mbox{\hyperlink{dmd_8c_a3a90b96474575bf1cd0f5cac7011efd5}{bits\+To\+Bytes\+\_\+char}} (const char $\ast$a, const int size)
+\item 
+int $\ast$ \mbox{\hyperlink{dmd_8c_a23eeab1665ec45f3f5d26ac2c7159ee9}{bits\+To\+Bytes\+\_\+int}} (const int $\ast$a, const int size)
+\item 
+void \mbox{\hyperlink{dmd_8c_a5ae9a436ead6cd37c5522e5066c0291c}{configure\+Lut}} (struct \mbox{\hyperlink{struct_patterns}{Patterns}} $\ast$pattern, int size, int rep)
+\item 
+int \mbox{\hyperlink{dmd_8c_a7db6624b3a516241261aa07bcb1a6bc2}{pow\+\_\+i}} (const int b, const int exp)
+\item 
+void \mbox{\hyperlink{dmd_8c_a47083e13645ee11fb07ec5b576a90098}{merge\+Images}} (int $\ast$$\ast$$\ast$images, int $\ast$$\ast$$\ast$res)
+\item 
+void \mbox{\hyperlink{dmd_8c_a5322ebaf981ea623bb0b08677603142b}{define\+Patterns}} (struct \mbox{\hyperlink{struct_patterns}{Patterns}} $\ast$pattern, const int index, const int exposure, const int bitdepth, const char $\ast$color, const int trigger\+In, const int dark\+Time, const int trigger\+Out, const int pat\+Ind, const int bit\+Pos)
+\item 
+void \mbox{\hyperlink{dmd_8c_af00b50b6acc570c860450efae04b730d}{def\+Sequence}} (struct \mbox{\hyperlink{struct_patterns}{Patterns}} $\ast$pattern, int $\ast$$\ast$$\ast$matrixes, int $\ast$exposure, int $\ast$trigger\+\_\+in, int dark\+\_\+time, int $\ast$trigger\+\_\+out, int repetition, const int size)
+\item 
+void \mbox{\hyperlink{dmd_8c_afeaef54598fc294c154c984b039121d3}{push}} (struct \mbox{\hyperlink{struct_node}{Node}} $\ast$$\ast$head, int data)
+\item 
+void \mbox{\hyperlink{dmd_8c_acacbc59659c17b7780638c5f6f0c1fc3}{allocate\+Pattern}} (struct \mbox{\hyperlink{struct_patterns}{Patterns}} $\ast$p, int n\+El)
+\item 
+int \mbox{\hyperlink{dmd_8c_a455580021eec54d98851448b957cfcdd}{is\+Row\+Equal}} (const int $\ast$a, const int $\ast$b)
+\item 
+void \mbox{\hyperlink{dmd_8c_a996179bbf101198151919f2cc5afdc75}{set\+Bmp}} (struct \mbox{\hyperlink{struct_patterns}{Patterns}} $\ast$pattern, const int index, const int size)
+\item 
+void \mbox{\hyperlink{dmd_8c_ab36e97ba04f12917b8fa3b5fc40c96b8}{bmp\+Load}} (struct \mbox{\hyperlink{struct_patterns}{Patterns}} $\ast$pattern, const int index, const int $\ast$image, const int size)
+\item 
+int \mbox{\hyperlink{dmd_8c_a5f362c40619d7443fa5843162d7883c0}{new\+Encode2}} (int $\ast$$\ast$$\ast$image, struct \mbox{\hyperlink{struct_node}{Node}} $\ast$$\ast$bit\+String)
+\item 
+int \mbox{\hyperlink{dmd_8c_acbbd139aff4cb349ddcc8a70605ca5a4}{take\+From\+Txt}} (struct \mbox{\hyperlink{struct_node}{Node}} $\ast$$\ast$bit\+String)
+\item 
+int \mbox{\hyperlink{dmd_8c_aa344137c485ac16eab250c7e8c5bf30b}{new\+Encode\+D\+M\+D\+Scope\+Foundary}} (int $\ast$$\ast$$\ast$image, struct \mbox{\hyperlink{struct_node}{Node}} $\ast$$\ast$bit\+String)
+\item 
+int \mbox{\hyperlink{dmd_8c_a7706f6ab92641d5d18ec4a010b4d2fde}{min}} (const int a, const int b)
+\item 
+int \mbox{\hyperlink{dmd_8c_a224caf53586afb09a678177f4946c8c9}{celing}} (const int a, const int b)
+\item 
+void \mbox{\hyperlink{dmd_8c_a3308aaa2df6ee03d36c556e2be6a38c3}{read\+B\+MP}} (char $\ast$filename, int $\ast$$\ast$$\ast$image)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{dmd_8c_a70ed59adcb4159ac551058053e649640}\label{dmd_8c_a70ed59adcb4159ac551058053e649640}} 
+\index{dmd.c@{dmd.c}!SIZE@{SIZE}}
+\index{SIZE@{SIZE}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{SIZE}{SIZE}}
+{\footnotesize\ttfamily \#define S\+I\+ZE~65}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{dmd_8c_acacbc59659c17b7780638c5f6f0c1fc3}\label{dmd_8c_acacbc59659c17b7780638c5f6f0c1fc3}} 
+\index{dmd.c@{dmd.c}!allocatePattern@{allocatePattern}}
+\index{allocatePattern@{allocatePattern}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{allocatePattern()}{allocatePattern()}}
+{\footnotesize\ttfamily void allocate\+Pattern (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{struct_patterns}{Patterns}} $\ast$}]{p,  }\item[{int}]{n\+El }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_a3a90b96474575bf1cd0f5cac7011efd5}\label{dmd_8c_a3a90b96474575bf1cd0f5cac7011efd5}} 
+\index{dmd.c@{dmd.c}!bitsToBytes\_char@{bitsToBytes\_char}}
+\index{bitsToBytes\_char@{bitsToBytes\_char}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{bitsToBytes\_char()}{bitsToBytes\_char()}}
+{\footnotesize\ttfamily int$\ast$ bits\+To\+Bytes\+\_\+char (\begin{DoxyParamCaption}\item[{const char $\ast$}]{a,  }\item[{const int}]{size }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_a23eeab1665ec45f3f5d26ac2c7159ee9}\label{dmd_8c_a23eeab1665ec45f3f5d26ac2c7159ee9}} 
+\index{dmd.c@{dmd.c}!bitsToBytes\_int@{bitsToBytes\_int}}
+\index{bitsToBytes\_int@{bitsToBytes\_int}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{bitsToBytes\_int()}{bitsToBytes\_int()}}
+{\footnotesize\ttfamily int$\ast$ bits\+To\+Bytes\+\_\+int (\begin{DoxyParamCaption}\item[{const int $\ast$}]{a,  }\item[{const int}]{size }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_ab36e97ba04f12917b8fa3b5fc40c96b8}\label{dmd_8c_ab36e97ba04f12917b8fa3b5fc40c96b8}} 
+\index{dmd.c@{dmd.c}!bmpLoad@{bmpLoad}}
+\index{bmpLoad@{bmpLoad}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{bmpLoad()}{bmpLoad()}}
+{\footnotesize\ttfamily void bmp\+Load (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{struct_patterns}{Patterns}} $\ast$}]{pattern,  }\item[{const int}]{index,  }\item[{const int $\ast$}]{image,  }\item[{const int}]{size }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_a224caf53586afb09a678177f4946c8c9}\label{dmd_8c_a224caf53586afb09a678177f4946c8c9}} 
+\index{dmd.c@{dmd.c}!celing@{celing}}
+\index{celing@{celing}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{celing()}{celing()}}
+{\footnotesize\ttfamily int celing (\begin{DoxyParamCaption}\item[{const int}]{a,  }\item[{const int}]{b }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_a2c4f35c46cfbd21af1b0cdd789fc0c9b}\label{dmd_8c_a2c4f35c46cfbd21af1b0cdd789fc0c9b}} 
+\index{dmd.c@{dmd.c}!checkForErrors@{checkForErrors}}
+\index{checkForErrors@{checkForErrors}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{checkForErrors()}{checkForErrors()}}
+{\footnotesize\ttfamily void check\+For\+Errors (\begin{DoxyParamCaption}\item[{hid\+\_\+device $\ast$}]{handle }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_a73130641109f77587d0cbe092e36f885}\label{dmd_8c_a73130641109f77587d0cbe092e36f885}} 
+\index{dmd.c@{dmd.c}!command@{command}}
+\index{command@{command}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{command()}{command()}}
+{\footnotesize\ttfamily int command (\begin{DoxyParamCaption}\item[{hid\+\_\+device $\ast$}]{handle,  }\item[{const char}]{mode,  }\item[{const char}]{sequencebyte,  }\item[{const char}]{com1,  }\item[{const char}]{com2,  }\item[{const char $\ast$}]{data,  }\item[{const int}]{size\+Data }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_a5ae9a436ead6cd37c5522e5066c0291c}\label{dmd_8c_a5ae9a436ead6cd37c5522e5066c0291c}} 
+\index{dmd.c@{dmd.c}!configureLut@{configureLut}}
+\index{configureLut@{configureLut}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{configureLut()}{configureLut()}}
+{\footnotesize\ttfamily void configure\+Lut (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{struct_patterns}{Patterns}} $\ast$}]{pattern,  }\item[{int}]{size,  }\item[{int}]{rep }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_a64db2ec0a3a0d6924bcb4b97246aec2d}\label{dmd_8c_a64db2ec0a3a0d6924bcb4b97246aec2d}} 
+\index{dmd.c@{dmd.c}!convlen@{convlen}}
+\index{convlen@{convlen}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{convlen()}{convlen()}}
+{\footnotesize\ttfamily char$\ast$ convlen (\begin{DoxyParamCaption}\item[{int}]{a,  }\item[{int}]{l }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_a5322ebaf981ea623bb0b08677603142b}\label{dmd_8c_a5322ebaf981ea623bb0b08677603142b}} 
+\index{dmd.c@{dmd.c}!definePatterns@{definePatterns}}
+\index{definePatterns@{definePatterns}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{definePatterns()}{definePatterns()}}
+{\footnotesize\ttfamily void define\+Patterns (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{struct_patterns}{Patterns}} $\ast$}]{pattern,  }\item[{const int}]{index,  }\item[{const int}]{exposure,  }\item[{const int}]{bitdepth,  }\item[{const char $\ast$}]{color,  }\item[{const int}]{trigger\+In,  }\item[{const int}]{dark\+Time,  }\item[{const int}]{trigger\+Out,  }\item[{const int}]{pat\+Ind,  }\item[{const int}]{bit\+Pos }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_af00b50b6acc570c860450efae04b730d}\label{dmd_8c_af00b50b6acc570c860450efae04b730d}} 
+\index{dmd.c@{dmd.c}!defSequence@{defSequence}}
+\index{defSequence@{defSequence}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{defSequence()}{defSequence()}}
+{\footnotesize\ttfamily void def\+Sequence (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{struct_patterns}{Patterns}} $\ast$}]{pattern,  }\item[{int $\ast$$\ast$$\ast$}]{matrixes,  }\item[{int $\ast$}]{exposure,  }\item[{int $\ast$}]{trigger\+\_\+in,  }\item[{int}]{dark\+\_\+time,  }\item[{int $\ast$}]{trigger\+\_\+out,  }\item[{int}]{repetition,  }\item[{const int}]{size }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_a455580021eec54d98851448b957cfcdd}\label{dmd_8c_a455580021eec54d98851448b957cfcdd}} 
+\index{dmd.c@{dmd.c}!isRowEqual@{isRowEqual}}
+\index{isRowEqual@{isRowEqual}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{isRowEqual()}{isRowEqual()}}
+{\footnotesize\ttfamily int is\+Row\+Equal (\begin{DoxyParamCaption}\item[{const int $\ast$}]{a,  }\item[{const int $\ast$}]{b }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_a47083e13645ee11fb07ec5b576a90098}\label{dmd_8c_a47083e13645ee11fb07ec5b576a90098}} 
+\index{dmd.c@{dmd.c}!mergeImages@{mergeImages}}
+\index{mergeImages@{mergeImages}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{mergeImages()}{mergeImages()}}
+{\footnotesize\ttfamily void merge\+Images (\begin{DoxyParamCaption}\item[{int $\ast$$\ast$$\ast$}]{images,  }\item[{int $\ast$$\ast$$\ast$}]{res }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_a7706f6ab92641d5d18ec4a010b4d2fde}\label{dmd_8c_a7706f6ab92641d5d18ec4a010b4d2fde}} 
+\index{dmd.c@{dmd.c}!min@{min}}
+\index{min@{min}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{min()}{min()}}
+{\footnotesize\ttfamily int min (\begin{DoxyParamCaption}\item[{const int}]{a,  }\item[{const int}]{b }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_a5f362c40619d7443fa5843162d7883c0}\label{dmd_8c_a5f362c40619d7443fa5843162d7883c0}} 
+\index{dmd.c@{dmd.c}!newEncode2@{newEncode2}}
+\index{newEncode2@{newEncode2}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{newEncode2()}{newEncode2()}}
+{\footnotesize\ttfamily int new\+Encode2 (\begin{DoxyParamCaption}\item[{int $\ast$$\ast$$\ast$}]{image,  }\item[{struct \mbox{\hyperlink{struct_node}{Node}} $\ast$$\ast$}]{bit\+String }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_aa344137c485ac16eab250c7e8c5bf30b}\label{dmd_8c_aa344137c485ac16eab250c7e8c5bf30b}} 
+\index{dmd.c@{dmd.c}!newEncodeDMDScopeFoundary@{newEncodeDMDScopeFoundary}}
+\index{newEncodeDMDScopeFoundary@{newEncodeDMDScopeFoundary}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{newEncodeDMDScopeFoundary()}{newEncodeDMDScopeFoundary()}}
+{\footnotesize\ttfamily int new\+Encode\+D\+M\+D\+Scope\+Foundary (\begin{DoxyParamCaption}\item[{int $\ast$$\ast$$\ast$}]{image,  }\item[{struct \mbox{\hyperlink{struct_node}{Node}} $\ast$$\ast$}]{bit\+String }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_a4491002147d381bb30b9517449d1b254}\label{dmd_8c_a4491002147d381bb30b9517449d1b254}} 
+\index{dmd.c@{dmd.c}!pow2\_i@{pow2\_i}}
+\index{pow2\_i@{pow2\_i}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{pow2\_i()}{pow2\_i()}}
+{\footnotesize\ttfamily int pow2\+\_\+i (\begin{DoxyParamCaption}\item[{const int}]{exp }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_a7db6624b3a516241261aa07bcb1a6bc2}\label{dmd_8c_a7db6624b3a516241261aa07bcb1a6bc2}} 
+\index{dmd.c@{dmd.c}!pow\_i@{pow\_i}}
+\index{pow\_i@{pow\_i}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{pow\_i()}{pow\_i()}}
+{\footnotesize\ttfamily int pow\+\_\+i (\begin{DoxyParamCaption}\item[{const int}]{b,  }\item[{const int}]{exp }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_afeaef54598fc294c154c984b039121d3}\label{dmd_8c_afeaef54598fc294c154c984b039121d3}} 
+\index{dmd.c@{dmd.c}!push@{push}}
+\index{push@{push}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{push()}{push()}}
+{\footnotesize\ttfamily void push (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{struct_node}{Node}} $\ast$$\ast$}]{head,  }\item[{int}]{data }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_a3308aaa2df6ee03d36c556e2be6a38c3}\label{dmd_8c_a3308aaa2df6ee03d36c556e2be6a38c3}} 
+\index{dmd.c@{dmd.c}!readBMP@{readBMP}}
+\index{readBMP@{readBMP}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{readBMP()}{readBMP()}}
+{\footnotesize\ttfamily void read\+B\+MP (\begin{DoxyParamCaption}\item[{char $\ast$}]{filename,  }\item[{int $\ast$$\ast$$\ast$}]{image }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_a996179bbf101198151919f2cc5afdc75}\label{dmd_8c_a996179bbf101198151919f2cc5afdc75}} 
+\index{dmd.c@{dmd.c}!setBmp@{setBmp}}
+\index{setBmp@{setBmp}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{setBmp()}{setBmp()}}
+{\footnotesize\ttfamily void set\+Bmp (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{struct_patterns}{Patterns}} $\ast$}]{pattern,  }\item[{const int}]{index,  }\item[{const int}]{size }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_acbbd139aff4cb349ddcc8a70605ca5a4}\label{dmd_8c_acbbd139aff4cb349ddcc8a70605ca5a4}} 
+\index{dmd.c@{dmd.c}!takeFromTxt@{takeFromTxt}}
+\index{takeFromTxt@{takeFromTxt}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{takeFromTxt()}{takeFromTxt()}}
+{\footnotesize\ttfamily int take\+From\+Txt (\begin{DoxyParamCaption}\item[{struct \mbox{\hyperlink{struct_node}{Node}} $\ast$$\ast$}]{bit\+String }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_a0d832867e2eda85ad47c4d86457fd45d}\label{dmd_8c_a0d832867e2eda85ad47c4d86457fd45d}} 
+\index{dmd.c@{dmd.c}!writeOnFile@{writeOnFile}}
+\index{writeOnFile@{writeOnFile}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{writeOnFile()}{writeOnFile()}}
+{\footnotesize\ttfamily void write\+On\+File (\begin{DoxyParamCaption}\item[{char $\ast$}]{file\+Name,  }\item[{unsigned char $\ast$}]{data,  }\item[{int}]{size }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{dmd_8c_a2c99bc08702d31c66277e3ad6149cb28}\label{dmd_8c_a2c99bc08702d31c66277e3ad6149cb28}} 
+\index{dmd.c@{dmd.c}!writeOnFile\_int@{writeOnFile\_int}}
+\index{writeOnFile\_int@{writeOnFile\_int}!dmd.c@{dmd.c}}
+\doxysubsubsection{\texorpdfstring{writeOnFile\_int()}{writeOnFile\_int()}}
+{\footnotesize\ttfamily void write\+On\+File\+\_\+int (\begin{DoxyParamCaption}\item[{char $\ast$}]{file\+Name,  }\item[{int}]{data\mbox{[}$\,$\mbox{]},  }\item[{int}]{size }\end{DoxyParamCaption})}
+
