@@ -23,8 +23,11 @@ void getBasis(const int hadamard_raster, const int dim, const int *idx, const in
 		getBasisBandPass(idx, dim, output);
 	else if(hadamard_raster == 9)
 		getBasisAddOneLineObli(dim, idx, szIdx, compressImage, output);
+<<<<<<< HEAD
     else if(hadamard_raster == 10)
 		getBasisHadamard2D(dim, idx, szIdx, 4, 960, 800, output);
+=======
+>>>>>>> parent of 215cce4 (Added Hadamard 2D and DMD simulation with py code)
 	//TODO aumentare le basi se meno di un tot (CIOE'?)
 	//to get band pass spatial filter use raster with only 1 base! and select dimension
 }
@@ -335,7 +338,7 @@ void getBasisHadamardHorizontal(const int nBasis, const int *idx, const int szId
 	int idxZeros = (WIDTH-mult*nBasis)/2; //trova dove partire ricordtati che le basi di Hadamard sono di dimensioni 2^n
 	for(int cont = 0; cont <szIdx; cont++){ //count on the basis
 		int i = cont;
-		for(int j = 0; j<WIDTH; j++){
+		for(int j = 0; j<WIDTH;j++){
 			int el =(H[cont][(j-idxZeros)/mult]+1)/2;
 			 for(int k = 0; k<HEIGHT; k++){
 				basis[i][k][j] = el;
@@ -451,6 +454,7 @@ void getBasisAddOneLineObli(const int dim, const int *idx, const int szIdx, int 
 	}
 }
 
+<<<<<<< HEAD
 void getBasisHadamard2D(const int nBasis, const int *idx, const int szIdx, const int zoom, const int xc, const int yc, unsigned char ***basis ){
 
     short int ** H;
@@ -516,6 +520,8 @@ void getBasisHadamard2D(const int nBasis, const int *idx, const int szIdx, const
 
 }
 
+=======
+>>>>>>> parent of 215cce4 (Added Hadamard 2D and DMD simulation with py code)
 int nDigit(int n){
 	int cont = 0;
 	while (n != 0){

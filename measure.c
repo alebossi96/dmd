@@ -97,9 +97,6 @@ void initDMD(struct Info info, struct DMD *dmd){
 		}
 		printf("\n");
 
-		// print bases on txt file
-		if(DMD_SIMULATOR) writePatternsOnFile(nEl, basis);
-
 		dmd->pattern[q].nB = nB;
 		int numberOfRepetition;
 		if(repeat)
@@ -422,34 +419,6 @@ void checkErrorMessage(hid_device *handle){
     printf("%s", message);
     printf("\n");
 
-}
-
-void writePatternsOnFile(const int nEl, unsigned char ***basis){
-    for(int f=0; f<nEl; f++){
-        char name[] = "b000.txt";
-        if (f<10){
-            name[3] += f;
-        }
-        else if(f<100){
-            name[2] += f/10;
-            name[3] += f-(f/10)*10;
-        }
-        else if(f<1000){
-            name[1] += f/100;
-            name[2] += f/10-(f/100)*100;
-            name[3] += f-(f/10)*10;
-        }
-        //printf("FileName %s\n", name);
-        FILE *tmpF = fopen(name, "w");
-        for(int j=0; j<HEIGHT; j++){
-            for(int i=0; i<WIDTH; i++){
-                if(i == WIDTH-1) fprintf(tmpF, "%d", basis[f][j][i]);
-                else fprintf(tmpF, "%d,", basis[f][j][i]);
-            }
-        fprintf(tmpF, "\n");
-        }
-        fclose(tmpF);
-    }
 }
 
 

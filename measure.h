@@ -75,8 +75,5 @@ void checkForErrors(hid_device *handle);
 see DMD Programmer's Guide pag. 23 */
 void checkErrorMessage(hid_device *handle);
 
-/* print the pattern on .txt files */
-void writePatternsOnFile(const int nEl, unsigned char ***basis);
-
 #endif
 

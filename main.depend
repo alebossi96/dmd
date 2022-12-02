@@ -79,10 +79,17 @@
 1665759061 c:\users\valerio\desktop\c\main\hidapi\hidapi_hidpi.h
 	<hidpi.h>
 
+<<<<<<< HEAD
 1669909945 source:c:\users\valerio\documents\github\dmd_mia\getbasis\getbasis.c
 	"getbasis.h"
 
 1669904987 c:\users\valerio\documents\github\dmd_mia\getbasis\getbasis.h
+=======
+1668455242 source:c:\users\valerio\documents\github\dmd_mia\getbasis\getbasis.c
+	"getbasis.h"
+
+1668455242 c:\users\valerio\documents\github\dmd_mia\getbasis\getbasis.h
+>>>>>>> parent of 215cce4 (Added Hadamard 2D and DMD simulation with py code)
 	<stdlib.h>
 	<stdio.h>
 	<unistd.h>
@@ -144,19 +151,27 @@
 	"getbasis/getbasis.h"
 	"hidapi/hidapi.h"
 
+<<<<<<< HEAD
 1669909343 source:c:\users\valerio\documents\github\dmd_mia\measure.c
+=======
+1668455242 source:c:\users\valerio\documents\github\dmd_mia\measure.c
+>>>>>>> parent of 215cce4 (Added Hadamard 2D and DMD simulation with py code)
 	"measure.h"
 
-1669579755 c:\users\valerio\documents\github\dmd_mia\measure.h
+1668450486 c:\users\valerio\documents\github\dmd_mia\measure.h
 	"main.h"
 	"hidapi/hidapi.h"
 	"dmd.h"
 
-1669578707 source:c:\users\valerio\documents\github\dmd_mia\main.c
+1667511753 source:c:\users\valerio\documents\github\dmd_mia\main.c
 	"main.h"
 	"measure.h"
 
+<<<<<<< HEAD
 1669904013 c:\users\valerio\documents\github\dmd_mia\main.h
+=======
+1668507871 c:\users\valerio\documents\github\dmd_mia\main.h
+>>>>>>> parent of 215cce4 (Added Hadamard 2D and DMD simulation with py code)
 	<stdlib.h>
 	<stdio.h>
 	<unistd.h>
