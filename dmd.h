@@ -30,7 +30,7 @@ struct Patterns{
 };
 
 
-/* unused (all at the end of .c file) */
+/** unused (all at the end of .c file) */
 //int command(hid_device *handle, const char mode, const char sequencebyte, const char com2, const char com1, const int *data, const int sizeData);
 //int newEncodeDMDScopeFoundary(int ***image, struct Node **bitString);
 //void commandPattern(hid_device *handle, struct Patterns * pattern, const int szPattern);
@@ -51,6 +51,8 @@ returns the reference to the last byte converted
 note: size is assumed to be multiple of 8, no controls are done
 remember to free bytes after calling the function */
 int * bitsToBytes(const char *a, const int size);
+
+
 
 /** function to write data in the DMD buffer
 for more informations look at the ti DLPC900 Programmer's Guide */
@@ -136,7 +138,7 @@ int takeFromTxt(struct Node **bitString);
 /** function to create a pattern from a 24-bit bmp image (note: only one color channel is read) */
 void readBMP(char* filename, int *** image);
 
-/* basic mathematical functions */
+/** basic mathematical functions */
 //int pow2_i(const int exp);
 //int pow_i(const int b, const int exp);    // these are in ordering.c
 //int min(const int a, const int b);
