@@ -79,17 +79,10 @@
 1665759061 c:\users\valerio\desktop\c\main\hidapi\hidapi_hidpi.h
 	<hidpi.h>
 
-<<<<<<< HEAD
-1669909945 source:c:\users\valerio\documents\github\dmd_mia\getbasis\getbasis.c
+1669974371 source:c:\users\valerio\documents\github\dmd_mia\getbasis\getbasis.c
 	"getbasis.h"
 
-1669904987 c:\users\valerio\documents\github\dmd_mia\getbasis\getbasis.h
-=======
-1668455242 source:c:\users\valerio\documents\github\dmd_mia\getbasis\getbasis.c
-	"getbasis.h"
-
-1668455242 c:\users\valerio\documents\github\dmd_mia\getbasis\getbasis.h
->>>>>>> parent of 215cce4 (Added Hadamard 2D and DMD simulation with py code)
+1669970290 c:\users\valerio\documents\github\dmd_mia\getbasis\getbasis.h
 	<stdlib.h>
 	<stdio.h>
 	<unistd.h>
@@ -98,7 +91,7 @@
 	<string.h>
 	"ordering.h"
 
-1668450100 c:\users\valerio\documents\github\dmd_mia\getbasis\ordering.h
+1669970290 c:\users\valerio\documents\github\dmd_mia\getbasis\ordering.h
 	<stdlib.h>
 	<stdio.h>
 	<unistd.h>
@@ -143,35 +136,27 @@
 1665755461 c:\users\valerio\documents\github\dmd_mia\hidapi\hidapi_hidpi.h
 	<hidpi.h>
 
-1669633404 source:c:\users\valerio\documents\github\dmd_mia\dmd.c
+1669974515 source:c:\users\valerio\documents\github\dmd_mia\dmd.c
 	"dmd.h"
 
-1668455353 c:\users\valerio\documents\github\dmd_mia\dmd.h
+1669970290 c:\users\valerio\documents\github\dmd_mia\dmd.h
 	"main.h"
 	"getbasis/getbasis.h"
 	"hidapi/hidapi.h"
 
-<<<<<<< HEAD
-1669909343 source:c:\users\valerio\documents\github\dmd_mia\measure.c
-=======
-1668455242 source:c:\users\valerio\documents\github\dmd_mia\measure.c
->>>>>>> parent of 215cce4 (Added Hadamard 2D and DMD simulation with py code)
+1669970290 source:c:\users\valerio\documents\github\dmd_mia\measure.c
 	"measure.h"
 
-1668450486 c:\users\valerio\documents\github\dmd_mia\measure.h
+1669970290 c:\users\valerio\documents\github\dmd_mia\measure.h
 	"main.h"
 	"hidapi/hidapi.h"
 	"dmd.h"
 
-1667511753 source:c:\users\valerio\documents\github\dmd_mia\main.c
+1669578707 source:c:\users\valerio\documents\github\dmd_mia\main.c
 	"main.h"
 	"measure.h"
 
-<<<<<<< HEAD
-1669904013 c:\users\valerio\documents\github\dmd_mia\main.h
-=======
-1668507871 c:\users\valerio\documents\github\dmd_mia\main.h
->>>>>>> parent of 215cce4 (Added Hadamard 2D and DMD simulation with py code)
+1669974548 c:\users\valerio\documents\github\dmd_mia\main.h
 	<stdlib.h>
 	<stdio.h>
 	<unistd.h>

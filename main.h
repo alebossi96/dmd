@@ -15,12 +15,8 @@
 #define SIZE_PATTERN 24             //
 #define SIZE_BUFFER 2049
 
-<<<<<<< HEAD
-#define DEBUG true                 // if true, the program works when the device is disconnected. The bytes are written on .txt files
-#define DMD_SIMULATOR true          // if true, create a series of .txt files with the patterns for the dmd
-=======
 #define DEBUG false                  // if true, the program works when the device is disconnected. The bytes are written on .txt files
->>>>>>> parent of 215cce4 (Added Hadamard 2D and DMD simulation with py code)
+#define DMD_SIMULATOR false          // if true, create a series of .txt files with the patterns for the dmd
 #define PRINT_BYTES false           // if DEBUG = true and PRINT_BYTES = true, print bytes on command window
 #define WIZARD_OR_COMMAND true      // if true, the measure parameters are asked in the program
 #define REMEMBER_PREVIUS_POS true

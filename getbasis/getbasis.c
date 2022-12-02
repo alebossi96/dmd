@@ -23,11 +23,8 @@ void getBasis(const int hadamard_raster, const int dim, const int *idx, const in
 		getBasisBandPass(idx, dim, output);
 	else if(hadamard_raster == 9)
 		getBasisAddOneLineObli(dim, idx, szIdx, compressImage, output);
-<<<<<<< HEAD
     else if(hadamard_raster == 10)
-		getBasisHadamard2D(dim, idx, szIdx, 4, 960, 800, output);
-=======
->>>>>>> parent of 215cce4 (Added Hadamard 2D and DMD simulation with py code)
+		getBasisHadamard2D(dim, idx, szIdx, 6, 960, 540, output);
 	//TODO aumentare le basi se meno di un tot (CIOE'?)
 	//to get band pass spatial filter use raster with only 1 base! and select dimension
 }
@@ -338,7 +335,7 @@ void getBasisHadamardHorizontal(const int nBasis, const int *idx, const int szId
 	int idxZeros = (WIDTH-mult*nBasis)/2; //trova dove partire ricordtati che le basi di Hadamard sono di dimensioni 2^n
 	for(int cont = 0; cont <szIdx; cont++){ //count on the basis
 		int i = cont;
-		for(int j = 0; j<WIDTH;j++){
+		for(int j = 0; j<WIDTH; j++){
 			int el =(H[cont][(j-idxZeros)/mult]+1)/2;
 			 for(int k = 0; k<HEIGHT; k++){
 				basis[i][k][j] = el;
@@ -454,7 +451,6 @@ void getBasisAddOneLineObli(const int dim, const int *idx, const int szIdx, int 
 	}
 }
 
-<<<<<<< HEAD
 void getBasisHadamard2D(const int nBasis, const int *idx, const int szIdx, const int zoom, const int xc, const int yc, unsigned char ***basis ){
 
     short int ** H;
@@ -483,25 +479,29 @@ void getBasisHadamard2D(const int nBasis, const int *idx, const int szIdx, const
 	int sq = sqrt(nBasis);
     int multW = (WIDTH)/(sq*zoom);
     int multH = (HEIGHT)/(sq*zoom);
-    printf("multW %d, multH %d\n", multW, multH);
+    if(multW<1 || multH<1){
+        printf("Reached Maximum zoom: decrease zoom or number of bases\n");
+        exit(1);
+    }
+    //printf("multW %d, multH %d\n", multW, multH);
     int idxZeroW = xc-multW*sq/2; // pixel dove iniziare
     int idxZeroH = yc-multH*sq/2;
     if(idxZeroH<0) idxZeroH = 0; // repositioning if out of dmd
     if(idxZeroW<0) idxZeroW = 0;
     if(idxZeroW+multW*sq>WIDTH) idxZeroW = WIDTH-sq*multW;
     if(idxZeroH+multH*sq>HEIGHT) idxZeroH = HEIGHT-sq*multH;
-    printf("idxH %d, idxW %d\n", idxZeroH, idxZeroW);
+    //printf("idxH %d, idxW %d\n", idxZeroH, idxZeroW);
     int cont = 0; // cont: select the basis
     int pos = 0; // pos: select basis element
     int row = 0;
     int col = 0;
     for(cont=0; cont<szIdx; cont++){
-        printf("pos %d\n", pos);
+        //printf("pos %d\n", pos);
         for(col=0; col<sq; col++){
             for(row=0; row<sq; row++){
-                printf("row %d; col %d; cont %d; pos %d\n", row, col, cont, pos);
-                printf("j limits %d : %d; ", idxZeroH+multH*row, idxZeroH+multH*(row+1));
-                printf("k limits %d : %d\n", idxZeroW+multW*col, idxZeroW+multW*(col+1));
+                //printf("row %d; col %d; cont %d; pos %d\n", row, col, cont, pos);
+                //printf("j limits %d : %d; ", idxZeroH+multH*row, idxZeroH+multH*(row+1));
+                //printf("k limits %d : %d\n", idxZeroW+multW*col, idxZeroW+multW*(col+1));
                 for(int j=idxZeroH+multH*row; j<idxZeroH+multH*(row+1); j++){
                     for(int k=idxZeroW+multW*col; k<idxZeroW+multW*(col+1); k++){
                         // fill the image (rows and then cols)
@@ -520,8 +520,6 @@ void getBasisHadamard2D(const int nBasis, const int *idx, const int szIdx, const
 
 }
 
-=======
->>>>>>> parent of 215cce4 (Added Hadamard 2D and DMD simulation with py code)
 int nDigit(int n){
 	int cont = 0;
 	while (n != 0){
