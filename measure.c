@@ -64,6 +64,14 @@ void initDMD(struct Info info, struct DMD *dmd){
                 basis[i][j] = (unsigned char*)malloc(WIDTH*sizeof(unsigned char));
 			}
 		}
+		// initialize basis
+		for(int i=0; i<nEl; i++){
+            for(int j=0; j<HEIGHT; j++){
+                for(int k=0; k<WIDTH; k++){
+                    basis[i][j][k] = 0;
+                }
+            }
+		}
 		// insert data into pattern
 		for (int i=0; i<nEl; i++){
 			exposure[i] = exp;

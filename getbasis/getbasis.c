@@ -24,7 +24,7 @@ void getBasis(const int hadamard_raster, const int dim, const int *idx, const in
 	else if(hadamard_raster == 9)
 		getBasisAddOneLineObli(dim, idx, szIdx, compressImage, output);
     else if(hadamard_raster == 10)
-		getBasisHadamard2D(dim, idx, szIdx, output);
+		getBasisHadamard2D(dim, idx, szIdx, 4, 960, 800, output);
 	//TODO aumentare le basi se meno di un tot (CIOE'?)
 	//to get band pass spatial filter use raster with only 1 base! and select dimension
 }
@@ -451,7 +451,7 @@ void getBasisAddOneLineObli(const int dim, const int *idx, const int szIdx, int 
 	}
 }
 
-void getBasisHadamard2D(const int nBasis, const int *idx, const int szIdx, unsigned char ***basis ){
+void getBasisHadamard2D(const int nBasis, const int *idx, const int szIdx, const int zoom, const int xc, const int yc, unsigned char ***basis ){
 
     short int ** H;
 	int mode = 0;   // 0 = Hadamard matrix ordering,        TODO (per CS): inserire la scelta dell'uso di CC nel wizard e a quale base fermarsi
@@ -477,35 +477,38 @@ void getBasisHadamard2D(const int nBasis, const int *idx, const int szIdx, unsig
 	}
 
 	int sq = sqrt(nBasis);
-    int multW = (WIDTH)/sq;
-    int multH = (HEIGHT)/sq;
+    int multW = (WIDTH)/(sq*zoom);
+    int multH = (HEIGHT)/(sq*zoom);
     printf("multW %d, multH %d\n", multW, multH);
-    int idxZerosW = (WIDTH-multW*nBasis)/2;      // pixel saltati
-    int idxZerosH = (HEIGHT-multH*nBasis)/2;
-    int cont = 0;
-    int pos = 0;
+    int idxZeroW = xc-multW*sq/2; // pixel dove iniziare
+    int idxZeroH = yc-multH*sq/2;
+    if(idxZeroH<0) idxZeroH = 0; // repositioning if out of dmd
+    if(idxZeroW<0) idxZeroW = 0;
+    if(idxZeroW+multW*sq>WIDTH) idxZeroW = WIDTH-sq*multW;
+    if(idxZeroH+multH*sq>HEIGHT) idxZeroH = HEIGHT-sq*multH;
+    printf("idxH %d, idxW %d\n", idxZeroH, idxZeroW);
+    int cont = 0; // cont: select the basis
+    int pos = 0; // pos: select basis element
     int row = 0;
     int col = 0;
     for(cont=0; cont<szIdx; cont++){
-        // select the basis
-        for(pos=0; pos<szIdx; ){
-            // select basis element
-            //printf("pos %d\n", pos);
-            for(col=0; col<sq; col++){
-                for(row=0; row<sq; row++){
-                    //printf("j limits %d : %d\n", multH*row, multH*(row+1));
-                    //printf("k limits %d : %d\n", multW*col, multW*(col+1));
-                    for(int j=multH*row; j<multH*(row+1); j++){
-                        for(int k=multW*col; k<multW*(col+1); k++){
-                            // fill the image (rows and then cols)
-                            //printf("cont %d, pos %d, j %d, k %d\n", cont, pos, j ,k);
-                            basis[cont][j][k] = (H[cont][pos]+1)/2;
-                        }
+        printf("pos %d\n", pos);
+        for(col=0; col<sq; col++){
+            for(row=0; row<sq; row++){
+                printf("row %d; col %d; cont %d; pos %d\n", row, col, cont, pos);
+                printf("j limits %d : %d; ", idxZeroH+multH*row, idxZeroH+multH*(row+1));
+                printf("k limits %d : %d\n", idxZeroW+multW*col, idxZeroW+multW*(col+1));
+                for(int j=idxZeroH+multH*row; j<idxZeroH+multH*(row+1); j++){
+                    for(int k=idxZeroW+multW*col; k<idxZeroW+multW*(col+1); k++){
+                        // fill the image (rows and then cols)
+                        //printf("cont %d, pos %d, j %d, k %d\n", cont, pos, j ,k);
+                        basis[cont][j][k] = (H[cont][pos]+1)/2;
                     }
-                    pos++;
                 }
+                pos++;
             }
 		}
+		pos = 0;
 	}
 	for(int i = 0; i<szIdx; i++)
 		free(H[i]);

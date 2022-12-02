@@ -79,10 +79,10 @@
 1665759061 c:\users\valerio\desktop\c\main\hidapi\hidapi_hidpi.h
 	<hidpi.h>
 
-1669588811 source:c:\users\valerio\documents\github\dmd_mia\getbasis\getbasis.c
+1669909945 source:c:\users\valerio\documents\github\dmd_mia\getbasis\getbasis.c
 	"getbasis.h"
 
-1669391756 c:\users\valerio\documents\github\dmd_mia\getbasis\getbasis.h
+1669904987 c:\users\valerio\documents\github\dmd_mia\getbasis\getbasis.h
 	<stdlib.h>
 	<stdio.h>
 	<unistd.h>
@@ -136,7 +136,7 @@
 1665755461 c:\users\valerio\documents\github\dmd_mia\hidapi\hidapi_hidpi.h
 	<hidpi.h>
 
-1668455353 source:c:\users\valerio\documents\github\dmd_mia\dmd.c
+1669633404 source:c:\users\valerio\documents\github\dmd_mia\dmd.c
 	"dmd.h"
 
 1668455353 c:\users\valerio\documents\github\dmd_mia\dmd.h
@@ -144,7 +144,7 @@
 	"getbasis/getbasis.h"
 	"hidapi/hidapi.h"
 
-1669581734 source:c:\users\valerio\documents\github\dmd_mia\measure.c
+1669909343 source:c:\users\valerio\documents\github\dmd_mia\measure.c
 	"measure.h"
 
 1669579755 c:\users\valerio\documents\github\dmd_mia\measure.h
@@ -156,7 +156,7 @@
 	"main.h"
 	"measure.h"
 
-1669485348 c:\users\valerio\documents\github\dmd_mia\main.h
+1669904013 c:\users\valerio\documents\github\dmd_mia\main.h
 	<stdlib.h>
 	<stdio.h>
 	<unistd.h>

@@ -790,6 +790,7 @@ void readBMP(char* filename, int *** image)
 	//https://stackoverflow.com/questions/9296059/read-pixel-value-in-bmp-file
 	//io uso 3 canali qui
 	//ma può essere solo b/n
+	//NOT TESTED
 
     int i;
     FILE* f = fopen(filename, "rb");
@@ -802,20 +803,35 @@ void readBMP(char* filename, int *** image)
     int width = *(int*)&info[18]; //devo fare assert che sia uguale a mio widthS
     int height = *(int*)&info[22];
 
+    // if height < 0 the image is stored from top to bottom
+    int heightSign = 1;
+    if (height < 0){
+        heightSign = -1;
+    }
+
     // allocate 3 bytes per pixel
-    int size = 3 * width * height;
+    long int size = 3 * width * abs(height);
     unsigned char* data = (unsigned char*)malloc(size*sizeof(unsigned char));
 
     // read the rest of the data at once
     fread(data, sizeof(unsigned char), size, f);
     fclose(f);
 
-    for(i = 0; i < size; i += 3)
-    {
-            // prendo solo da un canale.(se è rgb mi interessa solo 1)
-	    int idx = i/3;
-	    if(data[i]>127) (*image)[idx/width][idx%width]=1;
-	    else (*image)[idx/width][idx%width]=0;
+    if(heightSign == -1){
+        for(i=0; i<size; i+=3){
+            // prendo solo da un canale.(se è RGB mi interessa solo 1)
+            int idx = i/3;
+            if(data[i]>127) (*image)[idx/width][idx%width]=1;
+            else (*image)[idx/width][idx%width]=0;
+        }
+    }
+    else{
+        for(i=0; i<size; i+=3){
+            // prendo solo da un canale.(se è RGB mi interessa solo 1)
+            int idx = i/3;
+            if(data[size-i-1]>127) (*image)[idx/width][idx%width]=1;
+            else (*image)[idx/width][idx%width]=0;
+        }
     }
 
 }
