@@ -1,10 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
-	<ActiveTarget name="Debug" />
-	<File name="getbasis\ordering.c" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<ActiveTarget name="Release" />
+	<File name="getbasis\getbasis.h" open="1" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="2565" topLine="0" />
+			<Cursor1 position="3277" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="hidapi\hidapi.c" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="7816" topLine="645" />
+		</Cursor>
+	</File>
+	<File name="dmd.c" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="17083" topLine="603" />
+		</Cursor>
+	</File>
+	<File name="getbasis\getbasis.c" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="14443" topLine="448" />
+		</Cursor>
+	</File>
+	<File name="getbasis\ordering.h" open="1" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1369" topLine="18" />
 		</Cursor>
 	</File>
 	<File name="main.c" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -12,14 +32,9 @@
 			<Cursor1 position="45" topLine="105" />
 		</Cursor>
 	</File>
-	<File name="measure.h" open="1" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="hidapi\hidapi.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="2824" topLine="53" />
-		</Cursor>
-	</File>
-	<File name="getbasis\getbasis.c" open="1" top="1" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1124" topLine="526" />
+			<Cursor1 position="11838" topLine="343" />
 		</Cursor>
 	</File>
 	<File name="hidapi\hidapi_hidsdi.h" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -27,14 +42,14 @@
 			<Cursor1 position="909" topLine="6" />
 		</Cursor>
 	</File>
-	<File name="getbasis\ordering.h" open="1" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="dmd.h" open="1" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1094" topLine="8" />
+			<Cursor1 position="6429" topLine="93" />
 		</Cursor>
 	</File>
-	<File name="getbasis\getbasis.h" open="1" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="measure.h" open="1" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="3124" topLine="42" />
+			<Cursor1 position="458" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="hidapi\hidapi_cfgmgr32.h" open="0" top="0" tabpos="12" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -44,32 +59,17 @@
 	</File>
 	<File name="measure.c" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="2447" topLine="0" />
+			<Cursor1 position="6554" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="main.h" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="main.h" open="1" top="1" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="469" topLine="0" />
+			<Cursor1 position="472" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="hidapi\hidapi.c" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="getbasis\ordering.c" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="7816" topLine="645" />
-		</Cursor>
-	</File>
-	<File name="dmd.h" open="1" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2701" topLine="54" />
-		</Cursor>
-	</File>
-	<File name="hidapi\hidapi.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="11838" topLine="343" />
-		</Cursor>
-	</File>
-	<File name="dmd.c" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="20994" topLine="850" />
+			<Cursor1 position="2565" topLine="71" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

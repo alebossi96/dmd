@@ -15,6 +15,7 @@ struct List{
 	struct List *next;
 };
 
+/** This structure contains all the data about the patterns to be sent to the dmd */
 struct Patterns{
 	unsigned char (*defPatterns)[12]; // pattern settings (exposure time, bit-depth, triggers, pattern index...)
 	unsigned char configureLut[6]; // configuration of Look up table (LUT)
@@ -51,7 +52,41 @@ note: size is assumed to be multiple of 8, no controls are done
 remember to free bytes after calling the function */
 int * bitsToBytes(const char *a, const int size);
 
-/** function to send data to the DMD (same to talk_DMD) UNUSED*/
+
+
+/** function to write data in the DMD buffer
+for more informations look at the ti DLPC900 Programmer's Guide */
+int talkDMD_char(hid_device *handle, const char mode, const char sequencebyte, const char com1, const char com2, const unsigned char *data, const int sizeData);
+
+/** same to talkDMD_char but data are in int format
+a conversion to char is performed and (char)data are passed to talkDMD_char */
+int talkDMD_int(hid_device *handle, const char mode, const char sequencebyte, const char com1, const char com2, const int *data, const int sizeData);
+
+/** changes the internal image processing function of the DMD
+see DMD Programmer's Guide pag. 58 */
+void changeMode(hid_device *handle, int mode);
+
+/** function tells the DMD to stop the pattern display sequence (next start command restart from the beginning)
+see DMD Programmer's Guide pag. 69 */
+void stopSequence(hid_device *handle);
+
+/** function tells the DMD to start reproducing the pattern sequence stored in memory
+see DMD Programmer's Guide pag. 69 */
+void startSequence(hid_device *handle);
+
+/** performs a software reset of the DMD, USB connection must be reestablished before sending new file
+see DMD Programmer's Guide pag. 32-33 */
+void reset(hid_device *handle);
+
+/** retrieve the error number code from the DMD
+see DMD Programmer's Guide pag. 23 */
+void checkForErrors(hid_device *handle);
+
+/** retrieve the error message string from the DMD
+see DMD Programmer's Guide pag. 23 */
+void checkErrorMessage(hid_device *handle);
+
+/* function to send data to the DMD (same to talk_DMD) UNUSED*/
 //int command(hid_device *handle, const char mode, const char sequencebyte, const char com1, const char com2, const char *data, const int sizeData);
 
 /** configure the LUT for setting the sequence of patterns
@@ -100,6 +135,7 @@ int newEncode2(unsigned char ***image, struct Node **n);
 /** take data of the pattern from txt file */
 int takeFromTxt(struct Node **bitString);
 
+/** function to create a pattern from a 24-bit bmp image (note: only one color channel is read) */
 void readBMP(char* filename, int *** image);
 
 /** basic mathematical functions */

@@ -1,9 +1,4 @@
-
-bin/Release/cSetBmp.txt
-bin/Debug/cNewEncode.txt
-bin/Debug/cCommand.txt
-bin/Debug/cPattern.txt
-bin/Debug/cSetBmp.txt
-bin/Release/cCommand.txt
-bin/Release/cNewEncode.txt
-bin/Release/cPattern.txt
+*.so
+main
+*.txt
+*.o
