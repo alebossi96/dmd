@@ -25,6 +25,9 @@ struct Info{
 	int repeat;
 	int compress;
 	int sizeBatch;
+	int zoom;
+	int xC;
+	int yC;
 };
 
 /** returns # of initial line for successive raster scans

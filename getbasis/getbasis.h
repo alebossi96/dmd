@@ -16,7 +16,7 @@
 /** readdress to other getbasis functions according to hadamard_raster parameter
  dim: in hadamard mode is the dimension of the hadamard basis, in raster scan mode is the dimension of the line
  idx: is the index of basis or raster to be calculated */
-void getBasis(const int hadamard_raster, const int dim, const int *idx, const int szIdx, int compressImage, unsigned char ***output);
+void getBasis(const int hadamard_raster, const int dim, const int *idx, const int szIdx, int compressImage, int zoom, int xCenter, int yCenter, unsigned char ***output);
 
 /** generates and puts in basis the Hadamard bases of size nBasis */
 void getBasisHadamard(const int nBasis, const int *idx, const int szIdx,int compressImage, unsigned char ***basis);

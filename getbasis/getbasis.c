@@ -1,7 +1,7 @@
 
 #include "getbasis.h"
 
-void getBasis(const int hadamard_raster, const int dim, const int *idx, const int szIdx, int compressImage, unsigned char ***output){
+void getBasis(const int hadamard_raster, const int dim, const int *idx, const int szIdx, int compressImage, int zoom, int xCenter, int yCenter, unsigned char ***output){
     printf("Generating pattern\n");
 	if(hadamard_raster == 1)
 		getBasisHadamard(dim, idx, szIdx, compressImage, output);
@@ -24,7 +24,7 @@ void getBasis(const int hadamard_raster, const int dim, const int *idx, const in
 	else if(hadamard_raster == 9)
 		getBasisAddOneLineObli(dim, idx, szIdx, compressImage, output);
     else if(hadamard_raster == 10)
-		getBasisHadamard2D(dim, idx, szIdx, 6, 960, 540, output);
+		getBasisHadamard2D(dim, idx, szIdx, zoom, xCenter, yCenter, output);
 	//TODO aumentare le basi se meno di un tot (CIOE'?)
 	//to get band pass spatial filter use raster with only 1 base! and select dimension
 }

@@ -43,6 +43,14 @@ int main(){
                         }
                     } while(!ver);
                     info.nMeas = info.nBasis; // in Hadamard mode we have 1 measure for each basis
+                    if(info.RasterOrHadamard == 10){
+                        printf("Select zoom: ");
+                        scanf("%d", &(info.zoom));
+                        printf("Select X (center = 960): ");
+                        scanf("%d", &(info.xC));
+                        printf("Select Y (center = 540): ");
+                        scanf("%d", &(info.yC));
+                    }
 				}
 				if(BATCHES){
                     printf("What should the size batch be? - must be multiple of 24. Probably: " );

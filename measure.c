@@ -34,6 +34,9 @@ void initDMD(struct Info info, struct DMD *dmd){
 	int compress = info.compress;
 	int sizeBatch = info.sizeBatch;
 	int previousPos = info.previousPos;
+	int zoom = info.zoom;
+	int xCenter = info.xC;
+	int yCenter = info.yC;
 
 	int offset_ = offset(startPosition, nBasis, previousPos)/nBasis; // ??
 	int nSet = celing(nMeas, sizeBatch);
@@ -87,7 +90,7 @@ void initDMD(struct Info info, struct DMD *dmd){
 		idx = (int* )malloc((nB)*sizeof(int)); // index of the first element inside the batch
 		for(int i=0; i<nB; i++)
 			idx[i] = q*sizeBatch + i + offset_;
-		getBasis(RasterOrHadamard, nBasis, idx, nB, compress, basis); // generation of pattern
+		getBasis(RasterOrHadamard, nBasis, idx, nB, compress, zoom, xCenter, yCenter, basis); // generation of pattern
 		free(idx);
 		printf("\n");
 		for (int k=0; k<nEl; k++){
@@ -206,16 +209,10 @@ void writePatternsOnFile(const int nEl, unsigned char ***basis){
     for(int f=0; f<nEl; f++){
         char name[] = "b000.txt";
         if (f<10){
-            name[3] += f;
         }
         else if(f<100){
-            name[2] += f/10;
-            name[3] += f-(f/10)*10;
         }
         else if(f<1000){
-            name[1] += f/100;
-            name[2] += f/10-(f/100)*100;
-            name[3] += f-(f/10)*10;
         }
         //printf("FileName %s\n", name);
         FILE *tmpF = fopen(name, "w");
