@@ -209,10 +209,16 @@ void writePatternsOnFile(const int nEl, unsigned char ***basis){
     for(int f=0; f<nEl; f++){
         char name[] = "b000.txt";
         if (f<10){
+            itoa(f, &name[3], 10);
         }
         else if(f<100){
+            itoa(f/10, &name[2], 10);
+            itoa(f-(f/10)*10, &name[3], 10);
         }
         else if(f<1000){
+            itoa(f/100, &name[1], 10);
+            itoa(f/10-(f/100)*100, &name[2], 10);
+            itoa(f-(f/10)*10, &name[3], 10);
         }
         //printf("FileName %s\n", name);
         FILE *tmpF = fopen(name, "w");
